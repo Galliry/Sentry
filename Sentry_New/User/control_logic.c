@@ -16,8 +16,7 @@
 void TIM14_Task(void)
 {
 	tim14.ClockTime++;
-//	RobotOnlineState(&check_robot_state,&rc_Ctrl_et);
-	rc_Ctrl_et.isOnline=1;rc_Ctrl_et.rc.s1=1;
+	RobotOnlineState(&check_robot_state,&rc_Ctrl_et);
 	if(rc_Ctrl_et.isOnline == 1)
 	{
 		ShootPlantControl(&AmmoBooster);
@@ -52,7 +51,7 @@ void TIM13_Task(void)
 	tim14_FPS.Gyro_cnt++;
 	MPU6050_Read(&mpu6050.mpu6050_Data);
 	IMUupdate(&mpu6050.mpu6050_Data);
-//	INS_attitude = INS_GetAttitude(IMU_data);
+	INS_attitude = INS_GetAttitude(IMU_data);
 }
 
 /**

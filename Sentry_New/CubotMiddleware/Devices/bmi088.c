@@ -192,7 +192,8 @@ void BMI088_Calibrate_Offset(IMU_InitData_t *bmi088_data)
         bmi088_data->gyro_offset[1] = 0;
         bmi088_data->gyro_offset[2] = 0;
 
-        for (uint16_t i = 0; i < CaliTimes; ++i) {
+        for (uint16_t i = 0; i < CaliTimes; ++i) 
+		{
             BMI088_accel_read_muli_reg(BMI088_ACCEL_XOUT_L, buf, 6);
             bmi088_raw_temp       = (int16_t)((buf[1]) << 8) | buf[0];
             bmi088_data->accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
@@ -245,10 +246,7 @@ void BMI088_Calibrate_Offset(IMU_InitData_t *bmi088_data)
             if (gNormDiff > 0.5f ||
                 gyroDiff[0] > 0.15f ||
                 gyroDiff[1] > 0.15f ||
-                gyroDiff[2] > 0.15f)
-                //            {
-                break;
-            //            }
+                gyroDiff[2] > 0.15f) break;
 
             DWT_Delay_s(0.0005);
         }
@@ -266,11 +264,11 @@ void BMI088_Calibrate_Offset(IMU_InitData_t *bmi088_data)
         bmi088_cali_count++;
 
     } while (gNormDiff > 0.8f ||
-             fabsf(bmi088_data->g_norm - 9.8f) > 0.9f ||
-             gyroDiff[0] > 0.3f ||
-             gyroDiff[1] > 0.3f ||
-             gyroDiff[2] > 0.3f ||
-             fabsf(bmi088_data->gyro_offset[0]) > 0.03f ||
+             fabsf(bmi088_data->g_norm - 9.8f) > 0.01f ||//9.8
+             gyroDiff[0] > 0.03f ||//0.3
+             gyroDiff[1] > 0.03f ||//0.3
+             gyroDiff[2] > -0.03f ||//0.3
+             fabsf(bmi088_data->gyro_offset[0]) > 0.03f ||//0.03
              fabsf(bmi088_data->gyro_offset[1]) > 0.03f ||
              fabsf(bmi088_data->gyro_offset[2]) > 0.03f);
     // 若出不了while，说明校准条件恶劣，超时则使用预置值校准

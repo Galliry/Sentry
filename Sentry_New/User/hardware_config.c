@@ -59,22 +59,21 @@ void HardwareConfig(void)
 	DR16Init(&rc_Ctrl);
 	ET08Init(&rc_Ctrl_et);
 
-    CANx_Init(&hfdcan1, CAN1_rxCallBack);
+	PID_Init();
+	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
+	HolderInit(&Holder,&pid_pitch,&pid_yaw_m,&pid_yaw_s);
+	INS_Init(&bmi088.bmi088_Data);
+	MPU6050_Init(&mpu6050.mpu6050_Data);
+	
+	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
     CANx_Init(&hfdcan2, CAN2_rxCallBack);
     CAN_Open (&can2 );
 	
-    TIMx_Init(&htim14, TIM14_Task);//链接定时器回调
+	TIMx_Init(&htim14, TIM14_Task);//链接定时器回调
 	TIM_Open(&tim14);
-//	TIMx_Init(&htim13, TIM13_Task);//链接定时器回调
-//	TIM_Open(&tim13);
-	
-	PID_Init();
-	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
-	HolderInit(&Holder,&pid_pitch,&pid_yaw_m,&pid_yaw_s);
-//	INS_Init(&bmi088.bmi088_Data);
-//	MPU6050_Init(&mpu6050.mpu6050_Data);
-
+	TIMx_Init(&htim13, TIM13_Task);//链接定时器回调
+	TIM_Open(&tim13);
 }
 
 
