@@ -27,7 +27,7 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, Sing
 void ShootPlantControl(Ammo_Booster* ammo_booster)
 {
 	ammo_booster->Shoot_Plate.Delta_Angle = ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM*0.001*ammo_booster->Shoot_Plate.Angle_Sense;
-	if(ammo_booster->Shoot_Plate.Delta_Angle > 0.005)
+	if(ammo_booster->Shoot_Plate.Delta_Angle > 0.005f)
 	{
 		ammo_booster->Shoot_Plate.Plate_Angle += ammo_booster->Shoot_Plate.Delta_Angle;
 	}

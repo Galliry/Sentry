@@ -205,6 +205,9 @@
               },
               {
                 "path": "Code/Sentry_New/CubotMiddleware/Modules/holder.c"
+              },
+              {
+                "path": "Code/Sentry_New/CubotMiddleware/Modules/brain.c"
               }
             ],
             "folders": []

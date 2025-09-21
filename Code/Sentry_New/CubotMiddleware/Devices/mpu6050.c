@@ -141,10 +141,10 @@ void IMUupdate(IMU_InitData_t *mpu6050_data)
 	static float YawAngleLast;
 	dt =DWT_GetDeltaT(&DWT_Count); 
 	//mpu6050_data->gyro[2]*=1.58;
-    tempq0 = q0_1 + ( - q3_1*mpu6050_data->gyro[2])*dt*0.5;
-    tempq1 = q1_1 + ( q2_1*mpu6050_data->gyro[2] )*dt*0.5;
-    tempq2 = q2_1 + ( - q1_1*mpu6050_data->gyro[2] )*dt*0.5;
-    tempq3 = q3_1 + (q0_1*mpu6050_data->gyro[2] )*dt*0.5;  
+    tempq0 = q0_1 + ( - q3_1*mpu6050_data->gyro[2])*dt*0.5f;
+    tempq1 = q1_1 + ( q2_1*mpu6050_data->gyro[2] )*dt*0.5f;
+    tempq2 = q2_1 + ( - q1_1*mpu6050_data->gyro[2] )*dt*0.5f;
+    tempq3 = q3_1 + (q0_1*mpu6050_data->gyro[2] )*dt*0.5f;
 
     // 四元数规范化
     norm = invSqrt(tempq0*tempq0 + tempq1*tempq1 + tempq2*tempq2 + tempq3*tempq3);

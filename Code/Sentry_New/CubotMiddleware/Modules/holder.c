@@ -50,9 +50,9 @@ void Holder_Control(Holder_t* holder,RC_Ctrl_ET* rc_ctrl)
 	holder->Pitch.GYRO_Angle = -(INS_attitude->pitch);
 	holder->Yaw_M.GYRO_Angle = mpu6050.Yaw_total_angle;
 	holder->Yaw_S.GYRO_Angle = INS_attitude->yaw;
-	holder->Yaw_M.GYRO_AngleSpeed = -150 * mpu6050.mpu6050_Data.gyro[2] * 0.001 * 50 * 3;
-	holder->Pitch.GYRO_AngleSpeed = -(INS_attitude->gyro[0] * 0.001) * 150 * 57.32;
-	holder->Yaw_S.GYRO_AngleSpeed = ((INS_attitude->gyro[2] - mpu6050.mpu6050_Data.gyro[2]) * 0.001) * 150 * 50 * 2 * (-1);
+	holder->Yaw_M.GYRO_AngleSpeed = -150.0f * mpu6050.mpu6050_Data.gyro[2] * 0.001f * 50.0f * 3.0f;
+	holder->Pitch.GYRO_AngleSpeed = -(INS_attitude->gyro[0] * 0.001f) * 150.0f * 57.32f;
+	holder->Yaw_S.GYRO_AngleSpeed = ((INS_attitude->gyro[2] - mpu6050.mpu6050_Data.gyro[2]) * 0.001f) * 150.0f * 50.0f * 2.0f * (-1.0f);
 	
 	if(tim14.ClockTime%100==0 && holder->Yaw_Fllow_Mode.Flag_Fllow == 1)//´óÔÆÌ¨¸úËæ
 	{
