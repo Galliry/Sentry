@@ -1,3 +1,5 @@
+#ifndef DR16_H_
+#define DR16_H_
 #include "stm32h7xx_hal.h"
 #include "usart.h"
 #include "driver_usart.h"
@@ -39,3 +41,5 @@ extern UART_RxBuffer uart1_buffer;
 extern RC_Ctrl rc_Ctrl;
 extern uint8_t DR16_RxBuffer0[36];
 extern uint8_t DR16_RxBuffer1[36];
+
+#endif

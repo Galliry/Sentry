@@ -11,16 +11,23 @@
 #include "mpu6050.h"
 #include "bmi088.h"
 #include "holder.h"
+#include "swerve_chassis.h"
+#include "dr16.h"
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 
 void TIM14_Task(void)
 {
 	tim14.ClockTime++;
-	RobotOnlineState(&check_robot_state,&rc_Ctrl_et);
+	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	if(rc_Ctrl_et.isOnline == 1)
 	{
 		ShootPlantControl(&AmmoBooster);
 		Holder_Control(&Holder,&rc_Ctrl_et);
+	}
+
+	if(rc_Ctrl.is_online == 1)
+	{
+		SwerveChassis_Control(&swervechassis,&rc_Ctrl);
 	}
 	
 	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
@@ -34,11 +41,22 @@ void TIM14_Task(void)
 		MotorFillData(&Holder.Motors6020.Yaw_S,0);
 		MotorFillData(&Holder.Motors6020.Pitch,0);
 	}
+	if(rc_Ctrl.is_online == 1){;}
+	else
+	{
+		uint8_t i;
+		DR16Init(&rc_Ctrl);
+		for(i=0;i<4;i++)
+		{
+			MotorFillData(&swervechassis.Motors6020.motor[i],0);
+        	MotorFillData(&swervechassis.Motors3508.motor[i],0);
+		}
+	}
 		
-	MotorCanOutput(can1, 0x1ff);
+	MotorCanOutput(can1, 0x1FE);
 	MotorCanOutput(can1, 0x200);
 	if (tim14.ClockTime%4==0)
-	MotorCanOutput(can2, 0x1ff);
+	MotorCanOutput(can2, 0x1FE);		//此处是电流信号
 	MotorCanOutput(can2, 0x200);
 	
 //	UsartDmaPrintf("");

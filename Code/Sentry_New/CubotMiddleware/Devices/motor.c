@@ -58,6 +58,12 @@ CAN_TxBuffer txBuffer0x1FFforCAN1={
 CAN_TxBuffer txBuffer0x2FFforCAN1={
 	.Identifier = 0x2ff
 };
+CAN_TxBuffer txBuffer0x1FEforCAN1={
+	.Identifier = 0x1fe
+};
+CAN_TxBuffer txBuffer0x2FEforCAN1={
+	.Identifier = 0x2fe
+};
 CAN_TxBuffer txBuffer0x200forCAN2={
 	.Identifier = 0x200
 };
@@ -66,6 +72,12 @@ CAN_TxBuffer txBuffer0x1FFforCAN2={
 };
 CAN_TxBuffer txBuffer0x2FFforCAN2={
 	.Identifier = 0x2ff
+};
+CAN_TxBuffer txBuffer0x1FEforCAN2={
+	.Identifier = 0x1fe
+};
+CAN_TxBuffer txBuffer0x2FEforCAN2={
+	.Identifier = 0x2fe
 };
 
 
@@ -165,12 +177,16 @@ static  uint8_t CAN_fill_6020_data( CAN_Object can, MotorData motor_data,uint16_
 		if(id >= 0x205 && id <= 0x208)
 		{
 		 txBuffer0x1FFforCAN1.Data[(id - 0x205) * 2] = motor_data.Output >> 8;
-		 txBuffer0x1FFforCAN1.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;		
+		 txBuffer0x1FFforCAN1.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;
+		 txBuffer0x1FEforCAN1.Data[(id - 0x205) * 2] = motor_data.Output >> 8;
+		 txBuffer0x1FEforCAN1.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;		
 		}
 		else if(id >= 0x209 && id<= 0x20B)
 		{
 		 txBuffer0x2FFforCAN1.Data[(id - 0x209) * 2] = motor_data.Output >> 8;
-		 txBuffer0x2FFforCAN1.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;	
+		 txBuffer0x2FFforCAN1.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;
+		 txBuffer0x2FEforCAN1.Data[(id - 0x209) * 2] = motor_data.Output >> 8;
+		 txBuffer0x2FEforCAN1.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;	
 		}
 	}
 	else if(can.Handle == &hfdcan2)
@@ -178,12 +194,16 @@ static  uint8_t CAN_fill_6020_data( CAN_Object can, MotorData motor_data,uint16_
 		if(id >= 0x205 && id <= 0x208)
 		{
 		 txBuffer0x1FFforCAN2.Data[(id - 0x205) * 2] = motor_data.Output >> 8;
-		 txBuffer0x1FFforCAN2.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;		
+		 txBuffer0x1FFforCAN2.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;
+		 txBuffer0x1FEforCAN2.Data[(id - 0x205) * 2] = motor_data.Output >> 8;
+		 txBuffer0x1FEforCAN2.Data[(id - 0x205) * 2 + 1] = motor_data.Output & 0xff;		
 		}
 		else if(id >= 0x209 && id<= 0x20B)
 		{
 		 txBuffer0x2FFforCAN2.Data[(id - 0x209) * 2] = motor_data.Output >> 8;
-		 txBuffer0x2FFforCAN2.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;	
+		 txBuffer0x2FFforCAN2.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;
+		 txBuffer0x2FEforCAN2.Data[(id - 0x209) * 2] = motor_data.Output >> 8;
+		 txBuffer0x2FEforCAN2.Data[(id - 0x209) * 2 + 1] = motor_data.Output & 0xff;	
 		}
 	}
 	return 0;
@@ -382,6 +402,22 @@ uint16_t MotorCanOutput(CAN_Object can, int16_t IDforTxBuffer)
 				CAN_Send(&can, &txBuffer0x2FFforCAN1);
 			else if(can.Handle == &hfdcan2)
 				CAN_Send(&can, &txBuffer0x2FFforCAN2);
+			break;
+		}
+		case 0x1fe: 
+		{
+			if(can.Handle == &hfdcan1)
+				CAN_Send(&can, &txBuffer0x1FEforCAN1);
+			else if(can.Handle == &hfdcan2)
+				CAN_Send(&can, &txBuffer0x1FEforCAN2);
+			break;
+		}
+		case 0x2fe: 
+		{
+			if(can.Handle == &hfdcan1)
+				CAN_Send(&can, &txBuffer0x2FEforCAN1);
+			else if(can.Handle == &hfdcan2)
+				CAN_Send(&can, &txBuffer0x2FEforCAN2);
 			break;
 		}
 		default: ;

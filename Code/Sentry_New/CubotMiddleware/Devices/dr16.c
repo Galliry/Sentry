@@ -1,36 +1,36 @@
-	/**@file  dr16.c
-	* @brief    设备层
-	* @details  主要包括构建串口管理器，提供串口初始化和用户回调重定义
-	* @author      RyanJiao  any question please send mail to 1095981200@qq.com
-	* @date        2021-10-9
-	* @version     V1.0
-	* @copyright    Copyright (c) 2021-2121  中国矿业大学CUBOT战队
-	**********************************************************************************
+/**@file  dr16.c
+* @brief    设备层
+* @details  主要包括构建串口管理器，提供串口初始化和用户回调重定义
+* @author      RyanJiao  any question please send mail to 1095981200@qq.com
+* @date        2021-10-9
+* @version     V1.0
+* @copyright    Copyright (c) 2021-2121  中国矿业大学CUBOT战队
+**********************************************************************************
+* @attention
+* 硬件平台: STM32H750VBT \n
+* SDK版本：-++++
+* @par 修改日志:
+* <table>
+* <tr><th>Date        <th>Version  <th>Author    <th>Description
+* <tr><td>2021-8-12  <td>1.0      <td>RyanJiao  <td>创建初始版本
+* </table>
+*
+**********************************************************************************
+ ==============================================================================
+													How to use this driver  
+ ==============================================================================
+ 
+
+	********************************************************************************
 	* @attention
 	* 硬件平台: STM32H750VBT \n
 	* SDK版本：-++++
-	* @par 修改日志:
-	* <table>
-	* <tr><th>Date        <th>Version  <th>Author    <th>Description
-	* <tr><td>2021-8-12  <td>1.0      <td>RyanJiao  <td>创建初始版本
-	* </table>
-	*
-	**********************************************************************************
-	 ==============================================================================
-														How to use this driver  
-	 ==============================================================================
-	 
-
-		********************************************************************************
-		* @attention
-		* 硬件平台: STM32H750VBT \n
-		* SDK版本：-++++
-		* if you had modified this file, please make sure your code does not have many 
-		* bugs, update the version NO., write dowm your name and the date, the most
-		* important is make sure the users will have clear and definite understanding 
-		* through your new brief.
-		********************************************************************************
-	*/
+	* if you had modified this file, please make sure your code does not have many 
+	* bugs, update the version NO., write dowm your name and the date, the most
+	* important is make sure the users will have clear and definite understanding 
+	* through your new brief.
+	********************************************************************************
+*/
 
 #include "dr16.h"
 #include "hardware_config.h"

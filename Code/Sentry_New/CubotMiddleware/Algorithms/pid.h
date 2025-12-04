@@ -53,6 +53,8 @@ int16_t BasePID_SpeedControl(SinglePID_t* base_pid, float target_speed, float fe
   */
 float  BasePID_AngleControl(SinglePID_t* base_pid, float target_angle, float feedback_angle);
 
+float  BasePID_AngleControl_Swerve(SinglePID_t* base_pid, float target_angle, float feedback_angle);
+
 void PID_Init(void);
 extern SinglePID_t pid_load;
 extern SinglePID_t pid_friction0;
@@ -62,5 +64,6 @@ extern DualPID_Object pid_yaw_s;
 extern DualPID_Object pid_pitch;
 extern SinglePID_t pid_run;
 extern SinglePID_t pid_follow;
+extern DualPID_Object pid_turn[4];
 #endif
 
