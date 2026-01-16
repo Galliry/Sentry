@@ -7,9 +7,9 @@ Ammo_Booster AmmoBooster;
 
 void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, SinglePID_t* friction_pid1,SinglePID_t* load_pid)
 {
-	MotorInit(&ammo_booster->Friction_Wheel.motor3508[0], 0 , Motor3508, CAN1, 0x201);
-	MotorInit(&ammo_booster->Friction_Wheel.motor3508[1], 0 , Motor3508, CAN1, 0x202);
-	MotorInit(&ammo_booster->Shoot_Plate.motor2006, 0 , Motor2006, CAN1, 0x204);
+	MotorInit(&ammo_booster->Friction_Wheel.motor3508[0], 0 , Motor3508, CAN1, 0x203);
+	MotorInit(&ammo_booster->Friction_Wheel.motor3508[1], 0 , Motor3508, CAN1, 0x204);
+	MotorInit(&ammo_booster->Shoot_Plate.motor2006, 0 , Motor2006, CAN1, 0x201);
 
 	BasePID_Init(&ammo_booster->Shoot_Plate.RunPID, load_pid->Kp, load_pid->Ki, load_pid->Kd, load_pid->KiPartDetachment);
 	BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[0], friction_pid0->Kp, friction_pid0->Ki, friction_pid0->Kd, friction_pid0->KiPartDetachment);

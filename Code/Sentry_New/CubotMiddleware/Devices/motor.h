@@ -46,13 +46,19 @@ typedef struct
 	int32_t  TotalEcd;			//< 编码器累计增量值
 	int32_t  TotalAngle;		//< 累计旋转角度
 
+	struct{
+		uint16_t Cnt;
+		uint16_t FPS;
+		uint8_t Status;
+		uint8_t StatusCnt;
+	}Online_check;
 	int16_t  Target;				//< 电机的期望参数
 	int32_t  Output;  			//< 电机输出值，通常为电流和电压	
-	float CanEcd[20] ;
-	float CanAngleSpeed[20] ;
-	float LvboAngle;
-	int16_t  LvboEcd;
-	int16_t  LvboSpeedRPM;
+//	float CanEcd[20] ;
+//	float CanAngleSpeed[20] ;
+//	float LvboAngle;
+//	int16_t  LvboEcd;
+//	int16_t  LvboSpeedRPM;
 	
 }MotorData;
 

@@ -14,8 +14,10 @@
 #include "holder.h"
 #include "all_chassis.h"
 #include "swerve_chassis.h"
-void MPU_Init_(void);
+#include "DM_motor.h"
+#include "LK_motor.h"
 
+void MPU_Init_(void);
 void MPU_Init_(void)
 {
 	//MUP structure variable define
@@ -45,7 +47,7 @@ void MPU_Init_(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
 }
-
+extern LKMotor_t LKMotor;
 /**
   * @brief  初始化指令合集
   */
@@ -53,38 +55,33 @@ void HardwareConfig(void)
 {
 	MPU_Init_();
 	DWT_Init(480);
-	 
-//	UARTx_Init(&huart1,ET08_callback);
-	UARTx_Init(&huart1,DR16_Callback);
-	UARTx_Init(&huart7,NULL);//  Vofa+
-	UARTx_Init(&huart3, Referee_callback);
 	
 	DR16Init(&rc_Ctrl);
-	ET08Init(&rc_Ctrl_et);
-
-	PID_Init();
-//	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
+//	ET08Init(&rc_Ctrl_et);
+	
+	PID_Init(); 
+	LKMotor_Init(0x141,&LKMotor);
+	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
 	SwerveChassisInit(&swervechassis,pid_turn,&pid_run);
-//	HolderInit(&Holder,&pid_pitch,&pid_yaw_m,&pid_yaw_s);
-//	INS_Init(&bmi088.bmi088_Data);
-	MPU6050_Init(&mpu6050.mpu6050_Data);
+	HolderInit(&Holder,&pid_pitch,&pid_yaw_m,&pid_yaw_s);
 //	AllChassisInit(&allchassis,&pid_run,&pid_follow);
+	
+//	UARTx_Init(&huart1,ET08_callback);
+	UARTx_Init(&huart1,DR16_Callback);
+	UARTx_Init(&huart3, Referee_callback);
+	UARTx_Init(&huart7,NULL);//  Vofa+
 	
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
     CANx_Init(&hfdcan2, CAN2_rxCallBack);
     CAN_Open (&can2 );
 	
+//	INS_Init(&bmi088.bmi088_Data);
+//	MPU6050_Init(&mpu6050.mpu6050_Data);
+		
 	TIMx_Init(&htim14, TIM14_Task);//链接定时器回调
 	TIM_Open(&tim14);
-//	TIMx_Init(&htim13, TIM13_Task);//链接定时器回调
-//	TIM_Open(&tim13);
+	TIMx_Init(&htim13, TIM13_Task);//链接定时器回调
+	TIM_Open(&tim13);
 }
-
-
-
-
-
-
-
 

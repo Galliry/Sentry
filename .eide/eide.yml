@@ -1,5 +1,5 @@
 version: "4.1"
-name: Sentry
+name: H7_Base
 type: ARM
 deviceName: null
 packDir: null
@@ -81,11 +81,9 @@ virtualFolder:
           folders: []
         - name: Modules
           files:
-            - path: Code/Sentry_New/CubotMiddleware/Modules/ins.c
             - path: Code/Sentry_New/CubotMiddleware/Modules/all_chassis.c
             - path: Code/Sentry_New/CubotMiddleware/Modules/shoot.c
             - path: Code/Sentry_New/CubotMiddleware/Modules/holder.c
-            - path: Code/Sentry_New/CubotMiddleware/Modules/brain.c
             - path: Code/Sentry_New/CubotMiddleware/Modules/swerve_chassis.c
           folders: []
         - name: Devices
@@ -95,9 +93,10 @@ virtualFolder:
             - path: Code/Sentry_New/CubotMiddleware/Devices/motor.c
             - path: Code/Sentry_New/CubotMiddleware/Devices/mpu6050.c
             - path: Code/Sentry_New/CubotMiddleware/Devices/bmi088.c
-            - path: Code/Sentry_New/CubotMiddleware/Devices/check.c
             - path: Code/Sentry_New/CubotMiddleware/Devices/referee.c
             - path: Code/Sentry_New/CubotMiddleware/Devices/Supercap.c
+            - path: Code/Sentry_New/CubotMiddleware/Devices/DM_motor.c
+            - path: Code/Sentry_New/CubotMiddleware/Devices/LK_motor.c
           folders: []
         - name: Algorithms
           files:
@@ -107,6 +106,8 @@ virtualFolder:
             - path: Code/Sentry_New/CubotMiddleware/Algorithms/pid.c
             - path: Code/Sentry_New/CubotMiddleware/Algorithms/quaternions_EKF.c
             - path: Code/Sentry_New/CubotMiddleware/Algorithms/user_lib.c
+            - path: Code/Sentry_New/CubotMiddleware/Modules/ins.c
+            - path: Code/Sentry_New/CubotMiddleware/Devices/check.c
           folders: []
     - name: MIddlewaves
       files:

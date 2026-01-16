@@ -99,19 +99,20 @@ static void MotorEcdtoAngle(Motor* motor)
 	}
 		(&motor->Data)->Angle = K_ECD_TO_ANGLE * ((motor->Data.Ecd) - (&motor->Param)->EcdOffset);
 }
-static void MotorLvboEcdtoAngle(Motor* motor){
-if((&motor->Param)->EcdOffset < ((&motor->Param)->EcdFullRange/2))
-	{
-		if((motor->Data.LvboEcd) > (&motor->Param)->EcdOffset + (&motor->Param)->EcdFullRange/2)
-			(&motor->Data)->LvboEcd = (motor->Data.LvboEcd) - (&motor->Param)->EcdFullRange;
-	}
-	else
-	{
-		if((motor->Data.LvboEcd) < (&motor->Param)->EcdOffset - (&motor->Param)->EcdFullRange/2)
-			(&motor->Data)->LvboEcd = (motor->Data.LvboEcd) + (&motor->Param)->EcdFullRange;
-	}
-		(&motor->Data)->LvboAngle = K_ECD_TO_ANGLE * ((motor->Data.LvboEcd) - (&motor->Param)->EcdOffset);
-}
+//static void MotorLvboEcdtoAngle(Motor* motor)
+//{
+//	if((&motor->Param)->EcdOffset < ((&motor->Param)->EcdFullRange/2))
+//	{
+//		if((motor->Data.LvboEcd) > (&motor->Param)->EcdOffset + (&motor->Param)->EcdFullRange/2)
+//			(&motor->Data)->LvboEcd = (motor->Data.LvboEcd) - (&motor->Param)->EcdFullRange;
+//	}
+//	else
+//	{
+//		if((motor->Data.LvboEcd) < (&motor->Param)->EcdOffset - (&motor->Param)->EcdFullRange/2)
+//			(&motor->Data)->LvboEcd = (motor->Data.LvboEcd) + (&motor->Param)->EcdFullRange;
+//	}
+//	(&motor->Data)->LvboAngle = K_ECD_TO_ANGLE * ((motor->Data.LvboEcd) - (&motor->Param)->EcdOffset);
+//}
 
 
 /**
@@ -216,7 +217,7 @@ static  uint8_t CAN_fill_6020_data( CAN_Object can, MotorData motor_data,uint16_
 static  uint8_t CAN_update_data(MotorData* motor, CAN_RxBuffer rxBuffer)
 {
 	motor->LastEcd       = motor->Ecd;      //< 更新编码器角度前记录上个周期的编码器角度
-	motor->RawEcd 			 = rxBuffer.Data[0]<<8|rxBuffer.Data[1];
+	motor->RawEcd 		 = rxBuffer.Data[0]<<8|rxBuffer.Data[1];
 	motor->SpeedRPM      = rxBuffer.Data[2]<<8|rxBuffer.Data[3];
 	motor->TorqueCurrent = rxBuffer.Data[4]<<8|rxBuffer.Data[5];
 	motor->Temperature   = rxBuffer.Data[6];
@@ -326,21 +327,23 @@ void MotorRxCallback(CAN_Object canx, CAN_RxBuffer rxBuffer)
 	temp_motor = MotorFind(id,canx);
 	if(temp_motor != NULL)
 	{
-		temp_motor->MotorUpdate(&temp_motor->Data, rxBuffer); 
-		temp_motor->Data.CanEcd[Q_index] = temp_motor->Data.Ecd;
-		temp_motor->Data.CanAngleSpeed[Q_index] = temp_motor->Data.SpeedRPM;
-		Q_index++;
-		if(Q_index==20)Q_index=0;
-		for(int i = 0; i <20 ;i++){
-		Ecd_sum += temp_motor->Data.CanEcd[Q_index];
-		Speed_sum += temp_motor->Data.CanAngleSpeed[Q_index];			
-		}
-		temp_motor->Data.LvboSpeedRPM = Speed_sum/20;
-		temp_motor->Data.LvboEcd = Ecd_sum/20;
-		Speed_sum = 0;
-		Ecd_sum = 0;
+		temp_motor->MotorUpdate(&temp_motor->Data, rxBuffer);
 		MotorEcdtoAngle(temp_motor);
-		MotorLvboEcdtoAngle(temp_motor);
+		temp_motor->Data.Online_check.StatusCnt=0;
+		temp_motor->Data.Online_check.Cnt++;
+//		temp_motor->Data.CanEcd[Q_index] = temp_motor->Data.Ecd;
+//		temp_motor->Data.CanAngleSpeed[Q_index] = temp_motor->Data.SpeedRPM;
+//		Q_index++;
+//		if(Q_index==20)Q_index=0;
+//		for(int i = 0; i <20 ;i++){
+//		Ecd_sum += temp_motor->Data.CanEcd[Q_index];
+//		Speed_sum += temp_motor->Data.CanAngleSpeed[Q_index];			
+//		}
+//		temp_motor->Data.LvboSpeedRPM = Speed_sum/20;
+//		temp_motor->Data.LvboEcd = Ecd_sum/20;
+//		Speed_sum = 0;
+//		Ecd_sum = 0;
+//		MotorLvboEcdtoAngle(temp_motor);
 	}
 }
 
@@ -363,11 +366,10 @@ void MotorFillData(Motor* motor, int32_t output)
 {
 	motor->Data.Output = output;
 	MotorOutputLimit(motor);
-
-	
+	amp_test = motor->Data.Output;
 	if(motor->Param.CanNumber == CAN1)
 		motor->FillMotorData(can1, motor->Data, motor->Param.CanId);
-  else if(motor->Param.CanNumber == CAN2)
+	else if(motor->Param.CanNumber == CAN2)
 		motor->FillMotorData(can2, motor->Data, motor->Param.CanId);
 }
 

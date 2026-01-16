@@ -81,6 +81,8 @@ void MatInit(mat *m, uint8_t row, uint8_t col);
 #define ABS(ABS_x)                          ((ABS_x) > 0 ? (ABS_x) : (-(ABS_x)))                                                                        // 取绝对值
 #define SYNC_SIGN(SYNC_a, SYNC_b)           ((SYNC_b) = ((SYNC_a) >= 0 ? ABS(SYNC_b) : -ABS(SYNC_b)))                                                   // 使b与a同号
 
+int float_to_uint(float x, float x_min, float x_max, int bits);
+float uint_to_float(int x_int, float x_min, float x_max, int bits);
 /**
  * @brief 返回一块干净的内??,不过仍然需要强制转??为你需要的类型
  *

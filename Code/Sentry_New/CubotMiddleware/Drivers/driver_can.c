@@ -104,7 +104,7 @@ void CANx_Init(FDCAN_HandleTypeDef* handle, CAN_RxCpltCallback rxCallback)
   */
 void CAN_Open(CAN_Object* can) 
 { 
-  FDCAN_FilterTypeDef filter;                   	//< 声明局部变量 can过滤器结构体
+	FDCAN_FilterTypeDef filter;                   	//< 声明局部变量 can过滤器结构体
 	filter.IdType       = FDCAN_STANDARD_ID;       	//< id设置为标准id
 	filter.FilterIndex  = 0;                      	//< 设值筛选器的编号，标准id选择0-127
 	filter.FilterType   = FDCAN_FILTER_MASK;       	//< 设置工作模式为掩码模式
@@ -130,7 +130,7 @@ uint8_t CAN_Send(CAN_Object* can, CAN_TxBuffer* txBuffer)
 	txHeader.TxFrameType = FDCAN_DATA_FRAME;
 	txHeader.DataLength = FDCAN_DLC_BYTES_8;
 	txHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-  txHeader.BitRateSwitch = FDCAN_BRS_OFF;
+	txHeader.BitRateSwitch = FDCAN_BRS_OFF;
 	txHeader.FDFormat = FDCAN_CLASSIC_CAN;
 	txHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	txHeader.MessageMarker = 0x00;

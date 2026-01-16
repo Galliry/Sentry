@@ -81,7 +81,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
+            <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -1928,11 +1928,6 @@
           <GroupName>Cubot/Modules</GroupName>
           <Files>
             <File>
-              <FileName>ins.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\CubotMiddleware\Modules\ins.c</FilePath>
-            </File>
-            <File>
               <FileName>all_chassis.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Modules\all_chassis.c</FilePath>
@@ -1983,11 +1978,6 @@
               <FilePath>..\CubotMiddleware\Devices\bmi088.c</FilePath>
             </File>
             <File>
-              <FileName>check.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\CubotMiddleware\Devices\check.c</FilePath>
-            </File>
-            <File>
               <FileName>referee.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Devices\referee.c</FilePath>
@@ -1996,6 +1986,16 @@
               <FileName>Supercap.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Devices\Supercap.c</FilePath>
+            </File>
+            <File>
+              <FileName>DM_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Devices\DM_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>LK_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Devices\LK_motor.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2031,6 +2031,16 @@
               <FileName>user_lib.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Algorithms\user_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>ins.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Modules\ins.c</FilePath>
+            </File>
+            <File>
+              <FileName>check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Devices\check.c</FilePath>
             </File>
           </Files>
         </Group>

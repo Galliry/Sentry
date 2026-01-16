@@ -120,11 +120,11 @@ void PID_Init(void)
 	BasePID_Init(&pid_yaw_m_speed,0,0,0,0);
 	BasePID_Init(&pid_yaw_s_angle,0,0,0,0);
 	BasePID_Init(&pid_yaw_s_speed,0,0,0,0);
-	BasePID_Init(&pid_run,25,0,0,0);		//底盘运动
+	BasePID_Init(&pid_run,20,0,0,0);		//底盘运动 20
 	BasePID_Init(&pid_follow,0,0,0,0);		//底盘跟随
 	for(int i=0;i<4;i++)
 	{
-		BasePID_Init(&pid_turn_angle[i],-10,-0.1,-25,10);		//底盘舵向电机
-		BasePID_Init(&pid_turn_speed[i],10,0,0,0);
+		BasePID_Init(&pid_turn_angle[i],-35,-0.5,-40,10);		//底盘舵向电机 -35 -0.5 -40 10
+		BasePID_Init(&pid_turn_speed[i],10,0,0,0);		// 10 0 0 0
 	}
 }

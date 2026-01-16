@@ -21,7 +21,7 @@ typedef enum
 typedef struct
 {
 	FDCAN_RxHeaderTypeDef	Header;
-	uint8_t								Data[8];
+	uint8_t	Data[8];
 }CAN_RxBuffer;
 
 
@@ -30,8 +30,8 @@ typedef struct
 	*/
 typedef struct
 {
-	uint32_t							Identifier;
-	uint8_t								Data[8];
+	uint32_t Identifier;
+	uint8_t		Data[8];
 }CAN_TxBuffer;
 
 
@@ -48,7 +48,7 @@ typedef uint8_t(*CAN_RxCpltCallback)(CAN_RxBuffer* rxBuffer);
 typedef struct
 {
 	FDCAN_HandleTypeDef* 	Handle;
-	list_t								DevicesList;
+	list_t					DevicesList;
 	CAN_RxCpltCallback		RxCpltCallback;
 }CAN_Object;
 

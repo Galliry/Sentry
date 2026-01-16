@@ -87,8 +87,8 @@ void ET08_DataUnpack(RC_Ctrl_ET* rc_ctrl, uint8_t * recBuffer, uint16_t len )
 	uint8_t SA,SB,SC,SD;
 	if(recBuffer[0]==0x0f)																																												//< 数据完整性验证 
 	{
-	check_robot_state.Check_Usart.Check_receiver_cnt=0;
-	tim14_FPS.Receiver_cnt++;
+		check_robot_state.Check_Usart.Check_receiver_cnt=0;
+		tim14_FPS.Receiver_cnt++;
 		rc_ctrl->rc.ch0 = (recBuffer[1]>>0| (recBuffer[2] << 8)) & 0x07ff; 																					//< Channel 0   高8位与低3位
 		rc_ctrl->rc.ch1 = ((recBuffer[2] >> 3) | (recBuffer[3] << 5)) & 0x07ff; 																	//< Channel 1   高5位与低6位
 		rc_ctrl->rc.ch2 = ((recBuffer[3] >> 6) | (recBuffer[4] << 2) |(recBuffer[5] << 10)) & 0x07ff; 						//< Channel 2

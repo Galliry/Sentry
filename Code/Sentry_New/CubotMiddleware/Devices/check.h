@@ -43,4 +43,5 @@ extern Check_Robot_State check_robot_state;
 extern FPS tim14_FPS;
 void RobotOnlineState(Check_Robot_State* CheckRobotState,RC_Ctrl_ET* rc_ctrl,RC_Ctrl* rc_ctrl_dr16);
 void FPS_Check(FPS * fps);
+void Motor_CheckFPS();
 #endif

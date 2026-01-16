@@ -35,7 +35,7 @@
 #include "dr16.h"
 #include "hardware_config.h"
 #include "control_logic.h"
-
+#include "check.h"
 RC_Ctrl rc_Ctrl = {.isUnpackaging = 0,
                    .is_online      = 0};
 
@@ -64,8 +64,8 @@ uint8_t DR16_Callback(uint8_t *recBuffer, uint16_t len)
 {
     
     DR16_DataUnpack(&rc_Ctrl, recBuffer);
-	if(rc_Ctrl.FPS > 30)
-	rc_Ctrl.online_cnt = 0;
+//	if(rc_Ctrl.FPS > 30)
+//	rc_Ctrl.online_cnt = 0;
 	
     return 0;
 }
@@ -90,8 +90,10 @@ void DR16Init(RC_Ctrl *rc_ctrl)
  */
 void DR16_DataUnpack(RC_Ctrl *rc_ctrl, uint8_t *recBuffer)
 {
-	rc_ctrl->FPS++;
-	if (rc_ctrl->FPS>1000)   rc_ctrl->FPS=1000;
+//	rc_ctrl->FPS++;
+//	if (rc_ctrl->FPS>1000)   rc_ctrl->FPS=1000;
+	rc_Ctrl.online_cnt = 0;
+	tim14_FPS.Receiver_cnt++;
     // 解算期间不允许读取数据
     rc_ctrl->isUnpackaging = 1;
     uint8_t correct_num    = 0;

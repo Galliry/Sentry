@@ -13,8 +13,8 @@ Holder_t Holder;
 void HolderInit(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_m,DualPID_Object* yaw_s)
 {
 	MotorInit(&holder->Motors6020.Pitch,6993,Motor6020,CAN1,0x206);
-	MotorInit(&holder->Motors6020.Yaw_S,5924,Motor6020,CAN1,0x205);
-	MotorInit(&holder->Motors6020.Yaw_M,5645,Motor6020,CAN2,0x205);
+	MotorInit(&holder->Motors6020.Yaw_S,5924,Motor6020,CAN1,0x207);
+	MotorInit(&holder->Motors6020.Yaw_M,5645,Motor6020,CAN1,0x205);
 
 	DualPID_Init(&holder->Pitch.PID,pitch->ShellPID,pitch->CorePID);
 	DualPID_Init(&holder->Yaw_M.PID,yaw_m->ShellPID,yaw_m->CorePID);

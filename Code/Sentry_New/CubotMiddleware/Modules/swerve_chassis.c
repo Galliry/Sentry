@@ -7,10 +7,10 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis);
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid)
 {
     uint8_t i;
-    MotorInit(&chassis->Motors6020.motor[0],1045,Motor6020,CAN2,0x205);
-    MotorInit(&chassis->Motors6020.motor[1],2991,Motor6020,CAN1,0x206);
-    MotorInit(&chassis->Motors6020.motor[2],12590,Motor6020,CAN2,0x207);
-    MotorInit(&chassis->Motors6020.motor[3],5981,Motor6020,CAN2,0x208);
+    MotorInit(&chassis->Motors6020.motor[0],2797,Motor6020,CAN2,0x205);
+    MotorInit(&chassis->Motors6020.motor[1],6191,Motor6020,CAN2,0x206);     //此处如果八个电机全部接在can2最后一个电机收不到数据
+    MotorInit(&chassis->Motors6020.motor[2],7090,Motor6020,CAN2,0x207);
+    MotorInit(&chassis->Motors6020.motor[3],4887,Motor6020,CAN1,0x208);
     MotorInit(&chassis->Motors3508.motor[0],0,Motor3508,CAN2,0x201);
     MotorInit(&chassis->Motors3508.motor[1],0,Motor3508,CAN2,0x202);
     MotorInit(&chassis->Motors3508.motor[2],0,Motor3508,CAN2,0x203);
@@ -20,8 +20,8 @@ void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID
         DualPID_Init(&chassis->Motors6020.TurnPID[i],turn_pid[i].ShellPID,turn_pid[i].CorePID);
     }
 	BasePID_Init(&chassis->Motors3508.RunPID[0],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[1],-run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[2],-run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
+	BasePID_Init(&chassis->Motors3508.RunPID[1],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
+	BasePID_Init(&chassis->Motors3508.RunPID[2],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
 	BasePID_Init(&chassis->Motors3508.RunPID[3],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);;
 	chassis->Movement.Vx_Sensitivity = 5;
 	chassis->Movement.Vy_Sensitivity = 5;
@@ -60,31 +60,29 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
         {
             chassis->Vectors.UnTarget_Angle[i] = chassis->Vectors.Target_Angle[i] - 180;
         }
-        if(error > 180) 
+        if(error > 180.0f) 
         {
             error = 360 - error;
         }
-        else if(error < -180)
+        else if(error < -180.0f)
         {
             error += 360;
         }
 		error = fabsf(error);
-        if(error > 91.0f)
+        if(error > 90.0f)
         {
             chassis->Vectors.Target_Angle[i] = chassis->Vectors.UnTarget_Angle[i];
             chassis->Vectors.Velocity[i] = -chassis->Vectors.Velocity[i];
-        }
-        
+        }  
     }
-	chassis->Motors3508.motor[0].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[0],chassis->Vectors.Velocity[0],chassis->Motors3508.motor[0].Data.SpeedRPM);
-	chassis->Motors3508.motor[1].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[1],chassis->Vectors.Velocity[1],-chassis->Motors3508.motor[1].Data.SpeedRPM);
-	chassis->Motors3508.motor[2].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[2],chassis->Vectors.Velocity[2],-chassis->Motors3508.motor[2].Data.SpeedRPM);
-	chassis->Motors3508.motor[3].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[3],chassis->Vectors.Velocity[3],chassis->Motors3508.motor[3].Data.SpeedRPM);
+	chassis->Motors3508.motor[0].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[0],-chassis->Vectors.Velocity[0],chassis->Motors3508.motor[0].Data.SpeedRPM);
+	chassis->Motors3508.motor[1].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[1],chassis->Vectors.Velocity[1],chassis->Motors3508.motor[1].Data.SpeedRPM);
+	chassis->Motors3508.motor[2].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[2],chassis->Vectors.Velocity[2],chassis->Motors3508.motor[2].Data.SpeedRPM);
+	chassis->Motors3508.motor[3].Data.Output = BasePID_SpeedControl(&chassis->Motors3508.RunPID[3],-chassis->Vectors.Velocity[3],chassis->Motors3508.motor[3].Data.SpeedRPM);
 	for(int i=0;i<4;i++)
     {
         chassis->Motors6020.motor[i].Data.Output = BasePID_SpeedControl(chassis->Motors6020.TurnPID[i].CorePID,
 		    BasePID_AngleControl_Swerve(chassis->Motors6020.TurnPID[i].ShellPID,chassis->Vectors.Target_Angle[i],-(chassis->Motors6020.motor[i].Data.Angle)),chassis->Motors6020.motor[i].Data.SpeedRPM);    
-        
 		//限幅
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output,-16000,16000);
 		chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output,-16000,16000);
@@ -93,3 +91,4 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
     }
     
 }
+
