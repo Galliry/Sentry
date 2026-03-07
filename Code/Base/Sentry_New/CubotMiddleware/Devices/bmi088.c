@@ -420,7 +420,7 @@ static void BMI088_read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len)
     }
 }
 float Q_B[4];
-void Bmi088_InitQuaternion()
+void Bmi088_InitQuaternion(void)
 {
     float acc_init[3]     = {0};
     float gravity_norm[3] = {0, 0, 1}; // 导航系重力加速度矢量,归一化后为(0,0,1)

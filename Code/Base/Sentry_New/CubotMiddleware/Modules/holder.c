@@ -16,18 +16,7 @@ void HolderInit_Base(Holder_t* holder,DualPID_Object* yaw_m)
 	DualPID_Init(&holder->Yaw_M.PID,yaw_m->ShellPID,yaw_m->CorePID);
 	holder->Yaw_M.Sensitivity = 0.00085f;		//0.003f 0.0015
 }
-///**
-//  * @brief 云台初始化上板
-//  */
-//void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s)
-//{
-//	DMiaoInit(&holder->Motors.Pitch,0x06,0x00,MIT);
-//	MotorInit(&holder->Motors.Yaw_S,0,Motor6020,CAN2,0x205);
-//	DualPID_Init(&holder->Yaw_S.PID,yaw_s->ShellPID,yaw_s->CorePID);
-//	DualPID_Init(&holder->Pitch.PID,pitch->ShellPID,pitch->CorePID);
-//	holder->Pitch.Sensitivity = 0.00085f;		//-0.0015f
-//	holder->Yaw_S.Sensitivity = 0.0010f;
-//}
+
 /**
   * @brief 云台控制
   */

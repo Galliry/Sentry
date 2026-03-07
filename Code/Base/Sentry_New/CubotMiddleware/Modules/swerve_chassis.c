@@ -2,7 +2,7 @@
 #include "user_lib.h"
 SwerveChassis swervechassis;
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
-void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid)
+void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid)
 {
     uint8_t i;
     MotorInit(&chassis->Motors6020.motor[0],6859,Motor6020,CAN2,0x205);
@@ -17,10 +17,12 @@ void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID
     {
         DualPID_Init(&chassis->Motors6020.TurnPID[i],turn_pid[i].ShellPID,turn_pid[i].CorePID);
     }
-	BasePID_Init(&chassis->Motors3508.RunPID[0],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[1],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[2],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[3],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);;
+	BasePID_Init(&chassis->Motors3508.RunPID[0],run_pid->Kp,run_pid->Ki,run_pid->Kd,run_pid->KiPartDetachment);
+	BasePID_Init(&chassis->Motors3508.RunPID[1],run_pid->Kp,run_pid->Ki,run_pid->Kd,run_pid->KiPartDetachment);
+	BasePID_Init(&chassis->Motors3508.RunPID[2],run_pid->Kp,run_pid->Ki,run_pid->Kd,run_pid->KiPartDetachment);
+	BasePID_Init(&chassis->Motors3508.RunPID[3],run_pid->Kp,run_pid->Ki,run_pid->Kd,run_pid->KiPartDetachment);
+	
+	BasePID_Init(&chassis->Motors6020.FollowPID,follow_pid->Kp,follow_pid->Ki,follow_pid->Kd,follow_pid->KiPartDetachment);
 	chassis->Movement.Vx_Sensitivity = 5;
 	chassis->Movement.Vy_Sensitivity = 5;
 }
@@ -29,8 +31,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 {
     chassis->Movement.Vx = (rec->Base.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
     chassis->Movement.Vy = (-1) * (rec->Base.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
-	chassis->Movement.Omega = 0;
-//    chassis->Movement.Omega = (rec->Base.rc_Ctrl_ch2 - 1024) * chassis->Movement.Vx_Sensitivity;
+    chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,94.25f,Holder.Motors.Yaw_M.angle);
 	SwerveChassisSetSpeed(chassis);
 }
 

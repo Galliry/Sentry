@@ -52,7 +52,7 @@ extern void BMI088_Read(IMU_InitData_t *bmi088_data);
 
 extern BMI088_t bmi088;
 void BMI088_IMUupdate(IMU_InitData_t *mpu6050_data);
-void Bmi088_InitQuaternion();
+void Bmi088_InitQuaternion(void);
 
 #if defined(BMI088_USE_SPI)
 #elif defined(BMI088_USE_IIC)
