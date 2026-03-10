@@ -5,18 +5,15 @@
 #include "driver_timer.h"
 #include "et08.h"
 #include "driver.h"
-#include "referee.h"
 #include "shoot.h"
 #include "driver_counter.h"
 #include "ins.h"
 #include "mpu6050.h"
 #include "bmi088.h"
 #include "holder.h"
-#include "all_chassis.h"
 #include "swerve_chassis.h"
 #include "DM_motor.h"
-#include "LK_motor.h"
-
+#include "brain.h"
 void MPU_Init_(void);
 void MPU_Init_(void)
 {
@@ -56,14 +53,16 @@ void HardwareConfig(void)
 	DWT_Init(480);
 	
 	DR16Init(&rc_Ctrl);
-	// ET08Init(&rc_Ctrl_et);
+// 	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
-	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
+//	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
-	// UARTx_Init(&huart1,ET08_callback);
+// 	UARTx_Init(&huart1,ET08_callback);
 	UARTx_Init(&huart1,DR16_Callback);
+	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//视觉自瞄回调函数
+	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//导航雷达回调函数
 	UARTx_Init(&huart3, NULL); //Callback From Base
 	UARTx_Init(&huart7,NULL);//  Vofa+
 

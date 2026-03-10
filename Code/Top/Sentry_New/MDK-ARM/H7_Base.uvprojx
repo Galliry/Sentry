@@ -1952,6 +1952,11 @@
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Modules\communication.c</FilePath>
             </File>
+            <File>
+              <FileName>brain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Modules\brain.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

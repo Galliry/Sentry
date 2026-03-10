@@ -5,7 +5,9 @@
 #include "motor.h"
 #include "communication.h"
 Check_Robot_State check_robot_state={
-	.Check_Usart.Check_receiver_cnt=300
+	.Check_Usart.Check_receiver_cnt=300,
+	.Check_Usart.Check_vision_cnt=300,
+	.Check_Usart.Check_lidar_cnt=300,
 };
 
 FPS tim14_FPS={
@@ -41,14 +43,18 @@ void RobotOnlineState(Check_Robot_State* CheckRobotState,RC_Ctrl_ET* rc_ctrl,RC_
 	}
 	
 	CheckRobotState->Check_Usart.Check_receiver_cnt++;
-	CheckRobotState->Check_Usart.Check_referee_cnt++;
-	
-	CheckRobotState->Check_Usart.Check_referee_cnt= int16_constrain(CheckRobotState->Check_Usart.Check_referee_cnt,0,200);
-	CheckRobotState->Check_Usart.Check_referee = (CheckRobotState->Check_Usart.Check_referee_cnt > 100) ? 0 : 1;
+	CheckRobotState->Check_Usart.Check_vision_cnt++;
+	CheckRobotState->Check_Usart.Check_lidar_cnt++;
 	
 	CheckRobotState->Check_Usart.Check_receiver_cnt=int16_constrain(CheckRobotState->Check_Usart.Check_receiver_cnt,0,200);
 	if(CheckRobotState->Check_Usart.Check_receiver_cnt > 100){rc_ctrl->isOnline=0;CheckRobotState->Check_Usart.Check_receiver=0;}else{if(rc_ctrl->rc.sA==1&&rc_ctrl->rc.ch2!=1)rc_ctrl->isOnline=1;else rc_ctrl->isOnline=0;CheckRobotState->Check_Usart.Check_receiver=1;}
 	
+	CheckRobotState->Check_Usart.Check_vision_cnt=int16_constrain(CheckRobotState->Check_Usart.Check_vision_cnt,0,200);
+	CheckRobotState->Check_Usart.Check_vision = (CheckRobotState->Check_Usart.Check_vision_cnt > 100) ? 0 : 1;
+	
+	CheckRobotState->Check_Usart.Check_lidar_cnt = int16_constrain(CheckRobotState->Check_Usart.Check_lidar_cnt,0,200);
+	CheckRobotState->Check_Usart.Check_lidar = (CheckRobotState->Check_Usart.Check_lidar_cnt > 100) ? 0 : 1;
+		
 	rc_ctrl_dr16->online_cnt++;
 	rc_ctrl_dr16->online_cnt = int16_constrain(rc_ctrl_dr16->online_cnt,0,200);
 	if(rc_ctrl_dr16->online_cnt < 30){rc_ctrl_dr16->is_online = 1;}else {rc_ctrl_dr16->is_online = 0;}

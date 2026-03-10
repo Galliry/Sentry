@@ -1,6 +1,8 @@
 #include "swerve_chassis.h"
 #include "user_lib.h"
 SwerveChassis swervechassis;
+float Vx_c;
+float Vy_c;
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid)
 {
@@ -38,6 +40,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 void SwerveChassisSetSpeed(SwerveChassis* chassis)
 {
     float error;
+	float angle = Holder.Motors.Yaw_M.angle_raw;
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
     chassis->Vectors.Vy[0] = chassis->Movement.Vy - chassis->Movement.Omega * SIN_45_DEG;
     chassis->Vectors.Vx[1] = chassis->Movement.Vx - chassis->Movement.Omega * COS_45_DEG;

@@ -30,6 +30,8 @@ typedef struct
     {
         float Vx;
         float Vy;
+		float Vx_H;
+		float Vy_H;
         float Omega;
         float Vx_Sensitivity;       //灵敏度
 		float Vy_Sensitivity;

@@ -33,15 +33,16 @@
 #include "hardware_config.h"
 /* USER CODE END Includes */
 int a=0;
+int b=0;
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART3) {
+    if (huart->Instance == USART2) {
         a++;
     }
-	if (huart->Instance == UART7) {
-        a++;
+	if (huart->Instance == UART4) {
+        b++;
     }
 }
 /* USER CODE END PTD */

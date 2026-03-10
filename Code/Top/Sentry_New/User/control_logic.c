@@ -16,6 +16,7 @@
 #include "DM_motor.h"
 #include "LK_motor.h"
 #include "communication.h"
+#include "brain.h"
 int i = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
@@ -23,7 +24,7 @@ void TIM14_Task(void)
 	tim14.ClockTime++;
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
-
+	RobotToBrain(&Brain);
 	//ET08控制
 //	if(rc_Ctrl_et.isOnline == 1)
 //	{
@@ -51,6 +52,8 @@ void TIM14_Task(void)
 		else HolderControl_Top(&Holder,&rc_Ctrl);
 		if(tim14.ClockTime % 10 == 0)
 		Trans_forToptoBase(&rc_Ctrl);
+		
+		ShootPlantControl(&AmmoBooster);
 		
 	}
 	
