@@ -6,24 +6,36 @@
 #include "dr16.h"
 #include "communication.h"
 #include "holder.h"
+#include "referee.h"
+
 #define Pi 3.1415926
-// #define AtR 0.01745328  // pi/180 角度制转化为弧度制
 #define COS_45_DEG 0.7071067812f
 #define SIN_45_DEG 0.7071067812f
-
+#define TORQUE_COEFFICIENT_6020 1.421e-05
+#define speed_term_k2_6020 4.0e-08
+#define torque_term_k1_6020 2.0e-7
+#define CONSTANT_COEFFICIENT_6020 0.73
+#define torque_term_k1_3508 1.9e-07
+#define speed_term_k2_3508  4.0e-07
+#define TORQUE_COEFFICIENT_3508   1.99688994e-6f
+#define CONSTANT_COEFFICIENT_3508 0.71f
 typedef struct
 {
     struct
     {
         Motor motor[4];
         SinglePID_t RunPID[4];          //运动PID
+		float initial_give_power[4];
+		float scaled_give_power[4];
     }Motors3508;
     
     struct 
     {
-       Motor motor[4];
-       DualPID_Object TurnPID[4];
+		Motor motor[4];
+		DualPID_Object TurnPID[4];
 		SinglePID_t FollowPID;          //底盘跟随PID
+		float initial_give_power[4];
+		float scaled_give_power[4];
     }Motors6020;
     
     struct
@@ -46,9 +58,19 @@ typedef struct
         float Target_Angle[4];
         float UnTarget_Angle[4];
 	}Vectors;
+	
+	struct
+	{
+		float now_power;
+		float max_power;
+		float target_require_power_sum;
+		float turn_power;
+		double scaling_ratio;
+	}Power;
 }SwerveChassis;
 
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid);
 void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec);
+static void SwerveChassisPowerCtrl(SwerveChassis *chassis);
 extern SwerveChassis swervechassis;
 #endif

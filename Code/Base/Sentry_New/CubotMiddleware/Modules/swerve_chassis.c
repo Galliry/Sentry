@@ -43,14 +43,14 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 		{
 			if(rec->Base.Lidar.Movemode == 0)
 			{
-			
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2500;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2500;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2000;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2000;
-				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.0f,Holder.Motors.Yaw_M.angle);
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2500;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2500;
 			}
-			
+			chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.0f,Holder.Motors.Yaw_M.angle);
 		}
 		SwerveChassisSetSpeed(chassis);
 	}
@@ -118,77 +118,99 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
 		//限幅
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output,-16000,16000);
 		chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output,-16000,16000);
-        MotorFillData(&chassis->Motors6020.motor[i],chassis->Motors6020.motor[i].Data.Output);
-        MotorFillData(&chassis->Motors3508.motor[i],chassis->Motors3508.motor[i].Data.Output);
     }
-    
-}/*
-
-
-static void ChassisMotionCtrl(HeroChassis_t *chassis){
-    int i;
-
-   if(chassis->chassisFlag.follow == 1 ) {
-        float yaw_mech_angle = heroYaw.yawMotor.angle * 57.2957795f; 
-        float yaw_center_deg = 0.58f * 57.2957795f;
-        float current_error_deg = Angle_Limit(yaw_mech_angle - yaw_center_deg);
-        if (ABS(current_error_deg) < 3.0f) current_error_deg = 0;
-
-        chassis->movement.omega = One_Pid_Ctrl(0, current_error_deg, &chassis->rudderMotor.spinpid[0]);
-    }
-
-    if(ABS(chassis->movement.omega) < 10.0f) 
-        chassis->movement.omega = 0;
-        
-    if (ABS(chassis->movement.v_x) < 5.0f) chassis->movement.v_x = 0;
-    if (ABS(chassis->movement.raw_vy) < 5.0f) chassis->movement.raw_vy = 0;
-
-    chassis->movement.v_y[0] = chassis->movement.raw_vy - chassis->movement.omega;
-    chassis->movement.v_y[1] = chassis->movement.raw_vy + chassis->movement.omega;
-
-    for (i = 0; i < 2; i++) {
-       
-        chassis->wheelMotor.raw_targetspeed = Sqrt(chassis->movement.v_x * chassis->movement.v_x + chassis->movement.v_y[i] * chassis->movement.v_y[i]);
-        
-        if ((chassis->wheelMotor.raw_targetspeed > 5.0f) || chassis->movement.omega != 0 ) {
-            chassis->rudderMotor.raw_targetangle = atan2f(chassis->movement.v_x, chassis->movement.v_y[i]) * RtA;
-        } else {
-            chassis->wheelMotor.raw_targetspeed = 0;
-        }
-        
-        chassis->rudderMotor.raw_deltaangle = Angle_Limit(chassis->rudderMotor.raw_targetangle - chassis->rudderMotor.m6020[i].treatedData.angle);
-        
-        if (fabs(chassis->rudderMotor.raw_deltaangle) > 95.0f) {
-            if (chassis->rudderMotor.raw_deltaangle > 0) chassis->rudderMotor.raw_deltaangle -= 180.0f;
-            else chassis->rudderMotor.raw_deltaangle += 180.0f;
-            
-            chassis->wheelMotor.raw_targetspeed = -chassis->wheelMotor.raw_targetspeed; 
-        }
-        
-        chassis->rudderMotor.delta_angle[i] = chassis->rudderMotor.raw_deltaangle;
-   
-        if (fabs(chassis->rudderMotor.raw_deltaangle) > 45.0f) {
-            chassis->wheelMotor.raw_targetspeed = 0;
-        }
- 
-        if (i == 1 )
-            chassis->wheelMotor.raw_targetspeed = -chassis->wheelMotor.raw_targetspeed;
-
-        chassis->wheelMotor.target_speed[i] = chassis->wheelMotor.raw_targetspeed;
-
-        #if(POWERCTRL == 0)
-            chassis->wheelMotor.m3508[i].treatedData.motor_output = One_Pid_Ctrl(
-                chassis->wheelMotor.target_speed[i],  
-                chassis->wheelMotor.m3508[i].rawData.speed_rpm, 
-                &chassis->wheelMotor.chassisSpeedPID[i]);
-            
-            chassis->rudderMotor.m6020[i].treatedData.motor_output = Double_Pid_Ctrl(
-                0, 
-                -chassis->rudderMotor.delta_angle[i], 
-                chassis->rudderMotor.m6020[i].rawData.speed_rpm,
-                &chassis->rudderMotor.chassisAnglePID[i]);
-        #endif
-    }
+	SwerveChassisPowerCtrl(chassis);
 }
-*/
 
+
+static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
+{
+	chassis->Power.now_power = referee2022.power_heat_data.chassis_power; // 实时功率			
+//	chassis->Power.max_power = referee2024.robot_status_t.chassis_power_limit + (referee2024.power_heat_data_t.buffer_energy - 15) * 5 + sup_power;       // 功率上限			
+	if(Receive.Base.Lidar.Movemode == 0)
+	chassis->Power.max_power = 150;      // 功率上限			
+	else if(Receive.Base.Lidar.Movemode == 1)
+		chassis->Power.max_power = 50;
+	else if(Receive.Base.Lidar.Movemode == 2)
+		chassis->Power.max_power = 50;
+	if(chassis->Power.max_power < 0) chassis->Power.max_power = 0;
+			
+//	if(referee2022.power_heat_data.chassis_power_buffer > 40  )//加速起步且在不开超电时保证功率利用
+//	{
+//		chassis->Power.max_power += 100;
+//	}
+		
+
+	chassis->Power.target_require_power_sum = 0;
+	chassis->Power.turn_power=0;
+	
+    for (int8_t i = 0; i < 4; i++) 
+	{
+		chassis->Motors6020.initial_give_power[i] = chassis->Motors6020.motor[i].Data.Output * TORQUE_COEFFICIENT_6020 * chassis->Motors6020.motor[i].Data.SpeedRPM +
+														speed_term_k2_6020 * chassis->Motors6020.motor[i].Data.SpeedRPM * chassis->Motors6020.motor[i].Data.SpeedRPM +
+														torque_term_k1_6020 * chassis->Motors6020.motor[i].Data.Output * chassis->Motors6020.motor[i].Data.Output + CONSTANT_COEFFICIENT_6020;
+		if (chassis->Motors6020.initial_give_power[i] < 0) continue;	// negative power not included (transitory)          
+		chassis->Power.turn_power += chassis->Motors6020.initial_give_power[i];
+    }
+	for (int8_t i = 0; i < 4; i++) 
+	{
+		chassis->Motors3508.initial_give_power[i] = chassis->Motors3508.motor[i].Data.Output * TORQUE_COEFFICIENT_3508 * chassis->Motors3508.motor[i].Data.SpeedRPM +
+														speed_term_k2_3508 * chassis->Motors3508.motor[i].Data.SpeedRPM * chassis->Motors3508.motor[i].Data.SpeedRPM +
+														torque_term_k1_3508 * chassis->Motors3508.motor[i].Data.Output * chassis->Motors3508.motor[i].Data.Output + CONSTANT_COEFFICIENT_3508;
+        if (chassis->Motors3508.initial_give_power[i] < 0) continue;// negative power not included (transitory)
+        chassis->Power.target_require_power_sum += chassis->Motors3508.initial_give_power[i];
+	}
+
+    chassis->Power.scaling_ratio = (chassis->Power.max_power - chassis->Power.turn_power) / chassis->Power.target_require_power_sum;
+    if(chassis->Power.scaling_ratio > 1) chassis->Power.scaling_ratio = 1;
+			
+    for (uint8_t i = 0; i < 4; i++) 
+	{
+		if (chassis->Power.scaling_ratio == 1) 
+		{
+			chassis->Motors3508.scaled_give_power[i] = chassis->Motors3508.initial_give_power[i];
+			continue;		
+		}
+		else
+		{
+			chassis->Motors3508.scaled_give_power[i] = chassis->Motors3508.initial_give_power[i] * chassis->Power.scaling_ratio; // get scaled power
+
+			if (chassis->Motors3508.scaled_give_power[i] < 0)
+			{
+				chassis->Motors3508.motor[i].Data.Output = 0;
+				continue;
+			}
+			float b = TORQUE_COEFFICIENT_3508 * chassis->Motors3508.motor[i].Data.SpeedRPM;
+			float c = speed_term_k2_3508 * chassis->Motors3508.motor[i].Data.SpeedRPM * chassis->Motors3508.motor[i].Data.SpeedRPM - chassis->Motors3508.scaled_give_power[i] + CONSTANT_COEFFICIENT_3508;
+
+			if (chassis->Motors3508.motor[i].Data.Output > 0) // Selection of the calculation formula according to the direction of the original moment
+			{
+				double temp = (-b + sqrt(b * b - 4 * torque_term_k1_3508 * c)) / (2 * torque_term_k1_3508);
+				if (temp > 16000) 
+				{
+					chassis->Motors3508.motor[i].Data.Output  = 16000;
+				} 
+				else chassis->Motors3508.motor[i].Data.Output  = temp;				
+			}
+			else 
+			{
+				double temp = (-b - sqrt(b * b - 4 * torque_term_k1_3508 * c)) / (2 * torque_term_k1_3508);
+				if (temp < -16000) 
+				{
+					chassis->Motors3508.motor[i].Data.Output  = -16000;
+				} 
+				else chassis->Motors3508.motor[i].Data.Output  = temp;
+			}
+		}
+	}
+
+	for(int j =0;j < 4;j++)
+	{
+		chassis->Motors6020.motor[j].Data.Output = float_constrain(chassis->Motors6020.motor[j].Data.Output,-16000,16000);
+		chassis->Motors3508.motor[j].Data.Output = float_constrain(chassis->Motors3508.motor[j].Data.Output,-16000,16000);
+		MotorFillData(&chassis->Motors6020.motor[j],chassis->Motors6020.motor[j].Data.Output);
+        MotorFillData(&chassis->Motors3508.motor[j],chassis->Motors3508.motor[j].Data.Output);
+	}//最后上一层保险
+	
+	
+}
