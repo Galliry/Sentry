@@ -4,9 +4,11 @@
 #include "dr16.h"
 #include "et08.h"
 #include "mpu6050.h"
+#include "check.h"
+#include "brain.h"
 typedef struct 
 {
-    uint8_t TransData[16];
+    uint8_t TransData[50];
 }Transmit_t;
 
 typedef struct 

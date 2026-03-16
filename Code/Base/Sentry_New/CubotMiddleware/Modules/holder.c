@@ -22,10 +22,10 @@ void HolderInit_Base(Holder_t* holder,DualPID_Object* yaw_m)
   */
 void HolderControl_Base(Holder_t* holder,Receive_t* rec)
 {
-	if(rec->Base.rc_Ctrl_s2 != 1) holder->Yaw_M.Target_Angle += ((rec->Base.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
+	if(rec->Base.rc.rc_Ctrl_s2 != 1) holder->Yaw_M.Target_Angle += ((rec->Base.rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
 
-	holder->Yaw_M.GYRO_Angle = rec->Base.Gyro_Angle;
-	holder->Yaw_M.GYRO_AngleSpeed = rec->Base.Gyro_Data;
+	holder->Yaw_M.GYRO_Angle = rec->Base.Gyro.Gyro_Angle;
+	holder->Yaw_M.GYRO_AngleSpeed = rec->Base.Gyro.Gyro_Data;
 	holder->Yaw_M.Can_Angle = holder->Motors.Yaw_M.angle;
 	holder->Yaw_M.Can_AngleSpeed = holder->Motors.Yaw_M.speed_rpm;
 

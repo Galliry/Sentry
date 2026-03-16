@@ -57,7 +57,7 @@ void HardwareConfig(void)
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
-//	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
+	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
 // 	UARTx_Init(&huart1,ET08_callback);
 	UARTx_Init(&huart1,DR16_Callback);

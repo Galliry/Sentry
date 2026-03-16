@@ -98,8 +98,8 @@ typedef struct
 		uint16_t mode_cnt[2];
 		CubotBrain_t Brain_Data;
 		uint8_t	movemode;
-		int16_t vx;
-        int16_t vy;
+		float vx;
+        float vy;
         uint8_t change_position;
     float angle_to_lidar;
     uint8_t Arrive;

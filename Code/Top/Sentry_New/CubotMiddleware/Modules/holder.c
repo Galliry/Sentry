@@ -26,6 +26,19 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 {
 	if(rc_ctrl->rc.s2 == 1) {holder->Yaw_S.Target_Angle -= ((rc_ctrl->rc.ch2 - 1024) * holder->Yaw_S.Sensitivity);}
 	holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
+	if(rc_ctrl->rc.s2 == 2)
+	{
+		if(check_robot_state.Check_Usart.Check_vision == 1)
+		{
+			if(Brain.Autoaim.mode == Lock)
+			{
+				holder->Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + holder->Yaw_S.Can_Angle;
+				holder->Pitch.Target_Angle = Brain.Autoaim.Pitch_add + holder->Pitch.GYRO_Angle;
+			}
+			
+		}
+		
+	}
 	
 	holder->Yaw_S.Can_Angle = holder->Motors.Yaw_S.Data.Angle;
 	holder->Yaw_S.Can_AngleSpeed = holder->Motors.Yaw_S.Data.AngleSpeed;
@@ -37,7 +50,7 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	holder->Pitch.GYRO_Angle = -INS_attitude->roll;
 	holder->Pitch.GYRO_AngleSpeed = -INS_attitude->gyro[1];
 	
-	holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle,-40,40);
+	holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle,-38,38);
 	holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle,-30,30);
 	
 	holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,

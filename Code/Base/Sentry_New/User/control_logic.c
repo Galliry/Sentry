@@ -70,7 +70,7 @@ void TIM14_Task(void)
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
 	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
-	UsartDmaPrintf("%f,%f\r\n",Holder.Yaw_M.GYRO_Angle,Holder.Yaw_M.Target_Angle);
+	UsartDmaPrintf("%f,%f\r\n",swervechassis.Vectors.Target_Angle[3],-swervechassis.Motors6020.motor[3].Data.Angle);
 	
 }
 

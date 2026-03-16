@@ -8,14 +8,29 @@ typedef struct
 {
     struct 
     {
-        uint16_t rc_Ctrl_ch0;
-        uint16_t rc_Ctrl_ch1;
-        uint16_t rc_Ctrl_ch2;
-		uint16_t rc_Ctrl_ch3;
-		uint8_t rc_Ctrl_s1;
-        uint8_t rc_Ctrl_s2;
-        float Gyro_Angle;
-        float Gyro_Data;
+        struct
+		{
+			uint16_t rc_Ctrl_ch0;
+			uint16_t rc_Ctrl_ch1;
+			uint16_t rc_Ctrl_ch2;
+			uint16_t rc_Ctrl_ch3;
+			uint8_t rc_Ctrl_s1;
+			uint8_t rc_Ctrl_s2;
+		}rc;
+		
+        struct
+		{
+			float Gyro_Angle;
+			float Gyro_Data;
+		}Gyro;
+		struct
+		{
+			float Vx;
+			float Vy;
+			uint8_t Movemode;
+			uint8_t Online;
+		}Lidar;
+		
         struct 
         {
             uint8_t Status;

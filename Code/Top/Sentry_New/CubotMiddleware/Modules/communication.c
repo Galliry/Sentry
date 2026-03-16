@@ -15,8 +15,12 @@ void Trans_forToptoBase(RC_Ctrl* rc_ctrl)
     Transmit.TransData[5] = (rc_ctrl->rc.ch3 >> 7) | ((rc_ctrl->rc.s1 & 0x03) << 4) | ((rc_ctrl->rc.s2 & 0x03) << 6);
 	memcpy(&Transmit.TransData[6],&mpu6050.Yaw_total_angle,sizeof(float));
 	memcpy(&Transmit.TransData[6+sizeof(float)],&mpu6050.mpu6050_Data.gyro[2],sizeof(float));
+	Transmit.TransData[14] = check_robot_state.Check_Usart.Check_lidar;
+	memcpy(&Transmit.TransData[15],&Brain.Lidar.vx,sizeof(float));
+	memcpy(&Transmit.TransData[19],&Brain.Lidar.vy,sizeof(float));
+	Transmit.TransData[23] = Brain.Lidar.movemode;
     //·¢ËÍÊý¾Ý
-	HAL_UART_Transmit_DMA(&huart3,Transmit.TransData,16);
+	HAL_UART_Transmit_DMA(&huart3,Transmit.TransData,24);
     // CAN_Send(&can1,&Transmit.txBufferfor_TopToBase);
 }
 

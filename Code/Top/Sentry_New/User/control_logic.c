@@ -74,7 +74,7 @@ void TIM14_Task(void)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
 	
-	UsartDmaPrintf("%f,%f\r\n",swervechassis.Vectors.Target_Angle[0],-swervechassis.Motors6020.motor[0].Data.Angle);
+	UsartDmaPrintf("%f,%f\r\n",Holder.Yaw_S.Target_Angle,Holder.Yaw_S.Can_Angle);
 	
 }
 

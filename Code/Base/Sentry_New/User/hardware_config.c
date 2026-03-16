@@ -59,8 +59,8 @@ void HardwareConfig(void)
 //	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
-//	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
-//	HolderInit_Base(&Holder,&pid_yaw_m);
+	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
+	HolderInit_Base(&Holder,&pid_yaw_m);
 	
 //	UARTx_Init(&huart1,ET08_callback);
 	UARTx_Init(&huart1,DR16_Callback);
