@@ -18,6 +18,7 @@
 #include "communication.h"
 #include "brain.h"
 int i = 0;
+extern int flag_fire;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -43,7 +44,7 @@ void TIM14_Task(void)
 //		// MotorFillData(&Holder.Motors6020.Pitch,0);
 //	}
 	//DR16控制
-//	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
+	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
 	
 	if(rc_Ctrl.is_online == 1)
 	{
@@ -74,7 +75,7 @@ void TIM14_Task(void)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
 	
-	UsartDmaPrintf("%f,%f\r\n",Holder.Yaw_S.Target_Angle,Holder.Yaw_S.Can_Angle);
+	UsartDmaPrintf("%f,%f,%f,%f,%d,%f,%f,%d\r\n",Brain.Autoaim.Pitch_add,-Brain.Autoaim.Yaw_add,Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,flag_fire,Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output);
 	
 }
 

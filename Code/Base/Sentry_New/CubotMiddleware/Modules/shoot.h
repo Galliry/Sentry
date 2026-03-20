@@ -2,6 +2,7 @@
 #define _SHOOT_H
 #include "pid.h"
 #include "motor.h"
+#include "referee.h"
 typedef struct
 {
 	//≤¶µØ≈Ã

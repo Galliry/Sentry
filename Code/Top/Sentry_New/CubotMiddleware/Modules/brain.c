@@ -4,7 +4,7 @@ float last_yaw_add;
 float last_pitch_add;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
-
+int flag_fire;
 uint8_t Brain_Autoaim_Callback(uint8_t * recBuffer, uint16_t len)
 {
 	check_robot_state.Check_Usart.Check_vision_cnt = 0;
@@ -51,10 +51,19 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 //			if ( brain->Autoaim.Yaw_add == 0 && brain->Autoaim.Pitch_add == 0) { 	// ¶ªÊ§Ä¿±ê
 //				brain->Autoaim.mode = Cruise;
 //				Brain->Autoaim.change_mode_cnt = 0;
-			}else
+			if(rc_Ctrl.rc.s2 == 2)
 			{
-				brain->Autoaim.mode = Cruise;
+				Holder.Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + Holder.Yaw_S.Can_Angle;
+				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15 + Holder.Pitch.GYRO_Angle;
 			}
+			
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.3f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.3f)
+				flag_fire = 1;
+			else flag_fire = 0;
+		}else
+		{
+			brain->Autoaim.mode = Cruise;
+		}
 //			else{
 //				if (Brain->Autoaim.mode == Cruise ) {
 //					Brain->Autoaim.mode = Change;
@@ -109,11 +118,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 //					&& brain->Autoaim.mode == Cruise){
 //						// pitch sin t
 //					}
-		}
-	
-
-	
-	
+	}
 }
 
 

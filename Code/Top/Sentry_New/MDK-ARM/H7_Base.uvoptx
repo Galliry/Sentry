@@ -250,6 +250,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>check_robot_state,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag_fire,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

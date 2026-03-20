@@ -15,6 +15,8 @@ struct Holder_Motor_Info
 	int16_t Can_AngleSpeed;//RPM
 	float Sensitivity;
 	DualPID_Object PID;
+	float v1;
+	float v2;
 };
 
 typedef struct 
@@ -53,4 +55,5 @@ typedef struct
 extern Holder_t Holder;;
 void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s);
 void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl);
+float Holder_TD(struct Holder_Motor_Info* holder_info,float Expect,float r,float h);
 #endif

@@ -334,3 +334,5 @@ void EularAngleToQuaternion(float yaw, float pitch, float roll, float *q)
     q[2]     = sinPitch * cosRoll * sinYaw + cosPitch * sinRoll * cosYaw;
     q[3]     = cosPitch * cosRoll * sinYaw - sinPitch * sinRoll * cosYaw;
 }
+
+

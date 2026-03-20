@@ -37,20 +37,22 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 		{
 			chassis->Movement.Vx_Move = 0;
 			chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = 0;
+			chassis->Movement.Omega = 500;
 		}
 		else
 		{
 			if(rec->Base.Lidar.Movemode == 0)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2500;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2500;
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 1500;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 1500;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2500;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2500;
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 1500;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 1500;
 			}
 			chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.0f,Holder.Motors.Yaw_M.angle);
+//			if(1) ;
+		
 		}
 		SwerveChassisSetSpeed(chassis);
 	}
@@ -119,7 +121,12 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output,-16000,16000);
 		chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output,-16000,16000);
     }
-	SwerveChassisPowerCtrl(chassis);
+	for(int j =0;j < 4;j++)
+	{
+		MotorFillData(&chassis->Motors6020.motor[j],chassis->Motors6020.motor[j].Data.Output);
+        MotorFillData(&chassis->Motors3508.motor[j],chassis->Motors3508.motor[j].Data.Output);
+	}
+//	SwerveChassisPowerCtrl(chassis);
 }
 
 

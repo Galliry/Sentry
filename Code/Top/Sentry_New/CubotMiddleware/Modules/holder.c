@@ -6,14 +6,15 @@
 #include "user_lib.h"
 #include "communication.h"
 Holder_t Holder;
-float aaa;
+float Yaw_TD = 160;
+float Pitch_TD = 90;
 /**
   * @brief 云台初始化上板
   */
 void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s)
 {
 	DMiaoInit(&holder->Motors.Pitch,0x06,0x01,MIT);
-	MotorInit(&holder->Motors.Yaw_S,4182,Motor6020,CAN1,0x205);
+	MotorInit(&holder->Motors.Yaw_S,6753,Motor6020,CAN1,0x205);
 	DualPID_Init(&holder->Yaw_S.PID,yaw_s->ShellPID,yaw_s->CorePID);
 	DualPID_Init(&holder->Pitch.PID,pitch->ShellPID,pitch->CorePID);
 	holder->Pitch.Sensitivity = 0.00085f;		//-0.0015f
@@ -32,8 +33,8 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 		{
 			if(Brain.Autoaim.mode == Lock)
 			{
-				holder->Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + holder->Yaw_S.Can_Angle;
-				holder->Pitch.Target_Angle = Brain.Autoaim.Pitch_add + holder->Pitch.GYRO_Angle;
+				Holder_TD(&holder->Pitch,holder->Pitch.Target_Angle,Pitch_TD,0.001);
+				Holder_TD(&holder->Yaw_S,holder->Yaw_S.Target_Angle ,Yaw_TD,0.001);
 			}
 			
 		}
@@ -53,6 +54,13 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle,-38,38);
 	holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle,-30,30);
 	
+	if(rc_ctrl->rc.s2 == 2)
+	{
+		holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
+			BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,holder->Yaw_S.v1,holder->Yaw_S.Can_Angle),holder->Yaw_S.GYRO_AngleSpeed);
+		holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
+			BasePID_AngleControl(holder->Pitch.PID.ShellPID,holder->Pitch.v1,holder->Pitch.GYRO_Angle),holder->Pitch.GYRO_AngleSpeed);
+	}
 	holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
 		BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,holder->Yaw_S.Target_Angle,holder->Yaw_S.Can_Angle),holder->Yaw_S.GYRO_AngleSpeed);
 	holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
@@ -61,6 +69,15 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output,-50,50);
 	DMiaoMitControl(&holder->Motors.Pitch,0,0,0,0,holder->Motors.Pitch.motor_output * 0.05);
 	MotorFillData(&holder->Motors.Yaw_S,holder->Motors.Yaw_S.Data.Output);
+}
+
+
+float Holder_TD(struct Holder_Motor_Info* holder_info,float Expect,float r,float h)
+{
+    double fh= -r * r * (holder_info->v1 - Expect) - 2 * r * holder_info->v2;
+    holder_info->v1 += holder_info->v2 * h;
+    holder_info->v2 += fh * h;
+		return holder_info->v1;
 }
 //void HolderInit(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_m,DualPID_Object* yaw_s)
 //{

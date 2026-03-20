@@ -16,7 +16,7 @@ typedef struct
 	float KiPartDetachment;
 	float LastError;
 
-	float Out;
+	int Out;
 }SinglePID_t;
 
 

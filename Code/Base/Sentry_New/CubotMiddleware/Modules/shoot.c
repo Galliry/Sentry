@@ -26,18 +26,26 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, Sing
 
 void ShootPlantControl(Ammo_Booster* ammo_booster)
 {
+	ammo_booster->Shoot_Plate.heat_status = (referee2022.power_heat_data.shooter_id1_17mm_cooling_heat >= 
+               referee2022.game_robot_status.shooter_id1_17mm_cooling_limit - 
+               ammo_booster->Shoot_Plate.Fire_Margin) ? 0 : 1;
+	
 	ammo_booster->Shoot_Plate.Delta_Angle = ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM*0.001*ammo_booster->Shoot_Plate.Angle_Sense;
 	if(ammo_booster->Shoot_Plate.Delta_Angle > 0.005f)
 	{
 		ammo_booster->Shoot_Plate.Plate_Angle += ammo_booster->Shoot_Plate.Delta_Angle;
 	}
 	
-	if(rc_Ctrl_et.isOnline == 1)
+	if(referee2022.game_robot_status.mains_power_shooter_output == 1 && ammo_booster->Shoot_Plate.heat_status==1)
 	{
-		ammo_booster->Shoot_Plate.Fire_Divider=50;
+		if(referee2022.power_heat_data.shooter_id1_17mm_cooling_heat >= referee2022.game_robot_status.shooter_id1_17mm_cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin-70 )
+			ammo_booster->Shoot_Plate.Fire_Divider=125;
+		else ammo_booster->Shoot_Plate.Fire_Divider=50;
+		if(referee2022.game_status.game_progress != 4) ammo_booster->Shoot_Plate.Fire_Divider=100;
+		
 		if(ammo_booster->Shoot_Plate.Shoot_rest_flag) ammo_booster->Shoot_Plate.Shoot_Cut++;
 		if(ammo_booster->Shoot_Plate.Shoot_Cut%ammo_booster->Shoot_Plate.Fire_Divider == 0) ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;
-		if(rc_Ctrl_et.rc.s1 == 1 && rc_Ctrl_et.rc.s2 != 2 && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0)
+		if(rc_Ctrl_et.rc.s1 == 1 && rc_Ctrl_et.rc.s2 == 2 && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0)
 		{
 			ammo_booster->Shoot_Plate.Target_Angle += 45;
 			ammo_booster->Shoot_Plate.ShootNum++;

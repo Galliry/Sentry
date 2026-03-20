@@ -47,9 +47,9 @@ void TIM14_Task(void)
 		if( i <= 10)DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
 		else HolderControl_Base(&Holder,&Receive);
 		if(i > 100) i = 100;
-		SwerveChassis_Control(&swervechassis,&Receive);
+		
 	}
-	
+	SwerveChassis_Control(&swervechassis,&Receive);
 	if(Receive.Base.Online_check.Status == 1){;}
 	else
 	{
