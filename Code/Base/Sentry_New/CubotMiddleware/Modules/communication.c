@@ -13,13 +13,13 @@ Receive_t Receive={
 Transmit_t Transmit;
 
 /**
-	* @brief  �װ崦���ϰ�����
+	* @brief  
 	*/
 uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len)
 {
 	Receive.Base.Online_check.StatusCnt = 0;
 	Receive.Base.rc.rc_Ctrl_ch0 = rxBuffer[0] | (rxBuffer[1] << 8);
-	Receive.Base.rc.rc_Ctrl_ch0 &= 0x07FF;		// ��ֻ֤ȡ 11 λ
+	Receive.Base.rc.rc_Ctrl_ch0 &= 0x07FF;		
 	Receive.Base.rc.rc_Ctrl_ch1 = ((rxBuffer[1] >> 3) | (rxBuffer[2] << 5)) & 0x07FF;
 	Receive.Base.rc.rc_Ctrl_ch1 &= 0x07FF;  
 	Receive.Base.rc.rc_Ctrl_ch2 = ((rxBuffer[2] >> 6) | (rxBuffer[3] << 2) | (rxBuffer[4] << 10)) & 0x07FF;
@@ -45,6 +45,6 @@ void Trans_forBasetoTop(Referee2022* referee)
 	Transmit.TransData[3] = (uint8_t)(referee->power_heat_data.shooter_id1_17mm_cooling_heat & 0xff);
 	Transmit.TransData[4] = (uint8_t)((referee->power_heat_data.shooter_id1_17mm_cooling_heat >> 8) & 0xff);
 	Transmit.TransData[5] = referee->game_robot_status.mains_power_shooter_output;
-	
-	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,6);
+	Transmit.TransData[6] = 0xDD;
+	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,7);
 }

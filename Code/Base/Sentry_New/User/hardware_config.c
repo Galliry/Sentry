@@ -48,7 +48,7 @@ void MPU_Init_(void)
 
 }
 /**
-  * @brief  ��ʼ��ָ��ϼ�
+  * @brief  初始化指令合集
   */
 void HardwareConfig(void)
 {
@@ -59,8 +59,8 @@ void HardwareConfig(void)
 //	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
-//	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
-//	HolderInit_Base(&Holder,&pid_yaw_m);
+	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
+	HolderInit_Base(&Holder,&pid_yaw_m);
 	
 //	UARTx_Init(&huart1,ET08_callback);
 	UARTx_Init(&huart1,DR16_Callback);
@@ -76,9 +76,9 @@ void HardwareConfig(void)
     CANx_Init(&hfdcan2, CAN2_rxCallBack);
     CAN_Open (&can2 );	
 
-	TIMx_Init(&htim14, TIM14_Task);//���Ӷ�ʱ���ص�
+	TIMx_Init(&htim14, TIM14_Task);//链接定时器回调
 	TIM_Open(&tim14);
-//	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
+//	TIMx_Init(&htim13, TIM13_Task);//链接定时器回调
 //	TIM_Open(&tim13);
 }
 
