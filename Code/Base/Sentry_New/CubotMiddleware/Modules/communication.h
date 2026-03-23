@@ -4,6 +4,7 @@
 #include "dr16.h"
 #include "et08.h"
 #include "user_lib.h"
+#include "referee.h"
 typedef struct 
 {
     struct 
@@ -40,6 +41,12 @@ typedef struct
     
 }Receive_t;
 
+typedef struct 
+{
+    uint8_t TransData[50];
+}Transmit_t;
+
 extern Receive_t Receive;
 uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len);
+void Trans_forBasetoTop(Referee2022* referee);
 #endif

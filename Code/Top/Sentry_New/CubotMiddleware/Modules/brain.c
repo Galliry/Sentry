@@ -145,7 +145,6 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 {
 	int16_t tmp0, tmp1, tmp2, tmp3;
 
-//	ThisSecond++;
 	tmp0 = (int16_t)(INS_attitude->q[0] * 30000);
 	tmp1 = -(int16_t)(INS_attitude->q[1] * 30000);
 	tmp2 = -(int16_t)(INS_attitude->q[2] * 30000);
@@ -172,32 +171,14 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[15] = tmp2 >> 8;
 	RobotToBrainTimeBuffer[16] = tmp3 & 0xFF;
 	RobotToBrainTimeBuffer[17] = tmp3 >> 8;
-//	if (brain->Autoaim.mode == Cruise || brain->Autoaim.mode == Change)
-//	{
-//		brain->Autoaim.Stand = 0;
-//		cnt___ = 0;
-//	}
-//	else if (brain->Autoaim.mode == Lock)
-//		cnt___++;
-//	if (cnt___ >= 1)
-//	{
-//		brain->Autoaim.Stand = 1;
-//		cnt___ = 0;
-//	}
 
 	RobotToBrainTimeBuffer[18] = 0x01; // 0是预测 1是跟随 4 ceres 静止或低速
 	RobotToBrainTimeBuffer[19] = 0x01;
-//  RobotToBrainTimeBuffer[19] = tmp4 >> 8;
 
 	RobotToBrainTimeBuffer[20] = brain->Autoaim.Mode; // 1 是前哨站 0是普通
-//	Armor_Ignore(brain);
 	RobotToBrainTimeBuffer[21] = 0xDD; // 忽略装甲板
 
 	RobotToBrainTimeBuffer[22] = 0xDD;
-//  RobotToBrainTimeBuffer[23] = 0xDD;
-
-//	brain->Autoaim.Send_Can_angle[RobotToBrainTimeBuffer[8]] = Holder.Yaw1.Can_Angle;
-//	brain->Autoaim.Send_Gyro_angle[RobotToBrainTimeBuffer[8]] = Holder.Pitch.GYRO_Angle;
 
 	HAL_UART_Transmit_DMA(&huart2, RobotToBrainTimeBuffer, 23);
 }

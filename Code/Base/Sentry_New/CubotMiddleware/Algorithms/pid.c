@@ -52,7 +52,7 @@ void DualPID_Init(DualPID_Object* dual_pid, SinglePID_t* ShellPID,SinglePID_t* C
 /**
   * @brief 单环比例积分速度控制
   */
-int32_t BasePID_SpeedControl(SinglePID_t* base_pid, float target_speed, float feedback_speed)
+float BasePID_SpeedControl(SinglePID_t* base_pid, float target_speed, float feedback_speed)
 {
 	base_pid->Error = target_speed - feedback_speed;
 	
@@ -114,7 +114,7 @@ void PID_Init(void)
 	BasePID_Init(&pid_yaw_m_angle,-0.28,0,30,10);//-0.28,0,30,10
 	BasePID_Init(&pid_yaw_m_speed,10.8,0,8,0);
 	BasePID_Init(&pid_run,10,0,0,0);		//底盘运动 10
-	BasePID_Init(&pid_follow,-80,0,0,0);		//底盘跟随
+	BasePID_Init(&pid_follow,-50,0,0,0);		//底盘跟随
 	for(int i=0;i<4;i++)
 	{
 		BasePID_Init(&pid_turn_angle[i],-35,-0.5,40,10);		//底盘舵向电机 -35 -0.5 -40 10

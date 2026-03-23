@@ -15,7 +15,14 @@ typedef struct
 {
     struct 
     {
-        struct 
+        struct
+		{
+			uint8_t game_prograss;
+			uint16_t cooling_limit;
+			uint16_t cooling_heat;
+			uint8_t shooter_output;
+		}Referee;
+		struct 
         {
             uint8_t Status;
             uint8_t StatusCnt;
@@ -27,5 +34,5 @@ typedef struct
 extern Transmit_t Transmit;
 extern Receive_t Receive;
 void Trans_forToptoBase(RC_Ctrl* rc_ctrl);
-// void SolutionData_FromTop(CAN_RxBuffer* rxBuffer);
+uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len);
 #endif

@@ -16,6 +16,7 @@
 #include "DM_motor.h"
 #include "LK_motor.h"
 #include "communication.h"
+#include "referee.h"
 uint8_t i = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
@@ -23,24 +24,8 @@ void TIM14_Task(void)
 	tim14.ClockTime++;
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
-
-//	if(rc_Ctrl_et.isOnline == 1)
-//	{
-//		ShootPlantControl(&AmmoBooster);
-//		Holder_Control(&Holder,&rc_Ctrl_et);
-//	}
-//	
-//	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
-//	
-//	if(rc_Ctrl_et.isOnline == 1){;}
-//	else
-//	{
-//		ET08Init(&rc_Ctrl_et);
-//		MotorFillData(&AmmoBooster.Shoot_Plate.motor2006, 0);
-//		// MotorFillData(&Holder.Motors6020.Yaw_M,0);
-//		MotorFillData(&Holder.Motors.Yaw_S,0);
-//		// MotorFillData(&Holder.Motors6020.Pitch,0);
-//	}
+	if(tim14.ClockTime % 10 == 0) Trans_forBasetoTop(&referee2022);
+	
 	if(Receive.Base.Online_check.Status == 1)
 	{
 		i++;
@@ -70,7 +55,7 @@ void TIM14_Task(void)
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
 	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
-	UsartDmaPrintf("%d,%d\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit);
+	UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
 	
 }
 

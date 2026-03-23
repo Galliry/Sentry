@@ -75,7 +75,7 @@ void TIM14_Task(void)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
 	
-	UsartDmaPrintf("%f,%f,%f,%f,%d,%f,%f,%d\r\n",Brain.Autoaim.Pitch_add,-Brain.Autoaim.Yaw_add,Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,flag_fire,Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output);
+	UsartDmaPrintf("%f,%f,%f,%f,%d,%f,%f,%d\r\n",Brain.Autoaim.Pitch_add,-Brain.Autoaim.Yaw_add,Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output);
 	
 }
 

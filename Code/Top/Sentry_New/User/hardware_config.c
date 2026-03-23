@@ -14,6 +14,7 @@
 #include "swerve_chassis.h"
 #include "DM_motor.h"
 #include "brain.h"
+#include "communication.h"
 void MPU_Init_(void);
 void MPU_Init_(void)
 {
@@ -63,7 +64,7 @@ void HardwareConfig(void)
 	UARTx_Init(&huart1,DR16_Callback);
 	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//视觉自瞄回调函数
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//导航雷达回调函数
-	UARTx_Init(&huart3, NULL); //Callback From Base
+	UARTx_Init(&huart3,BaseData_Callback); //Callback From Base
 	UARTx_Init(&huart7,NULL);//  Vofa+
 
 	INS_Init(&bmi088.bmi088_Data);

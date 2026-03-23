@@ -44,14 +44,13 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = 0;
+				chassis->Movement.Omega = 2500;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 1500;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 1500;
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2000;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2000;
+				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
 			}
-//			chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
-		
 		}
 		SwerveChassisSetSpeed(chassis);
 	}
@@ -133,12 +132,13 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
 {
 	chassis->Power.now_power = referee2022.power_heat_data.chassis_power; // 实时功率			
 //	chassis->Power.max_power = referee2024.robot_status_t.chassis_power_limit + (referee2024.power_heat_data_t.buffer_energy - 15) * 5 + sup_power;       // 功率上限			
-	if(Receive.Base.Lidar.Movemode == 0)
-	chassis->Power.max_power = 150;      // 功率上限			
-	else if(Receive.Base.Lidar.Movemode == 1)
-		chassis->Power.max_power = 50;
-	else if(Receive.Base.Lidar.Movemode == 2)
-		chassis->Power.max_power = 50;
+//	if(Receive.Base.Lidar.Movemode == 0)
+//	chassis->Power.max_power = 150;      // 功率上限			
+//	else if(Receive.Base.Lidar.Movemode == 1)
+//		chassis->Power.max_power = 50;
+//	else if(Receive.Base.Lidar.Movemode == 2)
+//		chassis->Power.max_power = 50;
+	chassis->Power.max_power = 140;
 	if(chassis->Power.max_power < 0) chassis->Power.max_power = 0;
 			
 //	if(referee2022.power_heat_data.chassis_power_buffer > 40  )//加速起步且在不开超电时保证功率利用

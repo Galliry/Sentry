@@ -10,14 +10,16 @@ Receive_t Receive={
     .Base.rc.rc_Ctrl_s2 = 3,
 };
 
+Transmit_t Transmit;
+
 /**
-	* @brief  底板处理上板数据
+	* @brief  锟阶板处锟斤拷锟较帮拷锟斤拷锟斤拷
 	*/
 uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len)
 {
 	Receive.Base.Online_check.StatusCnt = 0;
 	Receive.Base.rc.rc_Ctrl_ch0 = rxBuffer[0] | (rxBuffer[1] << 8);
-	Receive.Base.rc.rc_Ctrl_ch0 &= 0x07FF;		// 保证只取 11 位
+	Receive.Base.rc.rc_Ctrl_ch0 &= 0x07FF;		// 锟斤拷证只取 11 位
 	Receive.Base.rc.rc_Ctrl_ch1 = ((rxBuffer[1] >> 3) | (rxBuffer[2] << 5)) & 0x07FF;
 	Receive.Base.rc.rc_Ctrl_ch1 &= 0x07FF;  
 	Receive.Base.rc.rc_Ctrl_ch2 = ((rxBuffer[2] >> 6) | (rxBuffer[3] << 2) | (rxBuffer[4] << 10)) & 0x07FF;
@@ -35,3 +37,14 @@ uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len)
 	return 0;
 }
 
+void Trans_forBasetoTop(Referee2022* referee)
+{
+	Transmit.TransData[0] = referee->game_status.game_progress;
+	Transmit.TransData[1] = (uint8_t)(referee->game_robot_status.shooter_id1_17mm_cooling_limit & 0xff);
+	Transmit.TransData[2] = (uint8_t)((referee->game_robot_status.shooter_id1_17mm_cooling_limit >> 8) & 0xff);
+	Transmit.TransData[3] = (uint8_t)(referee->power_heat_data.shooter_id1_17mm_cooling_heat & 0xff);
+	Transmit.TransData[4] = (uint8_t)((referee->power_heat_data.shooter_id1_17mm_cooling_heat >> 8) & 0xff);
+	Transmit.TransData[5] = referee->game_robot_status.mains_power_shooter_output;
+	
+	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,6);
+}
