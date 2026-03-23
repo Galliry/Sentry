@@ -178,82 +178,67 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rc_Ctrl_et,0x0A</ItemText>
+          <ItemText>Holder,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Holder,0x0A</ItemText>
+          <ItemText>tim14_FPS,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tim14_FPS,0x0A</ItemText>
+          <ItemText>mpu6050,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>swervechassis,0x0A</ItemText>
+          <ItemText>bmi088</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>can1,0x0A</ItemText>
+          <ItemText>Transmit,0x10</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>can2,0x10</ItemText>
+          <ItemText>INS_attitude,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>referee2022,0x0A</ItemText>
+          <ItemText>Brain,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>mpu6050,0x0A</ItemText>
+          <ItemText>uart2</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>bmi088</ItemText>
+          <ItemText>uart4,0x10</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Transmit,0x10</ItemText>
+          <ItemText>check_robot_state,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>INS_attitude,0x0A</ItemText>
+          <ItemText>flag_fire,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Brain,0x0A</ItemText>
+          <ItemText>gNormDiff</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>uart2</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>uart4,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>check_robot_state,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>flag_fire,0x0A</ItemText>
+          <ItemText>gyroDiff</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

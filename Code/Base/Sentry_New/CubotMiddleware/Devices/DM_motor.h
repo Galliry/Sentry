@@ -24,18 +24,23 @@ typedef struct
 	int16_t torque_current;
     uint8_t temperature;
 	uint8_t error;
+	float total_angle;
 	float angle;
 	float torque;
 	float speed_rpm;
 	float motor_output;
 	float angle_raw;
-	CAN_TxBuffer txBufferforEnable;
-	CAN_TxBuffer txBufferforDisable;
-	CAN_TxBuffer txBufferforMitMode;
-	CAN_TxBuffer txBufferforPositionSpeed;
-	CAN_TxBuffer txBufferforSpeed;
-	CAN_TxBuffer txBufferforCurrent;
-	CAN_RxBuffer rxBufferforCurrent;
+	struct
+	{
+		CAN_TxBuffer txBufferforEnable;
+		CAN_TxBuffer txBufferforDisable;
+		CAN_TxBuffer txBufferforMitMode;
+		CAN_TxBuffer txBufferforPositionSpeed;
+		CAN_TxBuffer txBufferforSpeed;
+		CAN_TxBuffer txBufferforCurrent;
+		CAN_RxBuffer rxBufferforCurrent;
+	}Buffer;
+	
 	DMode_t mode;
 	struct
 	{
@@ -53,4 +58,5 @@ void DMiao_Enable(CAN_Object can, DMiao_t *damiao);
 void DMiao_Disable(CAN_Object can, DMiao_t *damiao);
 void DMiao_CanOutput(CAN_Object can, DMiao_t *damiao);
 void DMiao_CanUpdata(DMiao_t *damiao,CAN_RxBuffer rxBuffer);
+float wrap_to_180(float angle);
 #endif

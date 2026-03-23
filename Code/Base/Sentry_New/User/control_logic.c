@@ -47,9 +47,9 @@ void TIM14_Task(void)
 		if( i <= 10)DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
 		else HolderControl_Base(&Holder,&Receive);
 		if(i > 100) i = 100;
-		
+		SwerveChassis_Control(&swervechassis,&Receive);
 	}
-	SwerveChassis_Control(&swervechassis,&Receive);
+	
 	if(Receive.Base.Online_check.Status == 1){;}
 	else
 	{
@@ -70,7 +70,7 @@ void TIM14_Task(void)
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
 	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
-	UsartDmaPrintf("%f,%f\r\n",swervechassis.Vectors.Target_Angle[3],-swervechassis.Motors6020.motor[3].Data.Angle);
+	UsartDmaPrintf("%d,%d\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit);
 	
 }
 

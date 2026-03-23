@@ -39,7 +39,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			brain->Autoaim.Pitch_add = ((recBuffer[5] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100);
 			
 			brain->Autoaim.Distance = (float)(recBuffer[7]) / 10;
-			brain->Autoaim.IsFire = ((float)(recBuffer[8])); 
+//			brain->Autoaim.IsFire = ((float)(recBuffer[8])); 
 //			stable = recBuffer[9];
 
 			// Brain->Autoaim.Attack_state.camara_num = recBuffer[11];
@@ -58,8 +58,8 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			}
 			
 			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.3f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.3f)
-				flag_fire = 1;
-			else flag_fire = 0;
+				brain->Autoaim.IsFire = 1;
+			else brain->Autoaim.IsFire = 0;
 		}else
 		{
 			brain->Autoaim.mode = Cruise;

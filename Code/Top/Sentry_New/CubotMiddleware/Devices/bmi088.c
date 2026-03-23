@@ -266,7 +266,7 @@ void BMI088_Calibrate_Offset(IMU_InitData_t *bmi088_data)
         bmi088_cali_count++;
 
     } while (gNormDiff > 0.8f ||
-             fabsf(bmi088_data->g_norm - 9.8f) > 0.1f ||
+             fabsf(bmi088_data->g_norm - 9.8f) > 0.2f ||
              gyroDiff[0] > 0.3f ||
              gyroDiff[1] > 0.3f ||
              gyroDiff[2] > 0.3f ||

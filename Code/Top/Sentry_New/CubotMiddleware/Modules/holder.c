@@ -14,7 +14,7 @@ float Pitch_TD = 90;
 void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s)
 {
 	DMiaoInit(&holder->Motors.Pitch,0x06,0x01,MIT);
-	MotorInit(&holder->Motors.Yaw_S,6753,Motor6020,CAN1,0x205);
+	MotorInit(&holder->Motors.Yaw_S,4085,Motor6020,CAN1,0x205);
 	DualPID_Init(&holder->Yaw_S.PID,yaw_s->ShellPID,yaw_s->CorePID);
 	DualPID_Init(&holder->Pitch.PID,pitch->ShellPID,pitch->CorePID);
 	holder->Pitch.Sensitivity = 0.00085f;		//-0.0015f

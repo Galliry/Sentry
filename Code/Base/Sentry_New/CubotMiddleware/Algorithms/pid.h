@@ -16,7 +16,7 @@ typedef struct
 	float KiPartDetachment;
 	float LastError;
 
-	int Out;
+	int32_t Out;
 }SinglePID_t;
 
 
@@ -45,7 +45,7 @@ void DualPID_Init(DualPID_Object* dual_pid, SinglePID_t* ShellPID,SinglePID_t* C
 /**
   * @brief 单环比例积分速度控制
   */
-int16_t BasePID_SpeedControl(SinglePID_t* base_pid, float target_speed, float feedback_speed);
+int32_t BasePID_SpeedControl(SinglePID_t* base_pid, float target_speed, float feedback_speed);
 
 
 /**

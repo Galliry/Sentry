@@ -1,8 +1,7 @@
 #include "swerve_chassis.h"
 #include "user_lib.h"
 SwerveChassis swervechassis;
-float Vx_c;
-float Vy_c;
+int32_t motoroutput_3508[4];
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid)
 {
@@ -37,21 +36,21 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 		{
 			chassis->Movement.Vx_Move = 0;
 			chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = 500;
+			chassis->Movement.Omega = 0;
 		}
 		else
 		{
 			if(rec->Base.Lidar.Movemode == 0)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 1500;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 1500;
+				chassis->Movement.Vx_Move = 0;
+				chassis->Movement.Vy_Move = 0;
+				chassis->Movement.Omega = 0;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
 				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 1500;
 				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 1500;
 			}
-			chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.0f,Holder.Motors.Yaw_M.angle);
-//			if(1) ;
+//			chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
 		
 		}
 		SwerveChassisSetSpeed(chassis);
@@ -60,7 +59,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 	{
 		chassis->Movement.Vx_Move = (rec->Base.rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
 		chassis->Movement.Vy_Move = (-1) * (rec->Base.rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
-		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.0f,Holder.Motors.Yaw_M.angle);
+		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0.0f,Holder.Motors.Yaw_M.angle);
 		SwerveChassisSetSpeed(chassis);
 	}
 	
@@ -69,7 +68,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 void SwerveChassisSetSpeed(SwerveChassis* chassis)
 {
     float error;
-	float angle = Holder.Motors.Yaw_M.angle_raw-1.80f;
+	float angle = Holder.Motors.Yaw_M.angle_raw-1.81f;
 	chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
 	chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
@@ -121,12 +120,12 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output,-16000,16000);
 		chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output,-16000,16000);
     }
-	for(int j =0;j < 4;j++)
-	{
-		MotorFillData(&chassis->Motors6020.motor[j],chassis->Motors6020.motor[j].Data.Output);
-        MotorFillData(&chassis->Motors3508.motor[j],chassis->Motors3508.motor[j].Data.Output);
-	}
-//	SwerveChassisPowerCtrl(chassis);
+//	for(int j =0;j < 4;j++)
+//	{
+//		MotorFillData(&chassis->Motors6020.motor[j],chassis->Motors6020.motor[j].Data.Output);
+//        MotorFillData(&chassis->Motors3508.motor[j],chassis->Motors3508.motor[j].Data.Output);
+//	}
+	SwerveChassisPowerCtrl(chassis);
 }
 
 
