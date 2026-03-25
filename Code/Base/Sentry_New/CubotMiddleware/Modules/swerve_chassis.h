@@ -72,5 +72,6 @@ typedef struct
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid);
 void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec);
 static void SwerveChassisPowerCtrl(SwerveChassis *chassis);
+void SwerveChassisSetSpeed(SwerveChassis* chassis);
 extern SwerveChassis swervechassis;
 #endif

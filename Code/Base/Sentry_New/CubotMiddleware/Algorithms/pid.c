@@ -117,7 +117,7 @@ void PID_Init(void)
 	BasePID_Init(&pid_follow,-50,0,0,0);		//底盘跟随
 	for(int i=0;i<4;i++)
 	{
-		BasePID_Init(&pid_turn_angle[i],-35,-0.5,40,10);		//底盘舵向电机 -35 -0.5 -40 10
+		BasePID_Init(&pid_turn_angle[i],-50,-0.08,200,10);		//底盘舵向电机 -35 -0.5 -40 10
 		BasePID_Init(&pid_turn_speed[i],8,0,1,0);		// 10 0 0 0
 	}
 }

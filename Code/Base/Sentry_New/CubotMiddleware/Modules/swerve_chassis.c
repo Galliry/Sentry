@@ -30,7 +30,8 @@ void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID
 
 void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 {
-    if(rec->Base.rc.rc_Ctrl_s1 == 2)
+    if(rec->Base.rc.rc_Ctrl_s1 == 2
+	|| referee2022.game_status.game_progress == 4)
 	{
 		if(rec->Base.Lidar.Online == 0)
 		{
@@ -43,7 +44,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = 3000;
+				// chassis->Movement.Omega = 3000;
 			}
 		}
 		else
@@ -55,12 +56,16 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 				chassis->Movement.Omega = 2500;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
-				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 2000;
-				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 2000;
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 200;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 200;
 				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
 			}
 		}
-		if(chassis->Movement.Vx_Move < 100 && chassis->Movement.Vy_Move <100) {;}
+		if( fabs(chassis->Movement.Vx_Move) < 0 && fabs(chassis->Movement.Vy_Move) <0) {
+			chassis->Movement.Vx_Move = 0;
+			chassis->Movement.Vy_Move = 0;
+			SwerveChassisSetSpeed(chassis);
+		}
 		else SwerveChassisSetSpeed(chassis);
 	}
 	else
@@ -143,7 +148,7 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
 	
 	chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + referee2022.power_heat_data.chassis_power_buffer - 20;
 	if(chassis->Power.max_power < 0) chassis->Power.max_power = 0;
-		
+
 	chassis->Power.target_require_power_sum = 0;
 	chassis->Power.turn_power=0;
 	
