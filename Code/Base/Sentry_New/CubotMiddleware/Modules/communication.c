@@ -1,5 +1,5 @@
 #include "communication.h"
-
+#include "driver_timer.h"
 Receive_t Receive={
     .Base.Online_check.StatusCnt = 50,
     .Base.rc.rc_Ctrl_ch0 = 1024,
@@ -45,6 +45,15 @@ void Trans_forBasetoTop(Referee2022* referee)
 	Transmit.TransData[3] = (uint8_t)(referee->power_heat_data.shooter_id1_17mm_cooling_heat & 0xff);
 	Transmit.TransData[4] = (uint8_t)((referee->power_heat_data.shooter_id1_17mm_cooling_heat >> 8) & 0xff);
 	Transmit.TransData[5] = referee->game_robot_status.mains_power_shooter_output;
-	Transmit.TransData[6] = 0xDD;
-	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,7);
+	Transmit.TransData[6] = (uint8_t)(referee->game_robot_status.remain_HP & 0xff);
+	Transmit.TransData[7] =  (uint8_t)((referee->game_robot_status.remain_HP >> 8) & 0xff);
+	Transmit.TransData[8] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
+	Transmit.TransData[9] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
+	Transmit.TransData[10] = referee->rfid_t.RMUL_BJ;
+	Transmit.TransData[11] = referee->rfid_t.RMUL_ZX;
+	Transmit.TransData[12] = (tim14.ClockTime >> 24);	// 定时器时间，int32_t型
+	Transmit.TransData[13] = ((tim14.ClockTime >> 16) & 0xff);
+	Transmit.TransData[14] = ((tim14.ClockTime >> 8) & 0xff);
+	Transmit.TransData[15] = ((tim14.ClockTime & 0xff));
+	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,16);
 }

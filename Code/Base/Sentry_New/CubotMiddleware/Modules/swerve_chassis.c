@@ -34,9 +34,17 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 	{
 		if(rec->Base.Lidar.Online == 0)
 		{
-			chassis->Movement.Vx_Move = 0;
-			chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = 0;
+			if(referee2022.game_status.game_progress != 4)
+			{
+				chassis->Movement.Vx_Move = 0;
+				chassis->Movement.Vy_Move = 0;
+				chassis->Movement.Omega = 0;
+			}else if(referee2022.game_status.game_progress == 4)
+			{
+				chassis->Movement.Vx_Move = 0;
+				chassis->Movement.Vy_Move = 0;
+				chassis->Movement.Omega = 3000;
+			}
 		}
 		else
 		{
@@ -52,7 +60,8 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
 			}
 		}
-		SwerveChassisSetSpeed(chassis);
+		if(chassis->Movement.Vx_Move < 100 && chassis->Movement.Vy_Move <100) {;}
+		else SwerveChassisSetSpeed(chassis);
 	}
 	else
 	{
@@ -130,23 +139,11 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
 
 static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
 {
-	chassis->Power.now_power = referee2022.power_heat_data.chassis_power; // 实时功率			
-//	chassis->Power.max_power = referee2024.robot_status_t.chassis_power_limit + (referee2024.power_heat_data_t.buffer_energy - 15) * 5 + sup_power;       // 功率上限			
-//	if(Receive.Base.Lidar.Movemode == 0)
-//	chassis->Power.max_power = 150;      // 功率上限			
-//	else if(Receive.Base.Lidar.Movemode == 1)
-//		chassis->Power.max_power = 50;
-//	else if(Receive.Base.Lidar.Movemode == 2)
-//		chassis->Power.max_power = 50;
-	chassis->Power.max_power = 140;
+	chassis->Power.now_power = referee2022.power_heat_data.chassis_power; // 实时功率
+	
+	chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + referee2022.power_heat_data.chassis_power_buffer - 20;
 	if(chassis->Power.max_power < 0) chassis->Power.max_power = 0;
-			
-//	if(referee2022.power_heat_data.chassis_power_buffer > 40  )//加速起步且在不开超电时保证功率利用
-//	{
-//		chassis->Power.max_power += 100;
-//	}
 		
-
 	chassis->Power.target_require_power_sum = 0;
 	chassis->Power.turn_power=0;
 	

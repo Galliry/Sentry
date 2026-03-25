@@ -9,6 +9,7 @@
 struct Holder_Motor_Info
 {
 	float Target_Angle;
+	float Last_Target_Angle;
 	float GYRO_Angle;
 	float GYRO_AngleSpeed;
 	float Can_Angle;

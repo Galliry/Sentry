@@ -2,6 +2,7 @@
 
 Transmit_t Transmit;
 Receive_t Receive={.Top.Online_check.StatusCnt = 50};
+int flag = 0;
 /**
 	* @brief  
 	*/
@@ -21,7 +22,6 @@ void Trans_forToptoBase(RC_Ctrl* rc_ctrl)
 	Transmit.TransData[23] = Brain.Lidar.movemode;
     
 	HAL_UART_Transmit_DMA(&huart5,Transmit.TransData,24);
-    // CAN_Send(&can1,&Transmit.txBufferfor_TopToBase);
 }
 uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -30,5 +30,9 @@ uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 	Receive.Top.Referee.cooling_limit = ((uint16_t)recBuffer[1] | (uint16_t)(recBuffer[2] << 8));
 	Receive.Top.Referee.cooling_heat = ((uint16_t)recBuffer[3] | (uint16_t)(recBuffer[4] << 8));
 	Receive.Top.Referee.shooter_output = recBuffer[5];
+	Receive.Top.Referee.robot_HP = ((uint16_t)recBuffer[6] | (uint16_t)(recBuffer[7] << 8));
+	Receive.Top.Referee.game_time = ((uint16_t)recBuffer[8] | (uint16_t)(recBuffer[9] << 8));
+	Receive.Top.Referee.RFID_zx =recBuffer[10];
+	Receive.Top.Referee.RFID_bj = recBuffer[11];
 	return 0;
 }

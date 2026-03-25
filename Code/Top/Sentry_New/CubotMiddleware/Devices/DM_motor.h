@@ -27,7 +27,7 @@ typedef struct
 	float angle;
 	float torque;
 	float speed_rpm;
-	int32_t motor_output;
+	float motor_output;
 	CAN_TxBuffer txBufferforEnable;
 	CAN_TxBuffer txBufferforDisable;
 	CAN_TxBuffer txBufferforMitMode;

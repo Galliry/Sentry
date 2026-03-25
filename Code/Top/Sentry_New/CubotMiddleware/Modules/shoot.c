@@ -4,6 +4,7 @@
 #include "driver_timer.h"
 #include "user_lib.h"
 #include "brain.h"
+#include "communication.h"
 extern int flag_fire;
 Ammo_Booster AmmoBooster;
 
@@ -28,18 +29,23 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, Sing
 
 void ShootPlantControl(Ammo_Booster* ammo_booster)
 {
+	ammo_booster->Shoot_Plate.heat_status = (Receive.Top.Referee.cooling_heat >= 
+	(Receive.Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin)) ? 0 : 1;
+	
 	ammo_booster->Shoot_Plate.Delta_Angle = ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM*0.001*ammo_booster->Shoot_Plate.Angle_Sense;
 	if(ammo_booster->Shoot_Plate.Delta_Angle > 0.005f)
 	{
 		ammo_booster->Shoot_Plate.Plate_Angle += ammo_booster->Shoot_Plate.Delta_Angle;
 	}
 	
-	if(rc_Ctrl.is_online == 1)
+	if(rc_Ctrl.is_online == 1 && Receive.Top.Referee.shooter_output == 1 && ammo_booster->Shoot_Plate.heat_status == 1)
 	{
-		ammo_booster->Shoot_Plate.Fire_Divider=100;
+		if(Receive.Top.Referee.cooling_heat >= (Receive.Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin - 70))
+			ammo_booster->Shoot_Plate.Fire_Divider = 100;
+		else ammo_booster->Shoot_Plate.Fire_Divider = 50;
 		if(ammo_booster->Shoot_Plate.Shoot_rest_flag) ammo_booster->Shoot_Plate.Shoot_Cut++;
 		if(ammo_booster->Shoot_Plate.Shoot_Cut%ammo_booster->Shoot_Plate.Fire_Divider == 0) ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;
-		if(rc_Ctrl.rc.s1 == 1 && ((rc_Ctrl.rc.s2 != 2) || (rc_Ctrl.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0)
+		if((rc_Ctrl.rc.s1 == 1 || Receive.Top.Referee.game_prograss == 4) && ((rc_Ctrl.rc.s2 != 2) || (rc_Ctrl.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0)
 		{
 			ammo_booster->Shoot_Plate.Target_Angle += 45;
 			ammo_booster->Shoot_Plate.ShootNum++;

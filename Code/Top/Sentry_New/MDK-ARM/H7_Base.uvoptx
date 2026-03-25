@@ -248,22 +248,27 @@
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>uart3</ItemText>
+          <ItemText>len,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>len,0x0A</ItemText>
+          <ItemText>uart5</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\H7_Base\../CubotMiddleware/Drivers/driver_usart.c\uart3.uart_RxBuffer[5]</ItemText>
+          <ItemText>Yaw_TD</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>uart5</ItemText>
+          <ItemText>fliter,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -291,6 +296,16 @@
           <count>4</count>
           <WinNumber>2</WinNumber>
           <ItemText>flag,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>k,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Yaw_TD</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>

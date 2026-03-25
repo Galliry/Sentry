@@ -50,8 +50,12 @@ void TIM14_Task(void)
 	{
 		i++;
 		if(i <= 10) DMiao_Enable(can2,&Holder.Motors.Pitch);
-		else HolderControl_Top(&Holder,&rc_Ctrl);
-		if(tim14.ClockTime % 10 == 0)
+		else 
+		{
+			
+		if(tim14.ClockTime %2 ==0)	HolderControl_Top(&Holder,&rc_Ctrl);
+		}
+			if(tim14.ClockTime % 10 == 0)
 		Trans_forToptoBase(&rc_Ctrl);
 		
 		ShootPlantControl(&AmmoBooster);
@@ -75,7 +79,8 @@ void TIM14_Task(void)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
 	
-	UsartDmaPrintf("%f,%f,%f,%f,%d,%f,%f,%d\r\n",Brain.Autoaim.Pitch_add,-Brain.Autoaim.Yaw_add,Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output);
+	UsartDmaPrintf("%f,%f,%d,%f,%f,%d,%f,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
+		Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output,Holder.Yaw_S.v1,Holder.Pitch.v1);
 	
 }
 

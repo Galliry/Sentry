@@ -21,7 +21,12 @@ typedef struct
 			uint16_t cooling_limit;
 			uint16_t cooling_heat;
 			uint8_t shooter_output;
+			uint16_t robot_HP;
+			uint16_t game_time;
+			uint8_t RFID_zx;
+			uint8_t RFID_bj;
 		}Referee;
+		int ClockTime;
 		struct 
         {
             uint8_t Status;

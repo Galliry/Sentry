@@ -224,6 +224,7 @@ typedef struct
 	 struct
 	{
 		uint32_t rfid_status;
+		uint8_t rfid_status_2;
 	}  rfid_status;
 
 	struct
@@ -283,7 +284,11 @@ typedef struct
 		uint8_t target_robot_id; 
 		uint8_t cmd_source; 
 	}map_command_t; 
-
+struct 
+	{ 
+		uint8_t RMUL_BJ;
+		uint8_t RMUL_ZX;
+	}rfid_t; 
 }Referee2022;
 
 		

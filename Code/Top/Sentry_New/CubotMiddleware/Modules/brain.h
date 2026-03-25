@@ -8,6 +8,7 @@
 #include "referee.h"
 #include "holder.h"
 #include "user_lib.h"
+#include "communication.h"
 //#include "dr16.h"
 //#include "filter.h"
 //#include "string.h"
@@ -84,7 +85,6 @@ typedef struct
 		uint8_t fire_flag;
 		float Limit;
 		
-
 		uint8_t Ignore_armorNumber;
 		uint8_t IsFire;
 		uint8_t vison_mode;

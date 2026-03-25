@@ -18,6 +18,7 @@
 #include "communication.h"
 #include "referee.h"
 uint8_t i = 0;
+int flag = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -28,11 +29,16 @@ void TIM14_Task(void)
 	
 	if(Receive.Base.Online_check.Status == 1)
 	{
-		i++;
-		if( i <= 10)DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
-		else HolderControl_Base(&Holder,&Receive);
-		if(i > 100) i = 100;
-		SwerveChassis_Control(&swervechassis,&Receive);
+		flag++;
+		if(flag > 1000)
+		{
+			i++;
+			if( i <= 10)DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
+			else HolderControl_Base(&Holder,&Receive);
+			if(i > 100) i = 100;
+			SwerveChassis_Control(&swervechassis,&Receive);
+		}
+		
 	}
 	
 	if(Receive.Base.Online_check.Status == 1){;}
@@ -46,6 +52,7 @@ void TIM14_Task(void)
 			MotorFillData(&swervechassis.Motors6020.motor[i],0);
         	MotorFillData(&swervechassis.Motors3508.motor[i],0);
 		}
+		flag = 0;
 	}
 	if (tim14.ClockTime%2==0)
 	{

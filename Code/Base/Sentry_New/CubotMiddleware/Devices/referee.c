@@ -208,7 +208,11 @@ void _Data_Diapcak(uint8_t *pdata)
 	//	BYTE1(referee2022.bullet_remaining_num_42mm) = *(pdata+data_addr + 3);
 
 	}
-	
+	if(cmd_id == 0x209)
+	{
+		referee2022.rfid_status.rfid_status = (*(pdata+data_addr));
+		referee2022.rfid_status.rfid_status_2= *(pdata+data_addr+4);
+	}
 	if(cmd_id==0x020D)
 	{
 //		BYTE0(referee2022.sentry_info_t.sentry_info)=*(pdata+data_addr);
@@ -285,6 +289,7 @@ uint8_t ref_packge[packs][max_single_pack_len];//__attribute__((at(0x24008000)))
 ******************************************************************/
 uint8_t index_i = 0 ;
 uint8_t max_i=0;//用于在debug中观察
+int x;
 void Referee_Data_Diapcak(uint8_t *data,uint8_t this_time_len)
 {
 	uint32_t Verify_CRC8_OK;
@@ -305,8 +310,10 @@ void Referee_Data_Diapcak(uint8_t *data,uint8_t this_time_len)
 			if((Verify_CRC8_OK==1)&&(Verify_CRC16_OK==1))  //校验通过
 			{
 				memcpy(ref_packge[i],  data, 7+referee2022.frame_info.head.data_len+2);	
-				_Data_Diapcak(ref_packge[i]);					
+				_Data_Diapcak(ref_packge[i]);
+				x=i	;				
 				i++;
+				
 			}
 			
 		//	check_robot_state.usart_state.Check_referee = 0;

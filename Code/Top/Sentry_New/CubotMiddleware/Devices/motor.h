@@ -54,6 +54,7 @@ typedef struct
 	}Online_check;
 	int16_t  Target;				//< 电机的期望参数
 	int32_t  Output;  			//< 电机输出值，通常为电流和电压	
+	int32_t  Last_Output; 
 	float CanEcd[20] ;
 	float CanAngleSpeed[20];
 	float LvboAngle;
