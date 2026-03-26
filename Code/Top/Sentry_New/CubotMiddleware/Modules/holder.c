@@ -79,7 +79,7 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	
 	
 	holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output,-50,50);
-	DMiaoMitControl(&holder->Motors.Pitch,0,0,0,0,holder->Motors.Pitch.motor_output * 0.05);
+	DMiaoMitControl(&holder->Motors.Pitch,0,0,0,0,holder->Motors.Pitch.motor_output * 0.05f);
 	MotorFillData(&holder->Motors.Yaw_S,holder->Motors.Yaw_S.Data.Output);
 //	holder->Motors.Yaw_S.Data.Output = fliter * holder->Motors.Yaw_S.Data.Output  +(1-fliter) * holder->Motors.Yaw_S.Data.Last_Output;
 //	holder->Motors.Yaw_S.Data.Last_Output  = holder->Motors.Yaw_S.Data.Output; 

@@ -1,7 +1,7 @@
 #include "swerve_chassis.h"
 #include "user_lib.h"
 SwerveChassis swervechassis;
-int32_t motoroutput_3508[4];
+float x_ = 0;
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid)
 {
@@ -30,8 +30,7 @@ void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID
 
 void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 {
-    if(rec->Base.rc.rc_Ctrl_s1 == 2
-	|| referee2022.game_status.game_progress == 4)
+    if(rec->Base.rc.rc_Ctrl_s1 == 2|| referee2022.game_status.game_progress == 4)
 	{
 		if(rec->Base.Lidar.Online == 0)
 		{
@@ -39,13 +38,14 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = 0;
+				chassis->Movement.Omega = 6000;
 			}else if(referee2022.game_status.game_progress == 4)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				// chassis->Movement.Omega = 3000;
+				chassis->Movement.Omega = -6000;
 			}
+			SwerveChassisSetSpeed(chassis);
 		}
 		else
 		{
@@ -53,20 +53,22 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = 2500;
+				chassis->Movement.Omega = 6000;
 			}else if(rec->Base.Lidar.Movemode == 1)
 			{
 				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 200;
 				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 200;
 				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
 			}
+			else if(rec->Base.Lidar.Movemode == 2)
+			{
+				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 200;
+				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 200;
+				chassis->Movement.Omega = 6000;
+			}
+			if( fabs(chassis->Movement.Vx_Move) <= 0 && fabs(chassis->Movement.Vy_Move) <= 0 && rec->Base.Lidar.Movemode == 1) {;}
+			else SwerveChassisSetSpeed(chassis);
 		}
-		if( fabs(chassis->Movement.Vx_Move) < 0 && fabs(chassis->Movement.Vy_Move) <0) {
-			chassis->Movement.Vx_Move = 0;
-			chassis->Movement.Vy_Move = 0;
-			SwerveChassisSetSpeed(chassis);
-		}
-		else SwerveChassisSetSpeed(chassis);
 	}
 	else
 	{
@@ -81,7 +83,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 void SwerveChassisSetSpeed(SwerveChassis* chassis)
 {
     float error;
-	float angle = Holder.Motors.Yaw_M.angle_raw-1.81f;
+	float angle = (Holder.Motors.Yaw_M.angle_raw-1.81f) + Holder.Motors.Yaw_M.speed_rpm * 0.026; //Ç°À¡
 	chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
 	chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;

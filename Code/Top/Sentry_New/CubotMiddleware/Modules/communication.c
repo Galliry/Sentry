@@ -34,5 +34,21 @@ uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 	Receive.Top.Referee.game_time = ((uint16_t)recBuffer[8] | (uint16_t)(recBuffer[9] << 8));
 	Receive.Top.Referee.RFID_zx =recBuffer[10];
 	Receive.Top.Referee.RFID_bj = recBuffer[11];
+	uint32_t temp = ((uint32_t)recBuffer[12] << 24) |
+                ((uint32_t)recBuffer[13] << 16) |
+                ((uint32_t)recBuffer[14] << 8)  |
+                ((uint32_t)recBuffer[15]);
+	Receive.Top.ClockTime = (int)temp;
+	
+	if(flag == 10)
+	{
+		MX_UART5_Init();
+		flag++;
+	}
+	// 终止 DMA 接收并清空相关状态
+	
+
+// 重新启动 DMA 接收（如果需要）
+//	HAL_UART_Receive_DMA(&huart1, rx_buffer, RX_BUFFER_SIZE);
 	return 0;
 }

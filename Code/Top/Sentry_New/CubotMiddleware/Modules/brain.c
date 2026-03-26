@@ -39,7 +39,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			if(rc_Ctrl.rc.s2 == 2)
 			{
 				Holder.Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + Holder.Yaw_S.Can_Angle;
-				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15 + Holder.Pitch.GYRO_Angle;
+				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15f + Holder.Pitch.GYRO_Angle;
 			}
 			
 			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.2f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 1.0f)
@@ -118,12 +118,7 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	//	y = referee2022.map_command_t.target_position_y * 100;
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
 	RobotToBrainChassisTimeBuffer[1] = Receive.Top.Referee.game_prograss;
-	if (check_robot_state.Check_Usart.Check_receiver == 0)
-	{
-		RobotToBrainChassisTimeBuffer[2] = 1;
-		RobotToBrainChassisTimeBuffer[3] = 1;
-	}
-	else if (referee2022.game_status.game_progress == 4)
+	if (referee2022.game_status.game_progress == 4)
 	{
 		RobotToBrainChassisTimeBuffer[2] = Receive.Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
 		RobotToBrainChassisTimeBuffer[3] = Receive.Top.Referee.game_time >> 8;

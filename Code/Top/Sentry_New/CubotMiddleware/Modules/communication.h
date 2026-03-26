@@ -6,6 +6,7 @@
 #include "mpu6050.h"
 #include "check.h"
 #include "brain.h"
+#include "usart.h"
 typedef struct 
 {
     uint8_t TransData[50];
