@@ -275,6 +275,31 @@
           <WinNumber>1</WinNumber>
           <ItemText>RobotToBrainChassisTimeBuffer</ItemText>
         </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>RobotToBrainChassisTimeBuffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>i,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Autoaim_switchMode_cnt,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Yaw_TD</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Pitch_TD</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -1034,8 +1059,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\CubotMiddleware\Devices\dr16.c</PathWithFileName>
-      <FilenameWithoutPath>dr16.c</FilenameWithoutPath>
+      <PathWithFileName>..\CubotMiddleware\Devices\motor.c</PathWithFileName>
+      <FilenameWithoutPath>motor.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1046,8 +1071,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\CubotMiddleware\Devices\et08.c</PathWithFileName>
-      <FilenameWithoutPath>et08.c</FilenameWithoutPath>
+      <PathWithFileName>..\CubotMiddleware\Devices\dr16.c</PathWithFileName>
+      <FilenameWithoutPath>dr16.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1058,8 +1083,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\CubotMiddleware\Devices\motor.c</PathWithFileName>
-      <FilenameWithoutPath>motor.c</FilenameWithoutPath>
+      <PathWithFileName>..\CubotMiddleware\Devices\et08.c</PathWithFileName>
+      <FilenameWithoutPath>et08.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

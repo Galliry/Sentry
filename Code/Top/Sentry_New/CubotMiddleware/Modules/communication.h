@@ -24,8 +24,9 @@ typedef struct
 			uint8_t shooter_output;
 			uint16_t robot_HP;
 			uint16_t game_time;
-			uint8_t RFID_zx;
-			uint8_t RFID_bj;
+			uint8_t gimbal_output;
+			uint8_t robot_id;
+			uint16_t shoot_num;
 		}Referee;
 		int ClockTime;
 		struct 

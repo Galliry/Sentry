@@ -1,8 +1,8 @@
 #include "communication.h"
+#include "holder.h"
 
 Transmit_t Transmit;
 Receive_t Receive={.Top.Online_check.StatusCnt = 50};
-int flag = 0;
 /**
 	* @brief  
 	*/
@@ -20,8 +20,9 @@ void Trans_forToptoBase(RC_Ctrl* rc_ctrl)
 	memcpy(&Transmit.TransData[15],&Brain.Lidar.vx,sizeof(float));
 	memcpy(&Transmit.TransData[19],&Brain.Lidar.vy,sizeof(float));
 	Transmit.TransData[23] = Brain.Lidar.movemode;
+	Transmit.TransData[24] = Brain.Autoaim.mode;
     
-	HAL_UART_Transmit_DMA(&huart5,Transmit.TransData,24);
+	HAL_UART_Transmit_DMA(&huart5,Transmit.TransData,25);
 }
 uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -32,23 +33,8 @@ uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 	Receive.Top.Referee.shooter_output = recBuffer[5];
 	Receive.Top.Referee.robot_HP = ((uint16_t)recBuffer[6] | (uint16_t)(recBuffer[7] << 8));
 	Receive.Top.Referee.game_time = ((uint16_t)recBuffer[8] | (uint16_t)(recBuffer[9] << 8));
-	Receive.Top.Referee.RFID_zx =recBuffer[10];
-	Receive.Top.Referee.RFID_bj = recBuffer[11];
-	uint32_t temp = ((uint32_t)recBuffer[12] << 24) |
-                ((uint32_t)recBuffer[13] << 16) |
-                ((uint32_t)recBuffer[14] << 8)  |
-                ((uint32_t)recBuffer[15]);
-	Receive.Top.ClockTime = (int)temp;
-	
-	if(flag == 10)
-	{
-		MX_UART5_Init();
-		flag++;
-	}
-	// 终止 DMA 接收并清空相关状态
-	
-
-// 重新启动 DMA 接收（如果需要）
-//	HAL_UART_Receive_DMA(&huart1, rx_buffer, RX_BUFFER_SIZE);
+	Receive.Top.Referee.gimbal_output =recBuffer[10];
+	Receive.Top.Referee.robot_id = recBuffer[11];
+	Receive.Top.Referee.shoot_num = ((uint16_t)recBuffer[12] | (uint16_t)(recBuffer[13] << 8));
 	return 0;
 }

@@ -34,6 +34,7 @@ uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len)
 	memcpy(&Receive.Base.Lidar.Vx,&rxBuffer[15],sizeof(float));
 	memcpy(&Receive.Base.Lidar.Vy,&rxBuffer[19],sizeof(float));
 	Receive.Base.Lidar.Movemode =rxBuffer[23];
+	Receive.Base.AutoAim.mode = rxBuffer[24];
 	return 0;
 }
 
@@ -49,11 +50,9 @@ void Trans_forBasetoTop(Referee2022* referee)
 	Transmit.TransData[7] =  (uint8_t)((referee->game_robot_status.remain_HP >> 8) & 0xff);
 	Transmit.TransData[8] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 	Transmit.TransData[9] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
-	Transmit.TransData[10] = referee->rfid_t.RMUL_BJ;
-	Transmit.TransData[11] = referee->rfid_t.RMUL_ZX;
-	Transmit.TransData[12] = (tim14.ClockTime >> 24);	// 定时器时间，int32_t型
-	Transmit.TransData[13] = ((tim14.ClockTime >> 16) & 0xff);
-	Transmit.TransData[14] = ((tim14.ClockTime >> 8) & 0xff);
-	Transmit.TransData[15] = ((tim14.ClockTime & 0xff));
-	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,16);
+	Transmit.TransData[10] = referee2022.game_robot_status.mains_power_gimbal_output;
+	Transmit.TransData[11] = referee2022.game_robot_status.robot_id;
+	Transmit.TransData[12] = (uint8_t)(referee->bullet_remaining.bullet_remaining_num & 0xff);
+	Transmit.TransData[13] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
+	HAL_UART_Transmit_DMA(&huart2,Transmit.TransData,14);
 }

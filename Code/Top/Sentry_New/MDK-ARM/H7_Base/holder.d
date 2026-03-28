@@ -91,3 +91,4 @@
 .\h7_base\holder.o: ..\CubotMiddleware\Modules\brain.h
 .\h7_base\holder.o: ../CubotMiddleware/Devices/referee.h
 .\h7_base\holder.o: ..\CubotMiddleware\Modules\communication.h
+.\h7_base\holder.o: ../CubotMiddleware/Algorithms/filter.h

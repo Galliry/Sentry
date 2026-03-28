@@ -37,6 +37,11 @@ typedef struct
             uint8_t Status;
             uint8_t StatusCnt;
         }Online_check;
+		
+		struct
+		{
+			uint8_t mode;
+		}AutoAim;
     }Base;
     
 }Receive_t;

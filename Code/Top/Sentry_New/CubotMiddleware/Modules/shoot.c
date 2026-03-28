@@ -19,7 +19,7 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, Sing
 	BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[1], friction_pid1->Kp, friction_pid1->Ki, friction_pid1->Kd, friction_pid1->KiPartDetachment);
 
 	ammo_booster->Shoot_Plate.Fire_Rate = 8000;//5250//8000
-	ammo_booster->Shoot_Plate.Fire_Margin = 40;
+	ammo_booster->Shoot_Plate.Fire_Margin = 60;
 	ammo_booster->Shoot_Plate.Angle_Sense = 0.1689f;
 
 	ammo_booster->Friction_Wheel.Friction_Start = 0;
@@ -41,7 +41,7 @@ void ShootPlantControl(Ammo_Booster* ammo_booster)
 	if(rc_Ctrl.is_online == 1 && Receive.Top.Referee.shooter_output == 1 && ammo_booster->Shoot_Plate.heat_status == 1)
 	{
 		if(Receive.Top.Referee.cooling_heat >= (Receive.Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin - 70))
-			ammo_booster->Shoot_Plate.Fire_Divider = 100;
+			ammo_booster->Shoot_Plate.Fire_Divider = 125;
 		else ammo_booster->Shoot_Plate.Fire_Divider = 50;
 		if(ammo_booster->Shoot_Plate.Shoot_rest_flag) ammo_booster->Shoot_Plate.Shoot_Cut++;
 		if(ammo_booster->Shoot_Plate.Shoot_Cut%ammo_booster->Shoot_Plate.Fire_Divider == 0) ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;

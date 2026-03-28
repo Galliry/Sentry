@@ -5,6 +5,7 @@
 #include "driver_timer.h"
 #include "user_lib.h"
 #include "communication.h"
+#include "filter.h"
 Holder_t Holder;
 float Yaw_TD = 200;
 float Pitch_TD = 90;
@@ -31,11 +32,14 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
 	if(rc_ctrl->rc.s2 == 2 || Receive.Top.Referee.game_prograss == 4)
 	{
-		if(check_robot_state.Check_Usart.Check_vision == 1)
+		if(check_robot_state.Check_Usart.Check_vision == 1
+			|| rc_Ctrl.rc.s2 == 2
+		)
 		{
 			if(Brain.Autoaim.mode == Cruise)
 			{
-			
+				holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+				holder->Pitch.Target_Angle = 8 * sin(HAL_GetTick()/100.0f) - 7;
 			}
 			else if(Brain.Autoaim.mode == Lock)
 		    {
@@ -62,10 +66,16 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 	holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle,-38,38);
 	holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle,-30,30);
 	
-	if(rc_ctrl->rc.s2 == 2)
+	holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle, &LPF_yaw_mpu );
+	holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle, &LPF_pitch_mpu );
+	
+	holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle,-38,38);
+	holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle,-30,30);
+	
+	if(rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)
 	{
 		holder->Motors.Yaw_S.Data.Output = k * holder->Yaw_S.v2 + BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
-			BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,holder->Yaw_S.Target_Angle,holder->Yaw_S.Can_Angle),holder->Yaw_S.GYRO_AngleSpeed);
+			BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,holder->Yaw_S.v1,holder->Yaw_S.Can_Angle),holder->Yaw_S.GYRO_AngleSpeed);
 		holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
 			BasePID_AngleControl(holder->Pitch.PID.ShellPID,holder->Pitch.v1,holder->Pitch.GYRO_Angle),holder->Pitch.GYRO_AngleSpeed);
 	}

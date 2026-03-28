@@ -26,12 +26,12 @@ struct LowPassFilter_Info LPF_none={
 };
 
 struct LowPassFilter_Info LPF_pitch_mpu={
-  .filter_coefficient=0.2f,
+  .filter_coefficient=0.96f,
 	.last_output=0,
 };
 
 struct LowPassFilter_Info LPF_yaw_mpu={
-  .filter_coefficient=0.2f,
+  .filter_coefficient=0.96f,
 	.last_output=0,
 };
 struct LowPassFilter_Info LPF_3508={

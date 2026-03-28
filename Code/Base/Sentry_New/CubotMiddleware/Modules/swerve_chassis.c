@@ -1,7 +1,7 @@
 #include "swerve_chassis.h"
 #include "user_lib.h"
 SwerveChassis swervechassis;
-float x_ = 0;
+float x_ = -6000;
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid)
 {
@@ -43,7 +43,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = -6000;
+				chassis->Movement.Omega = 6000;
 			}
 			SwerveChassisSetSpeed(chassis);
 		}
@@ -58,7 +58,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 			{
 				chassis->Movement.Vx_Move = rec->Base.Lidar.Vx * 200;
 				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 200;
-				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0,Holder.Motors.Yaw_M.angle);
+				chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.28,Holder.Motors.Yaw_M.angle);
 			}
 			else if(rec->Base.Lidar.Movemode == 2)
 			{
@@ -66,7 +66,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 				chassis->Movement.Vy_Move = rec->Base.Lidar.Vy * 200;
 				chassis->Movement.Omega = 6000;
 			}
-			if( fabs(chassis->Movement.Vx_Move) <= 0 && fabs(chassis->Movement.Vy_Move) <= 0 && rec->Base.Lidar.Movemode == 1) {;}
+			if( fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Base.Lidar.Movemode == 1 || rec->Base.Lidar.Movemode == 2)) {;}
 			else SwerveChassisSetSpeed(chassis);
 		}
 	}
@@ -74,7 +74,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 	{
 		chassis->Movement.Vx_Move = (rec->Base.rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
 		chassis->Movement.Vy_Move = (-1) * (rec->Base.rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
-		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,0.0f,Holder.Motors.Yaw_M.angle);
+		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID,103.28,Holder.Motors.Yaw_M.angle);
 		SwerveChassisSetSpeed(chassis);
 	}
 	
@@ -83,7 +83,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec)
 void SwerveChassisSetSpeed(SwerveChassis* chassis)
 {
     float error;
-	float angle = (Holder.Motors.Yaw_M.angle_raw-1.81f) + Holder.Motors.Yaw_M.speed_rpm * 0.026; //前馈
+	float angle = (Holder.Motors.Yaw_M.angle_raw-1.803f) + Holder.Motors.Yaw_M.speed_rpm * 0.026; //前馈
 	chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
 	chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
@@ -148,7 +148,7 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
 {
 	chassis->Power.now_power = referee2022.power_heat_data.chassis_power; // 实时功率
 	
-	chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + referee2022.power_heat_data.chassis_power_buffer - 20;
+	chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + (referee2022.power_heat_data.chassis_power_buffer - 15) * 5;
 	if(chassis->Power.max_power < 0) chassis->Power.max_power = 0;
 
 	chassis->Power.target_require_power_sum = 0;

@@ -66,9 +66,28 @@ UART_Object uart6;
 UART_Object uart7;
 UART_Object uart8;
 UART_Object *Find_UART(UART_HandleTypeDef *huart);
-
+int error_flag = 0;
 uint8_t Usart_TxBuffer[128];
 uint8_t Usart_TxBuffer_[128];
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == UART5)
+    {
+        uint32_t error_code = HAL_UART_GetError(huart);
+        if (error_code == HAL_UART_ERROR_DMA) 
+		{
+            HAL_UART_DMAStop(huart);
+			__HAL_UART_CLEAR_OREFLAG(huart);
+			__HAL_UART_CLEAR_FEFLAG(huart);
+			__HAL_UART_CLEAR_NEFLAG(huart);
+			error_code++;
+        }
+
+        HAL_UART_Receive_DMA(uart5.Handle, uart5.uart_RxBuffer, 200);
+    }
+}
+
 void UsartDmaPrintf(const char *format, ...)
 {
     uint16_t len;

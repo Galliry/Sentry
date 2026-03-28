@@ -2,6 +2,7 @@
 Brain_t Brain;
 float last_yaw_add;
 float last_pitch_add;
+uint16_t Autoaim_switchMode_cnt;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
 int flag_fire;
@@ -28,7 +29,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 
 		if ((brain->Autoaim.Brain_Data.FrameType == BRAIN_TO_ROBOT_CMD) && recBuffer[11] == 0xDD ) //< 解算偏转角
 		{
-
+			Autoaim_switchMode_cnt = 0;
 			brain->Autoaim.mode = Lock;
 			last_yaw_add = brain->Autoaim.Yaw_add;
 			last_pitch_add = brain->Autoaim.Pitch_add;
@@ -42,12 +43,22 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15f + Holder.Pitch.GYRO_Angle;
 			}
 			
-			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.2f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 1.0f)
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.8f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.8f)
 				brain->Autoaim.IsFire = 1;
 			else brain->Autoaim.IsFire = 0;
 		} else
 		{
-			brain->Autoaim.mode = Cruise;
+			
+			if (Autoaim_switchMode_cnt >= 4)
+			{
+				
+				brain->Autoaim.mode = Cruise;
+				brain->Autoaim.IsFire = 0;
+			}
+			else {
+				Autoaim_switchMode_cnt ++;
+			}
+			
 		}
 
 	}
@@ -90,7 +101,7 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[7] = ((tim14.ClockTime >> 8) & 0xff);
 	RobotToBrainTimeBuffer[8] = ((tim14.ClockTime & 0xff));
 
-	RobotToBrainTimeBuffer[9] = (referee2022.game_robot_status.robot_id > 10) ? 1 : 0;
+	RobotToBrainTimeBuffer[9] = (Receive.Top.Referee.robot_id > 10) ? 1 : 0;
 
 	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// 四元数q0，float型
 	RobotToBrainTimeBuffer[11] = tmp0 >> 8;
@@ -104,7 +115,7 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[18] = 0x01; // 0是预测 1是跟随 4 ceres 静止或低速
 	RobotToBrainTimeBuffer[19] = 0x01;
 
-	RobotToBrainTimeBuffer[20] = 0x01; // 1 是ekf 0是shou 23 fu 4 ceres
+	RobotToBrainTimeBuffer[20] = 0x04; // 1 是ekf 0是shou 23 fu 4 ceres
 	RobotToBrainTimeBuffer[21] = 0xDD; // 忽略装甲板
 
 	RobotToBrainTimeBuffer[22] = 0xDD;
@@ -118,6 +129,9 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	//	y = referee2022.map_command_t.target_position_y * 100;
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
 	RobotToBrainChassisTimeBuffer[1] = Receive.Top.Referee.game_prograss;
+	if ( Receive.Top.Referee.game_prograss == 3 ){
+		RobotToBrainChassisTimeBuffer[1] = 4;
+	}
 	if (referee2022.game_status.game_progress == 4)
 	{
 		RobotToBrainChassisTimeBuffer[2] = Receive.Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
@@ -130,8 +144,8 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	}
 	RobotToBrainChassisTimeBuffer[4] = Receive.Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[5] = Receive.Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[6] = Receive.Top.Referee.RFID_zx;
-	RobotToBrainChassisTimeBuffer[7] = Receive.Top.Referee.RFID_bj;
+	RobotToBrainChassisTimeBuffer[6] = 0x00;
+	RobotToBrainChassisTimeBuffer[7] = 0x00;
 	RobotToBrainChassisTimeBuffer[8] = 0xDD;
 	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer, 9);
 

@@ -22,17 +22,17 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\My\GitHub\Sentry\Code\Base\Sentry_New\MDK-ARM\H7_Base.uvprojx
-Project File Date:  03/25/2026
+Project File Date:  03/26/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'H7_Base'
-compiling swerve_chassis.c...
-..\CubotMiddleware\Modules\swerve_chassis.c(86): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	float angle = (Holder.Motors.Yaw_M.angle_raw-1.81f) + Holder.Motors.Yaw_M.speed_rpm * 0.026; //Ç°À¡
-..\CubotMiddleware\Modules\swerve_chassis.c: 1 warning, 0 errors
+compiling holder.c...
+..\CubotMiddleware\Modules\holder.c(40): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	DMiaoMitControl(&holder->Motors.Yaw_M,0,0,0,0,holder->Motors.Yaw_M.motor_output * 0.05);
+..\CubotMiddleware\Modules\holder.c: 1 warning, 0 errors
 linking...
-Program Size: Code=50498 RO-data=2630 RW-data=404 ZI-data=24208  
+Program Size: Code=49738 RO-data=2630 RW-data=404 ZI-data=24208  
 FromELF: creating hex file...
 ".\H7_Base\H7_Base.axf" - 0 Error(s), 1 Warning(s).
 
@@ -57,7 +57,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.6.0
-Build Time Elapsed:  00:00:07
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

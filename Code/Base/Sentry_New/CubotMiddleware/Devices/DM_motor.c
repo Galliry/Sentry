@@ -43,7 +43,7 @@ void DMiaoMitControl(DMiao_t *damiao, float position, float speed, float kp, flo
 {
 	static uint16_t i_position, i_speed, i_kp, i_kd, i_torque;
 	
-	i_position = float_to_uint(position, -12.5f, 12.5f, 16);
+	i_position = float_to_uint(position, -3.14159f, 3.14159f, 16);
 	i_speed    = float_to_uint(speed, -30.0f, 30.0f, 12);
 	i_kp       = float_to_uint(kp, 0, 500.0f, 12);
 	i_kd       = float_to_uint(kd, 0, 5.0f, 12);
@@ -168,25 +168,14 @@ void DMiao_CanUpdata(DMiao_t *damiao,CAN_RxBuffer rxBuffer)
 				i_speed   			= ((rxBuffer.Data[4]|(rxBuffer.Data[3]<<8))>>4);
 				i_torque   			= (rxBuffer.Data[5])|((rxBuffer.Data[4]&0x0f)<<8);
 					
-				damiao->angle_raw       = uint_to_float(i_position, -12.5f, 12.5f, 16); // (-12.5,12.5)
+				damiao->angle_raw       = uint_to_float(i_position, -3.14159f, 3.14159f, 16); // (-12.5,12.5)
 				damiao->speed_rpm   = uint_to_float(i_speed, -45.0f, 45.0f, 12);// (-45.0,45.0)
 				damiao->torque      = uint_to_float(i_torque, -18.0f, 18.0f, 12); // (-18.0,18.0)
-				damiao->total_angle = damiao->angle_raw * 57.2957f;
-				damiao->angle = -wrap_to_180((damiao->total_angle - 103.72f));
+				damiao->angle = damiao->angle_raw * 57.2957f;
+				damiao->angle_offest = (damiao->angle - 103.28f);
 			}
 			break;
 		}
 		default:;
 	}
-}
-
-float wrap_to_180(float angle)
-{
-	angle = fmod(angle, 360.0);
-    if (angle > 180.0) {
-        angle -= 360.0;
-    } else if (angle <= -180.0) {
-        angle += 360.0;
-    }
-    return angle;	
 }

@@ -1963,6 +1963,11 @@
           <GroupName>Cubot/Devices</GroupName>
           <Files>
             <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Devices\motor.c</FilePath>
+            </File>
+            <File>
               <FileName>dr16.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Devices\dr16.c</FilePath>
@@ -1971,11 +1976,6 @@
               <FileName>et08.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Devices\et08.c</FilePath>
-            </File>
-            <File>
-              <FileName>motor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\CubotMiddleware\Devices\motor.c</FilePath>
             </File>
             <File>
               <FileName>mpu6050.c</FileName>

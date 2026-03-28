@@ -24,7 +24,7 @@ typedef struct
 	int16_t torque_current;
     uint8_t temperature;
 	uint8_t error;
-	float total_angle;
+	float angle_offest;
 	float angle;
 	float torque;
 	float speed_rpm;

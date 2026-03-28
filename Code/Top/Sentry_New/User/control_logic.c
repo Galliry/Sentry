@@ -18,7 +18,7 @@
 #include "communication.h"
 #include "brain.h"
 int i = 0;
-extern int flag_fire;
+extern int error_flag;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -46,18 +46,12 @@ void TIM14_Task(void)
 	//DR16控制
 	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
 	
-	if(rc_Ctrl.is_online == 1)
+	if(rc_Ctrl.is_online == 1 && Receive.Top.Referee.gimbal_output == 1)
 	{
 		i++;
-		if(i <= 10) DMiao_Enable(can2,&Holder.Motors.Pitch);
-		else 
-		{
-			
-		if(tim14.ClockTime %2 ==0)	HolderControl_Top(&Holder,&rc_Ctrl);
-		}
-			if(tim14.ClockTime % 10 == 0)
-		Trans_forToptoBase(&rc_Ctrl);
-		
+		if( i % 10 == 0) DMiao_Enable(can2,&Holder.Motors.Pitch);
+		else HolderControl_Top(&Holder,&rc_Ctrl);
+		if(tim14.ClockTime % 10 == 0)Trans_forToptoBase(&rc_Ctrl);
 		ShootPlantControl(&AmmoBooster);
 		
 	}
@@ -79,9 +73,11 @@ void TIM14_Task(void)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
 	
-	UsartDmaPrintf("%f,%f,%d,%f,%f,%d,%f,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
-		Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Motors.Yaw_S.Data.Output,Holder.Yaw_S.v1,Holder.Pitch.v1);
-	
+//	UsartDmaPrintf("%f,%f,%d,%f,%f,%d,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
+//		Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Yaw_S.v1,Holder.Pitch.v1);
+	UsartDmaPrintf("%d,%d,%d,%d,%d\r\n",error_flag,huart5.ErrorCode,Receive.Top.Referee.robot_HP,Receive.Top.Referee.robot_id,Receive.Top.Referee.game_prograss);
+//	UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
+
 }
 
 

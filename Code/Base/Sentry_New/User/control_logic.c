@@ -19,7 +19,7 @@
 #include "referee.h"
 uint8_t i = 0;
 int flag = 0;
-#define DEBUG 0
+uint8_t motor_flag = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -30,19 +30,17 @@ void TIM14_Task(void)
 	
 	if(Receive.Base.Online_check.Status == 1)
 	{
-		#if DEBUG
-		SwerveChassisSetSpeed(&swervechassis);
-		#else
+		
 		flag++;
 		if(flag > 1000)
 		{
-			i++;
-			if( i <= 10)DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
+			if(referee2022.game_robot_status.mains_power_gimbal_output == 0) i=0;
+			else i++;
+			if(i <= 10) DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
 			else HolderControl_Base(&Holder,&Receive);
 			if(i > 100) i = 100;
 			SwerveChassis_Control(&swervechassis,&Receive);
 		}
-		#endif
 		
 	}
 	else
@@ -65,8 +63,10 @@ void TIM14_Task(void)
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
 	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
-	// UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
-	UsartDmaPrintf("%.2f, %.2f, %d\r\n",swervechassis.Movement.Vx_Move,swervechassis.Movement.Vy_Move,Receive.Base.Lidar.Movemode);
+//  UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
+//	UsartDmaPrintf("%.2f, %.2f, %d\r\n",swervechassis.Movement.Vx_Move,swervechassis.Movement.Vy_Move,Receive.Base.Lidar.Movemode);
+//	UsartDmaPrintf("%d,%d\r\n",huart2.ErrorCode,referee2022.game_robot_status.remain_HP);
+	UsartDmaPrintf("%d,%d,%d\r\n",Receive.Base.AutoAim.mode,Receive.Base.Lidar.Movemode,Receive.Base.Lidar.Online);
 }
 
 
