@@ -38,7 +38,8 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
 		{
 			if(Brain.Autoaim.mode == Cruise)
 			{
-				holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+//				holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+				holder->Yaw_S.Target_Angle = 0;
 				holder->Pitch.Target_Angle = 8 * sin(HAL_GetTick()/100.0f) - 7;
 			}
 			else if(Brain.Autoaim.mode == Lock)

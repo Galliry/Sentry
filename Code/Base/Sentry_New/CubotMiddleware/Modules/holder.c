@@ -24,9 +24,9 @@ void HolderControl_Base(Holder_t* holder,Receive_t* rec)
 {
 	if(rec->Base.rc.rc_Ctrl_s2 == 3) holder->Yaw_M.Target_Angle += ((rec->Base.rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
 	
-	else if ((rec->Base.AutoAim.mode == 0x00 /*Cruise*/ && referee2022.game_status.game_progress == 4) || rec->Base.rc.rc_Ctrl_s2 == 2 ) 
+	else if (rec->Base.AutoAim.mode == 0x00 /*Cruise*/ && (referee2022.game_status.game_progress == 4 || rec->Base.rc.rc_Ctrl_s2 == 2) && Receive.Base.Lidar.Movemode == 0 && Receive.Base.Lidar.Online == 1) 
 	{
-		holder->Yaw_M.Target_Angle += 0.08f;
+		holder->Yaw_M.Target_Angle -= 0.08f;
 	}
 
 	holder->Yaw_M.GYRO_Angle = rec->Base.Gyro.Gyro_Angle;

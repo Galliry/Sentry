@@ -113,7 +113,7 @@ void PID_Init(void)
 {
 	BasePID_Init(&pid_yaw_m_angle,-0.28,0,30,10);//-0.28,0,30,10
 	BasePID_Init(&pid_yaw_m_speed,10.8,0,8,0);
-	BasePID_Init(&pid_run,10,0,0,0);		//底盘运动 10
+	BasePID_Init(&pid_run,20,0,0,0);		//底盘运动 10
 	BasePID_Init(&pid_follow,60,0,0,0);		//底盘跟随
 	for(int i=0;i<4;i++)
 	{

@@ -63,10 +63,11 @@ void TIM14_Task(void)
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
 	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
-//  UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
+//	UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
 //	UsartDmaPrintf("%.2f, %.2f, %d\r\n",swervechassis.Movement.Vx_Move,swervechassis.Movement.Vy_Move,Receive.Base.Lidar.Movemode);
-//	UsartDmaPrintf("%d,%d\r\n",huart2.ErrorCode,referee2022.game_robot_status.remain_HP);
-	UsartDmaPrintf("%d,%d,%d\r\n",Receive.Base.AutoAim.mode,Receive.Base.Lidar.Movemode,Receive.Base.Lidar.Online);
+	UsartDmaPrintf("%d,%d,%d\r\n",huart2.ErrorCode,referee2022.game_robot_status.remain_HP,referee2022.game_status.game_progress);
+//	UsartDmaPrintf("%d,%d,%d\r\n",Receive.Base.AutoAim.mode,Receive.Base.Lidar.Movemode,Receive.Base.Lidar.Online);
+//	UsartDmaPrintf("%d,%d,%d,%d\r\n",swervechassis.Motors3508.motor[0].Data.SpeedRPM,swervechassis.Motors3508.motor[1].Data.SpeedRPM,-swervechassis.Motors3508.motor[2].Data.SpeedRPM,-swervechassis.Motors3508.motor[3].Data.SpeedRPM);
 }
 
 
