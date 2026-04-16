@@ -48,6 +48,7 @@ void Trans_forBasetoTop(Referee2022* referee)
 	Transmit.TransData[5] = referee->game_robot_status.mains_power_shooter_output;
 	Transmit.TransData[6] = (uint8_t)(referee->game_robot_status.remain_HP & 0xff);
 	Transmit.TransData[7] =  (uint8_t)((referee->game_robot_status.remain_HP >> 8) & 0xff);
+	
 	Transmit.TransData[8] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 	Transmit.TransData[9] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
 	Transmit.TransData[10] = referee2022.game_robot_status.mains_power_gimbal_output;

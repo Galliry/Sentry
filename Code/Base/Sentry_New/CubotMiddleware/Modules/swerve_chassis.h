@@ -7,6 +7,8 @@
 #include "communication.h"
 #include "holder.h"
 #include "referee.h"
+#include "interboard.h"
+#include "Supercap.h"
 
 #define Pi 3.1415926
 #define COS_45_DEG 0.7071067812f
@@ -61,7 +63,7 @@ typedef struct
 	
 	struct
 	{
-		float now_power;
+		float super_power;
 		float max_power;
 		float target_require_power_sum;
 		float turn_power;
@@ -70,7 +72,7 @@ typedef struct
 }SwerveChassis;
 
 void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID_t* run_pid,SinglePID_t* follow_pid);
-void SwerveChassis_Control(SwerveChassis* chassis,Receive_t* rec);
+void SwerveChassis_Control(SwerveChassis* chassis,Base_t* rec);
 static void SwerveChassisPowerCtrl(SwerveChassis *chassis);
 void SwerveChassisSetSpeed(SwerveChassis* chassis);
 extern SwerveChassis swervechassis;

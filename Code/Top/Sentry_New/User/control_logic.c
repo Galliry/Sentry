@@ -26,49 +26,35 @@ void TIM14_Task(void)
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
 	RobotToBrain(&Brain);
+	if(tim14.ClockTime % 4 == 0)
+		TopBoardDataTrans(&rc_Ctrl_et);
 	//ET08¿ØÖÆ
-//	if(rc_Ctrl_et.isOnline == 1)
-//	{
-//		;
-//	}
-//	
-	
-//	
-//	if(rc_Ctrl_et.isOnline == 1){;}
-//	else
-//	{
-//		ET08Init(&rc_Ctrl_et);
-//		MotorFillData(&AmmoBooster.Shoot_Plate.motor2006, 0);
-//		// MotorFillData(&Holder.Motors6020.Yaw_M,0);
-//		MotorFillData(&Holder.Motors.Yaw_S,0);
-//		// MotorFillData(&Holder.Motors6020.Pitch,0);
-//	}
-	//DR16¿ØÖÆ
+
 	if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
 	
-	if(rc_Ctrl.is_online == 1 && Receive.Top.Referee.gimbal_output == 1)
+	if(rc_Ctrl_et.isOnline == 1)
 	{
 		i++;
-		if( i % 10 == 0) DMiao_Enable(can2,&Holder.Motors.Pitch);
-		else HolderControl_Top(&Holder,&rc_Ctrl);
+		if( i % 10 == 0) DMiao_Enable(can1,&Holder.Motors.Pitch);
+		else HolderControl_Top(&Holder,&rc_Ctrl_et);
 		if(tim14.ClockTime % 10 == 0)Trans_forToptoBase(&rc_Ctrl);
 		ShootPlantControl(&AmmoBooster);
 		
 	}
 	
-	if(rc_Ctrl.is_online == 1){;}
+	if(rc_Ctrl_et.isOnline == 1){;}
 	else
 	{
 		i = 0;
 		DR16Init(&rc_Ctrl);
 		MotorFillData(&Holder.Motors.Yaw_S,0);
 		MotorFillData(&AmmoBooster.Shoot_Plate.motor2006, 0);
-		DMiao_Disable(can2,&Holder.Motors.Pitch);
+		DMiao_Disable(can1,&Holder.Motors.Pitch);
 	} 
 		
 	MotorCanOutput(can1, 0x1FF);
 	MotorCanOutput(can1, 0x200);
-	DMiao_CanOutput(can2,&Holder.Motors.Pitch);
+	DMiao_CanOutput(can1,&Holder.Motors.Pitch);
 //	if (tim14.ClockTime%4==0)
 //	MotorCanOutput(can2, 0x1FE);		
 //	MotorCanOutput(can2, 0x200);
@@ -96,6 +82,7 @@ void TIM13_Task(void)
 uint8_t CAN1_rxCallBack(CAN_RxBuffer* rxBuffer)
 {
 	MotorRxCallback(&can1, rxBuffer);
+	DMiao_CanUpdata(&Holder.Motors.Pitch,(*rxBuffer));
 	return 0;
 }
 
@@ -105,7 +92,7 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer* rxBuffer)
 uint8_t CAN2_rxCallBack(CAN_RxBuffer* rxBuffer)
 {
 	MotorRxCallback(&can2, rxBuffer);
-	DMiao_CanUpdata(&Holder.Motors.Pitch,(*rxBuffer));
+	BaseBoard_Callback(rxBuffer);
 	return 0;
 }
 

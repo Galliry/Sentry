@@ -19,6 +19,9 @@
 #include "referee.h"
 uint8_t i = 0;
 int flag = 0;
+extern Motor a1308;
+uint8_t ff = 0;
+int ccur = 0;
 uint8_t motor_flag = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
@@ -26,26 +29,28 @@ void TIM14_Task(void)
 	tim14.ClockTime++;
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
-	if(tim14.ClockTime % 10 == 0) Trans_forBasetoTop(&referee2022);
+	if(tim14.ClockTime % 10 == 0) 
+		RefereeDataTrans(&referee2022);
 	
-	if(Receive.Base.Online_check.Status == 1)
+	if(tim14.ClockTime % 9 == 0 && tim14.ClockTime % 2 != 0 && tim14.ClockTime % 2 != 0)
+		SupercapControl(can1,&super_cap);
+	
+	if(Base.Rc.isOnline == 1)
 	{
-		
 		flag++;
 		if(flag > 1000)
 		{
 			if(referee2022.game_robot_status.mains_power_gimbal_output == 0) i=0;
 			else i++;
 			if(i <= 10) DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
-			else HolderControl_Base(&Holder,&Receive);
+			else HolderControl_Base(&Holder,&Base);
 			if(i > 100) i = 100;
-			SwerveChassis_Control(&swervechassis,&Receive);
+			SwerveChassis_Control(&swervechassis,&Base);
 		}
-		
 	}
+	if(Base.Rc.isOnline == 1) ;
 	else
 	{
-		// DR16Init(&rc_Ctrl);
 		i = 0;
 		DMiao_Disable(can1,&Holder.Motors.Yaw_M);
 		for(uint8_t i=0;i<4;i++)
@@ -55,14 +60,15 @@ void TIM14_Task(void)
 		}
 		flag = 0;
 	}
-	if (tim14.ClockTime%2==0)
+	if (tim14.ClockTime % 2 == 0 && tim14.ClockTime % 10 != 0)
 	{
 		MotorCanOutput(can1, 0x1FE);
 		MotorCanOutput(can1, 0x200);
+		DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
 	}	
 	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
 	MotorCanOutput(can2, 0x200);
-	DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
+	
 //	UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
 //	UsartDmaPrintf("%.2f, %.2f, %d\r\n",swervechassis.Movement.Vx_Move,swervechassis.Movement.Vy_Move,Receive.Base.Lidar.Movemode);
 	UsartDmaPrintf("%d,%d,%d\r\n",huart2.ErrorCode,referee2022.game_robot_status.remain_HP,referee2022.game_status.game_progress);
@@ -86,6 +92,8 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer* rxBuffer)
 {
 	MotorRxCallback(&can1, rxBuffer);
 	DMiao_CanUpdata(&Holder.Motors.Yaw_M,*rxBuffer);
+	TopBoard_Callback(rxBuffer);
+	Supercap_rxCallBack((*rxBuffer),&super_cap);
 	return 0;
 }
 
