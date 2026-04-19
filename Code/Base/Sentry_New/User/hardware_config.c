@@ -47,6 +47,7 @@ void MPU_Init_(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
 }
+
 /**
   * @brief  初始化指令合集
   */
@@ -55,7 +56,7 @@ void HardwareConfig(void)
 	MPU_Init_();
 	DWT_Init(480);
 	
-	DR16Init(&rc_Ctrl);
+//	DR16Init(&rc_Ctrl);
 //	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
@@ -63,9 +64,9 @@ void HardwareConfig(void)
 	HolderInit_Base(&Holder,&pid_yaw_m);
 	
 //	UARTx_Init(&huart1,ET08_callback);
-	UARTx_Init(&huart1,DR16_Callback);
+//	UARTx_Init(&huart1,DR16_Callback);
 	UARTx_Init(&huart2,SolutionData_FromTop);
-	UARTx_Init(&huart4, Referee_callback);
+	UARTx_Init(&huart4,Referee_callback);
 	UARTx_Init(&huart7,NULL);//  Vofa+
 		
 //	INS_Init(&bmi088.bmi088_Data);
@@ -74,7 +75,7 @@ void HardwareConfig(void)
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
     CANx_Init(&hfdcan2, CAN2_rxCallBack);
-    CAN_Open (&can2 );	
+    CAN_Open (&can2);	
 
 	TIMx_Init(&htim14, TIM14_Task);//链接定时器回调
 	TIM_Open(&tim14);

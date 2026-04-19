@@ -31,7 +31,7 @@ BMI088_t bmi088 =
                 .chipSelect =
                     {
                         .cs_pin = GPIO_PIN_2,
-                        .gpiox  = GPIOD,
+                        .gpiox  = GPIOD,//GPIOD
                     },
             },
         .bmi088Gyro =

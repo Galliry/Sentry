@@ -32,6 +32,7 @@ uint8_t BaseData_Callback(uint8_t * recBuffer, uint16_t len)
 	Receive.Top.Referee.cooling_heat = ((uint16_t)recBuffer[3] | (uint16_t)(recBuffer[4] << 8));
 	Receive.Top.Referee.shooter_output = recBuffer[5];
 	Receive.Top.Referee.robot_HP = ((uint16_t)recBuffer[6] | (uint16_t)(recBuffer[7] << 8));
+	
 	Receive.Top.Referee.game_time = ((uint16_t)recBuffer[8] | (uint16_t)(recBuffer[9] << 8));
 	Receive.Top.Referee.gimbal_output =recBuffer[10];
 	Receive.Top.Referee.robot_id = recBuffer[11];

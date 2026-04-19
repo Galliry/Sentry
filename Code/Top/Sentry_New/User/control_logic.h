@@ -2,7 +2,7 @@
 #define CONTROLLOGIC_H_
 #include "stm32h7xx_hal.h"
 #include "motor.h"
-
+#include "interboard.h"
 uint8_t CAN1_rxCallBack(CAN_RxBuffer* rxBuffer);
 uint8_t CAN2_rxCallBack(CAN_RxBuffer* rxBuffer);
 

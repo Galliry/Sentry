@@ -53,15 +53,15 @@ void HardwareConfig(void)
 	MPU_Init_();
 	DWT_Init(480);
 	
-	DR16Init(&rc_Ctrl);
-// 	ET08Init(&rc_Ctrl_et);
+//	DR16Init(&rc_Ctrl);
+ 	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load);
 	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
-// 	UARTx_Init(&huart1,ET08_callback);
-	UARTx_Init(&huart1,DR16_Callback);
+ 	UARTx_Init(&huart1,ET08_callback);
+//	UARTx_Init(&huart1,DR16_Callback);
 	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//视觉自瞄回调函数
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//导航雷达回调函数
 	UARTx_Init(&huart5,BaseData_Callback); //Callback From Base

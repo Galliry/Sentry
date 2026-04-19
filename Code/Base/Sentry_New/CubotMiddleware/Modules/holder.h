@@ -6,6 +6,7 @@
 #include "et08.h"
 #include "DM_motor.h"
 #include "communication.h"
+#include "interboard.h"
 struct Holder_Motor_Info
 {
 	float Target_Angle;
@@ -51,8 +52,6 @@ typedef struct
 }Holder_t;
 
 extern Holder_t Holder;;
-void HolderInit(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_m,DualPID_Object* yaw_s);
-void Holder_Control(Holder_t* holder,RC_Ctrl_ET* rc_ctrl);
 void HolderInit_Base(Holder_t* holder,DualPID_Object* yaw_m);
-void HolderControl_Base(Holder_t* holder,Receive_t* rec);
+void HolderControl_Base(Holder_t* holder,Base_t* rec);
 #endif

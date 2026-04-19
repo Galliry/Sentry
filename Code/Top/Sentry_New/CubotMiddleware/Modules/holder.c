@@ -16,7 +16,7 @@ float fliter=0.9;
   */
 void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s)
 {
-	DMiaoInit(&holder->Motors.Pitch,0x06,0x01,MIT);
+	DMiaoInit(&holder->Motors.Pitch,0x06,0x05,MIT);
 	MotorInit(&holder->Motors.Yaw_S,4085,Motor6020,CAN1,0x205);
 	DualPID_Init(&holder->Yaw_S.PID,yaw_s->ShellPID,yaw_s->CorePID);
 	DualPID_Init(&holder->Pitch.PID,pitch->ShellPID,pitch->CorePID);
@@ -26,19 +26,18 @@ void HolderInit_Top(Holder_t* holder,DualPID_Object* pitch,DualPID_Object* yaw_s
 /**
   * @brief ÔÆÌ¨¿ØÖÆ
   */
-void HolderControl_Top(Holder_t* holder,RC_Ctrl* rc_ctrl)
+void HolderControl_Top(Holder_t* holder,RC_Ctrl_ET* rc_ctrl)
 {
 	if(rc_ctrl->rc.s2 == 1) {holder->Yaw_S.Target_Angle -= ((rc_ctrl->rc.ch2 - 1024) * holder->Yaw_S.Sensitivity);}
 	holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
-	if(rc_ctrl->rc.s2 == 2 || Receive.Top.Referee.game_prograss == 4)
+	if(rc_ctrl->rc.s2 == 2 || Top.Referee.game_prograss == 4)
 	{
-		if(check_robot_state.Check_Usart.Check_vision == 1
-			|| rc_Ctrl.rc.s2 == 2
-		)
+		if(check_robot_state.Check_Usart.Check_vision == 1 || rc_ctrl->rc.s2 == 2)
 		{
 			if(Brain.Autoaim.mode == Cruise)
 			{
-				holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+//				holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+				holder->Yaw_S.Target_Angle = 0;
 				holder->Pitch.Target_Angle = 8 * sin(HAL_GetTick()/100.0f) - 7;
 			}
 			else if(Brain.Autoaim.mode == Lock)
