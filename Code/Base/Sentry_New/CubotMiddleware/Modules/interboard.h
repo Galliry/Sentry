@@ -5,7 +5,7 @@
 #include "et08.h"
 #include "user_lib.h"
 #include "referee.h"
-
+#include "check.h"
 typedef struct
 {
 	struct
@@ -30,12 +30,6 @@ typedef struct
 		uint8_t isOnline;
 		uint8_t Movemode;
 	}Lidar;
-	struct 
-	{
-		uint8_t Status;
-		uint8_t StatusCnt;
-	}Online_check;
-
 }Base_t;
 
 extern Base_t Base;

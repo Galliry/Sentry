@@ -5,7 +5,10 @@
 #include "motor.h"
 #include "communication.h"
 Check_Robot_State check_robot_state={
-	.Check_Usart.Check_receiver_cnt=300
+	.Check_Usart.Check_receiver_cnt=300,
+	.Check_Usart.Check_referee_cnt=300,
+	.Check_Usart.Check_cap_cnt=300,
+	.Check_Usart.Check_board_cnt=300,
 };
 
 FPS tim14_FPS={
@@ -42,6 +45,8 @@ void RobotOnlineState(Check_Robot_State* CheckRobotState,RC_Ctrl_ET* rc_ctrl,RC_
 	
 	CheckRobotState->Check_Usart.Check_receiver_cnt++;
 	CheckRobotState->Check_Usart.Check_referee_cnt++;
+	CheckRobotState->Check_Usart.Check_cap_cnt++;
+	CheckRobotState->Check_Usart.Check_board_cnt++;
 	
 	CheckRobotState->Check_Usart.Check_referee_cnt= int16_constrain(CheckRobotState->Check_Usart.Check_referee_cnt,0,200);
 	CheckRobotState->Check_Usart.Check_referee = (CheckRobotState->Check_Usart.Check_referee_cnt > 100) ? 0 : 1;
@@ -49,14 +54,11 @@ void RobotOnlineState(Check_Robot_State* CheckRobotState,RC_Ctrl_ET* rc_ctrl,RC_
 	CheckRobotState->Check_Usart.Check_receiver_cnt=int16_constrain(CheckRobotState->Check_Usart.Check_receiver_cnt,0,200);
 	if(CheckRobotState->Check_Usart.Check_receiver_cnt > 100){rc_ctrl->isOnline=0;CheckRobotState->Check_Usart.Check_receiver=0;}else{if(rc_ctrl->rc.sA==1&&rc_ctrl->rc.ch2!=1)rc_ctrl->isOnline=1;else rc_ctrl->isOnline=0;CheckRobotState->Check_Usart.Check_receiver=1;}
 	
-	rc_ctrl_dr16->online_cnt++;
-	rc_ctrl_dr16->online_cnt = int16_constrain(rc_ctrl_dr16->online_cnt,0,200);
-	if(rc_ctrl_dr16->online_cnt < 30){rc_ctrl_dr16->is_online = 1;}else {rc_ctrl_dr16->is_online = 0;}
+	CheckRobotState->Check_Usart.Check_cap_cnt= int16_constrain(CheckRobotState->Check_Usart.Check_cap_cnt,0,200);
+	CheckRobotState->Check_Usart.Check_cap = (CheckRobotState->Check_Usart.Check_cap_cnt > 50) ? 0 : 1;
 
-	Receive.Base.Online_check.StatusCnt++;
-	Receive.Base.Online_check.StatusCnt = int16_constrain(Receive.Base.Online_check.StatusCnt,0,200);
-	if(Receive.Base.Online_check.StatusCnt < 30){Receive.Base.Online_check.Status = 1;}else{Receive.Base.Online_check.Status = 0;}
-
+	CheckRobotState->Check_Usart.Check_board_cnt= int16_constrain(CheckRobotState->Check_Usart.Check_board_cnt,0,200);
+	CheckRobotState->Check_Usart.Check_board = (CheckRobotState->Check_Usart.Check_board_cnt > 50) ? 0 : 1;	
 }
 
 /*¸÷Ä£¿éÖ¡ÂÊ¼ì²â*/

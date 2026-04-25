@@ -8,14 +8,14 @@ typedef struct
 	struct
 	{
 		uint8_t Check_receiver;//接收机
-		uint8_t Check_vision;//视觉
 		uint8_t Check_referee;//裁判系统
-		uint8_t Check_lidar;//雷达
+		uint8_t Check_cap;//超电
+		uint8_t Check_board;
 
 		uint16_t Check_receiver_cnt;//接收机
-		uint16_t Check_vision_cnt;//视觉
 		uint16_t Check_referee_cnt;//裁判系统
-		uint16_t Check_lidar_cnt;//雷达
+		uint16_t Check_cap_cnt;//超电
+		uint16_t Check_board_cnt;
 	}Check_Usart;
 }Check_Robot_State;
 

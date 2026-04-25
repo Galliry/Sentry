@@ -111,10 +111,10 @@ float  BasePID_AngleControl_Swerve(SinglePID_t* base_pid, float target_angle, fl
 }
 void PID_Init(void)
 {
-	BasePID_Init(&pid_yaw_m_angle,-0.28,0,30,10);//-0.28,0,30,10
-	BasePID_Init(&pid_yaw_m_speed,10.8,0,8,0);
+	BasePID_Init(&pid_yaw_m_angle,-0.29,0,60,1);//-0.28,0,30,10
+	BasePID_Init(&pid_yaw_m_speed,14,0,5,0);
 	BasePID_Init(&pid_run,20,0,0,0);		//µ×ÅÌÔË¶¯ 10
-	BasePID_Init(&pid_follow,60,0,0,0);		//µ×ÅÌ¸úËæ
+	BasePID_Init(&pid_follow,50,0.01,0,0);		//µ×ÅÌ¸úËæ
 	for(int i=0;i<4;i++)
 	{
 		BasePID_Init(&pid_turn_angle[i],-50,-0.08,200,10);		//µ×ÅÌ¶æÏòµç»ú -35 -0.5 -40 10

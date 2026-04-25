@@ -8,8 +8,8 @@ typedef struct
 		float    Voltage;
 		float    Current;
 		uint8_t  Supercap_Mode;		//是否开超电
-		uint8_t  Supercap_Flag;
-		uint8_t  voltage_flag;		//电压过低关闭超电
+		uint8_t  Supercap_Flag;		//是否成功开启超电
+		uint8_t  Voltage_Flag;		//电压过低关闭超电
 	}cap_state;
 }Supercap;
 extern Supercap super_cap;
