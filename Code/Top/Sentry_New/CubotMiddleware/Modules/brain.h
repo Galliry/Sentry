@@ -9,10 +9,6 @@
 #include "holder.h"
 #include "user_lib.h"
 #include "communication.h"
-//#include "dr16.h"
-//#include "filter.h"
-//#include "string.h"
-
 
 #define Brain_rxBufferLengh 50
 #define Lidar_rxBufferLengh 50 
@@ -46,15 +42,13 @@ typedef enum
 	Cruise = 0,             
 	Lock = 1,
 	Change = 2
-
 }Brain_Autoaim_mode; 
 
 typedef enum
 {
-	Lidar_home=1,
-	Lidar_Outpost=2,
-	Lidar_Patrol=3,
-	Lidar_Fortress=4
+	Lidar_Arrive = 0,
+	Lidar_OnlyMove = 1,
+	Lidar_RevolveMove = 2,
 }Brain_Lidar_mode;
 
 typedef enum
@@ -74,45 +68,36 @@ typedef struct
 {
 	
 	struct{
-		Brain_Autoaim_mode mode;
-		Brain_Autoaim_mode Last_mode;
-		uint16_t mode_cnt[3];
+		Brain_Autoaim_mode mode; 	//下位机模式
+		uint16_t mode_cnt;
 		CubotBrain_t Brain_Data;
-		Brain_mode  Mode;
+		Brain_mode  Mode; 	//上位机模式
 		float Pitch_add;
 		float Yaw_add;
 		float Distance;
-		uint8_t fire_flag;
-		float Limit;
-		
-		uint8_t Ignore_armorNumber;
 		uint8_t IsFire;
-		uint8_t vison_mode;
-		uint8_t Stand;
-		struct{
-			uint8_t  camara_num;
-			uint16_t shoot_num;
-			uint16_t hp;
-		}Attack_state;
+		uint8_t Rune_Flag;
 	}Autoaim;
-	 struct{
+	 
+	struct{
 		Brain_Lidar_mode mode;
-		uint16_t mode_cnt[2];
 		CubotBrain_t Brain_Data;
 		uint8_t	movemode;
 		float vx;
         float vy;
-        uint8_t change_position;
-    float angle_to_lidar;
-    uint8_t Arrive;
+		uint8_t Posture;
+		float MyPosition_x;
+		float MyPosition_y;
 	}Lidar;
-	 struct{
-		 Brain_All_See_mode mode;
+	 
+	struct
+	{
+		Brain_All_See_mode mode;
 		uint16_t mode_cnt[3];
-		 uint8_t Find_size;
-		 uint8_t Camera_Index[10];
-		 uint8_t armorNumber[10];
-		 float Pitch_add[10];
+		uint8_t Find_size;
+		uint8_t Camera_Index[10];
+		uint8_t armorNumber[10];
+		float Pitch_add[10];
 		float Yaw_add[10];
 		float Distance[10];//mm
 	}All_See;

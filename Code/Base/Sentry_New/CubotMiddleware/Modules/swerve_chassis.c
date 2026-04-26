@@ -37,7 +37,7 @@ void SwerveChassis_Control(SwerveChassis* chassis,Base_t* rec)
 			{
 				chassis->Movement.Vx_Move = 0;
 				chassis->Movement.Vy_Move = 0;
-				chassis->Movement.Omega = 6000;
+				chassis->Movement.Omega = 10000;
 				super_cap.cap_state.Supercap_Mode = 1;
 			}else if(referee2022.game_status.game_progress == 4)
 			{
@@ -136,11 +136,6 @@ void SwerveChassisSetSpeed(SwerveChassis* chassis)
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output,-16000,16000);
 		chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output,-16000,16000);
     }
-//	for(int j =0;j < 4;j++)
-//	{
-//		MotorFillData(&chassis->Motors6020.motor[j],chassis->Motors6020.motor[j].Data.Output);
-//        MotorFillData(&chassis->Motors3508.motor[j],chassis->Motors3508.motor[j].Data.Output);
-//	}
 	SwerveChassisPowerCtrl(chassis);
 }
 
