@@ -1,4 +1,5 @@
 #include "interboard.h"
+
 CAN_TxBuffer RefereeData;
 Base_t Base;
 
@@ -36,6 +37,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 {
 	if(rxBuffer->Header.Identifier == 0x101)
 	{
+		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		Base.Rc.rc_Ctrl_ch0 = rxBuffer->Data[0] | (rxBuffer->Data[1] << 8);
 		Base.Rc.rc_Ctrl_ch0 &= 0x07FF;		
 		Base.Rc.rc_Ctrl_ch1 = ((rxBuffer->Data[1] >> 3) | (rxBuffer->Data[2] << 5)) & 0x07FF;
@@ -46,16 +48,19 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Rc.rc_Ctrl_ch3 &= 0x07FF;
 		Base.Rc.rc_Ctrl_s1 = (rxBuffer->Data[5] >> 4) & 0x03;  
 		Base.Rc.rc_Ctrl_s2 = (rxBuffer->Data[5] >> 6) & 0x03;
-		Base.Rc.isOnline = rxBuffer->Data[6];
-		Base.Lidar.isOnline = 0;
+		Base.Rc.isOnline = (rxBuffer->Data[6] & 0x01);
+		Base.Lidar.isOnline = ((rxBuffer->Data[6] >> 1) & 0x01);
+		Base.Lidar.Movemode = ((rxBuffer->Data[6] >> 2) & 0x03);
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{
+		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Gyro.Gyro_Angle,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Gyro.Gyro_Data,&rxBuffer->Data[4],sizeof(float));
 	}
 	if(rxBuffer->Header.Identifier == 0x103)
 	{
+		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Lidar.Vx,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Lidar.Vy,&rxBuffer->Data[4],sizeof(float));
 	}

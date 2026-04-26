@@ -5,6 +5,7 @@
 #include "motor.h"
 #include "referee.h"
 #include "hardware_config.h"
+#include "check.h"
 CAN_TxBuffer txBuffer0x6FFforCAN1={
 	.Identifier = 0x6ff
 };
@@ -14,6 +15,7 @@ uint8_t Supercap_rxCallBack(CAN_RxBuffer rxBuffer,Supercap* Cap)
 {
 	if(rxBuffer.Header.Identifier == 0x601)
 	{
+		check_robot_state.Check_Usart.Check_cap_cnt = 0;
 		Cap->cap_state.Voltage = ((rxBuffer.Data[0]<<8)+rxBuffer.Data[1])*0.01f;
 		Cap->cap_state.Current = ((rxBuffer.Data[2]<<8)+rxBuffer.Data[3])*0.01f;
 	}
@@ -22,14 +24,14 @@ uint8_t Supercap_rxCallBack(CAN_RxBuffer rxBuffer,Supercap* Cap)
 
 void SupercapControl(CAN_Object can, Supercap* Cap)
 {
-	Cap->cap_state.voltage_flag = 1;
+	Cap->cap_state.Voltage_Flag = 1;
 	
-	if(Cap->cap_state.Voltage<15.0f)
+	if(Cap->cap_state.Voltage < 9.0f)
 	{
-		Cap->cap_state.voltage_flag=0;
+		Cap->cap_state.Voltage_Flag=0;
 	}
 	
-	if(Cap->cap_state.Supercap_Mode == 1 && Cap->cap_state.voltage_flag==1)
+	if(Cap->cap_state.Supercap_Mode == 1 && Cap->cap_state.Voltage_Flag==1)
 	{
 		txBuffer0x6FFforCAN1.Data[0] = 1;
 		Cap->cap_state.Supercap_Flag = 1;
@@ -39,7 +41,6 @@ void SupercapControl(CAN_Object can, Supercap* Cap)
 		txBuffer0x6FFforCAN1.Data[0] = 0;
 		Cap->cap_state.Supercap_Flag = 0;
 	}
-
 
 	txBuffer0x6FFforCAN1.Data[1] = (uint8_t)referee2022.game_robot_status.chassis_power_limit;
 	txBuffer0x6FFforCAN1.Data[2] = (uint8_t)(referee2022.power_heat_data.chassis_power_buffer & 0xff);

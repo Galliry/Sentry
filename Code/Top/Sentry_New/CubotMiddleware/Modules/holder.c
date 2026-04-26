@@ -44,12 +44,8 @@ void HolderControl_Top(Holder_t* holder,RC_Ctrl_ET* rc_ctrl)
 		    {
 				Holder_TD(&holder->Pitch,holder->Pitch.Target_Angle,Pitch_TD,0.001);
 				Holder_TD(&holder->Yaw_S,holder->Yaw_S.Target_Angle ,Yaw_TD,0.001);
-//				holder->Yaw_S.Target_Angle = fliter * holder->Yaw_S.Target_Angle  +(1-fliter) * holder->Yaw_S.Last_Target_Angle;
-//				holder->Yaw_S.Last_Target_Angle  = holder->Yaw_S.Target_Angle; 
 			}
-			
-		}
-		
+		}	
 	}
 	
 	holder->Yaw_S.Can_Angle = holder->Motors.Yaw_S.Data.Angle;
