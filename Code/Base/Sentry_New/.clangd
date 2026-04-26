@@ -1,0 +1,56 @@
+CompileFlags:
+  CompilationDatabase: None
+  Add:
+    - --target=arm-none-eabi
+    - -mcpu=cortex-m7
+    - -mthumb
+    - -mfpu=fpv5-d16
+    - -mfloat-abi=hard
+    - -ffreestanding
+    - -fshort-enums
+    - -std=gnu11
+    - -DUSE_HAL_DRIVER
+    - -DSTM32H750xx
+
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Inc
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Include
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Algorithms
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Devices
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Drivers
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Modules
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Support
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/User
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include
+    - -I
+    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
+
+    # Toolchain system headers (for std headers like math.h)
+    - -isystem
+    - C:/Keil_v5/ARM/ARMCLANG/include
+    - -isystem
+    - C:/Keil_v5/ARM/ARMCC/include
+    - -isystem
+    - C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/arm-none-eabi/include
+
+---
+If:
+  PathMatch: .*\.(h|hpp)$
+CompileFlags:
+  Add: [-xc]

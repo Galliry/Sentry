@@ -205,6 +205,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>can1</ItemText>
         </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>DEBUG_tar</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
