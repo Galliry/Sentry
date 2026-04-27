@@ -25,12 +25,21 @@ volatile float DEBUG_tar = 0.0f;
 float PitchFF_Gravity(float target) // 重力补偿前馈
 {
     // 测试源数据https://www.desmos.com/calculator/ikerwae6cv
-    float ff;
+    float ff1, ff2;
+    target = -target;
+
     const float A = 0.94273f;   // 水平时重力力矩
     const float B = -0.063365f; // 重心偏角 (rad)
     const float pi = 3.1415926f;
-    ff = A * arm_cos_f32(float_constrain(target, -32, 32) * 2 * pi / 360 + B); // R^2 = 0.9921
-    return float_constrain(ff, 0, 0.90);
+    const float a = 0.670588f;
+    const float b = -0.31886f;
+    ff1 = A * arm_cos_f32(float_constrain(target, -35, 38) * 2 * pi / 360 + B); // R^2 = 0.9921
+    ff2 = a * arm_cos_f32(float_constrain(target, -35, 38) * 2 * pi / 360 + b); // R^2 = 0.9836
+
+    return ((target + 45) * ff1 + (65 - target) * ff2) / 110;
+    // return target < -18 ? float_constrain(ff2, 0.35, 0.55) :
+    // target < 0 ? float_constrain((0.738015f - 0.540642f) / 18.0f * target + 0.738015f, 0.54, 0.74) :
+    // float_constrain((ff1 + 2 * ff2) / 3, 0.66, 0.76);
 }
 
 /**
@@ -100,37 +109,44 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
         holder->Motors.Yaw_S.Data.Output = k * holder->Yaw_S.v2 + BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
                                                                                        BasePID_AngleControl(holder->Yaw_S.PID.ShellPID, holder->Yaw_S.v1, holder->Yaw_S.Can_Angle), holder->Yaw_S.GYRO_AngleSpeed);
         holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
-                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID, holder->Pitch.v1, holder->Pitch.GYRO_Angle), holder->Pitch.GYRO_AngleSpeed)
-																 + PitchFF_Gravity(holder->Pitch.v1);
+                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID,
+                                                                                      holder->Pitch.v1,
+                                                                                      holder->Pitch.GYRO_Angle),
+                                                                 holder->Pitch.GYRO_AngleSpeed) +
+                                            PitchFF_Gravity(holder->Pitch.GYRO_Angle);
     }
     else
     {
         holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
                                                                 BasePID_AngleControl(holder->Yaw_S.PID.ShellPID, holder->Yaw_S.Target_Angle, holder->Yaw_S.Can_Angle), holder->Yaw_S.GYRO_AngleSpeed);
         holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
-                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID, holder->Pitch.Target_Angle, holder->Pitch.GYRO_Angle), holder->Pitch.GYRO_AngleSpeed)
-																 + PitchFF_Gravity(holder->Pitch.Target_Angle);
+                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID,
+                                                                                      holder->Pitch.Target_Angle,
+                                                                                      holder->Pitch.GYRO_Angle),
+                                                                 holder->Pitch.GYRO_AngleSpeed) +
+                                            PitchFF_Gravity(holder->Pitch.GYRO_Angle);
     }
 
-   holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -8, 8);
-	//holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -50, 50);
-    DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, holder->Motors.Pitch.motor_output * 0.05f);
+    holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -10, 10);
+    // holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -50, 50);
+    DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, holder->Motors.Pitch.motor_output);
     MotorFillData(&holder->Motors.Yaw_S, holder->Motors.Yaw_S.Data.Output);
     //	holder->Motors.Yaw_S.Data.Output = fliter * holder->Motors.Yaw_S.Data.Output  +(1-fliter) * holder->Motors.Yaw_S.Data.Last_Output;
     //	holder->Motors.Yaw_S.Data.Last_Output  = holder->Motors.Yaw_S.Data.Output;
 
 #else
-    DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0,DEBUG_tar);
-	
-	// holder->Pitch.Target_Angle = DEBUG_tar;
-    // holder->Motors.Pitch.motor_output = //BasePID_SpeedControl(holder->Pitch.PID.CorePID,
-    //                                                         //  BasePID_AngleControl(holder->Pitch.PID.ShellPID,
-    //                                                         //                       holder->Pitch.Target_Angle,
-    //                                                         //                       holder->Pitch.GYRO_Angle),
-    //                                                         //  holder->Pitch.GYRO_AngleSpeed) +
-    //                                     PitchFF_Gravity(DEBUG_tar);
-	// holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -8, 8);
-	// DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, holder->Motors.Pitch.motor_output);
+    // DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, DEBUG_tar);
+
+    // DEBUG_tar = -INS_attitude->roll;
+    holder->Pitch.Target_Angle = DEBUG_tar;
+    holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
+                                                             BasePID_AngleControl(holder->Pitch.PID.ShellPID,
+                                                                                  holder->Pitch.Target_Angle,
+                                                                                  holder->Pitch.GYRO_Angle),
+                                                             holder->Pitch.GYRO_AngleSpeed) +
+                                        PitchFF_Gravity(holder->Pitch.GYRO_Angle);
+    holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -10, 10);
+    DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, holder->Motors.Pitch.motor_output);
 
 #endif
 }

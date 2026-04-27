@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\H7_Base\H7_Base.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\H7_Base\H7_Base.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Apr 26 19:45:14 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon Apr 27 22:15:19 2026
 <BR><P>
 <H3>Maximum Stack Usage =        432 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1566,7 +1566,7 @@ Global Symbols
 <P><STRONG><a name="[ac]"></a>BaseData_Callback</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, communication.o(i.BaseData_Callback))
 <BR>[Address Reference Count : 1]<UL><LI> hardware_config.o(i.HardwareConfig)
 </UL>
-<P><STRONG><a name="[1e1]"></a>BasePID_AngleControl</STRONG> (Thumb, 104 bytes, Stack size 0 bytes, pid.o(i.BasePID_AngleControl))
+<P><STRONG><a name="[1e1]"></a>BasePID_AngleControl</STRONG> (Thumb, 114 bytes, Stack size 0 bytes, pid.o(i.BasePID_AngleControl))
 <BR><BR>[Called By]<UL><LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HolderControl_Top
 </UL>
 
@@ -1575,7 +1575,7 @@ Global Symbols
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AmmoBoosterInit
 </UL>
 
-<P><STRONG><a name="[1e2]"></a>BasePID_SpeedControl</STRONG> (Thumb, 104 bytes, Stack size 0 bytes, pid.o(i.BasePID_SpeedControl))
+<P><STRONG><a name="[1e2]"></a>BasePID_SpeedControl</STRONG> (Thumb, 114 bytes, Stack size 0 bytes, pid.o(i.BasePID_SpeedControl))
 <BR><BR>[Called By]<UL><LI><a href="#[236]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ShootPlantControl
 <LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HolderControl_Top
 </UL>
@@ -1993,11 +1993,11 @@ Global Symbols
 <P><STRONG><a name="[160]"></a>HAL_DMA_Init</STRONG> (Thumb, 900 bytes, Stack size 40 bytes, stm32h7xx_hal_dma.o(i.HAL_DMA_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HAL_DMA_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_CheckFifoParam
+<BR>[Calls]<UL><LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_CheckFifoParam
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_CalcDMAMUXRequestGenBaseAndMask
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_CalcDMAMUXChannelBaseAndMask
 <LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_CalcBaseAndBitshift
+<LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 </UL>
@@ -2052,7 +2052,8 @@ Global Symbols
 <P><STRONG><a name="[15a]"></a>HAL_FDCAN_IRQHandler</STRONG> (Thumb, 764 bytes, Stack size 48 bytes, stm32h7xx_hal_fdcan.o(i.HAL_FDCAN_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = HAL_FDCAN_IRQHandler &rArr; HAL_FDCAN_RxFifo0Callback &rArr; HAL_FDCAN_GetRxMessage
 </UL>
-<BR>[Calls]<UL><LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_TxFifoEmptyCallback
+<BR>[Calls]<UL><LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_RxFifo0Callback
+<LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_TxFifoEmptyCallback
 <LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_TxEventFifoCallback
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_TxBufferCompleteCallback
 <LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_TxBufferAbortCallback
@@ -2068,7 +2069,6 @@ Global Symbols
 <LI><a href="#[173]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_ErrorStatusCallback
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_ErrorCallback
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_ClockCalibrationCallback
-<LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_RxFifo0Callback
 </UL>
 <BR>[Called By]<UL><LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FDCAN2_IT0_IRQHandler
 <LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FDCAN1_IT0_IRQHandler
@@ -2078,8 +2078,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 424<LI>Call Chain = HAL_FDCAN_Init &rArr; HAL_FDCAN_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_MspInit
-<LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[17b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FDCAN_CalcultateRamBlockAddresses
+<LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_FDCAN2_Init
@@ -2194,6 +2194,9 @@ Global Symbols
 <LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
 <LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
 <LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PWREx_ConfigSupply
+<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
+<LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 <LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCCEx_PLL3_Config
 <LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCCEx_PLL2_Config
 <LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_TransmitReceive
@@ -2205,9 +2208,6 @@ Global Symbols
 <LI><a href="#[18c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_WaitOnSTOPFlagUntilTimeout
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_WaitOnFlagUntilTimeout
 <LI><a href="#[1e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_IsErrorOccurred
-<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
-<LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
-<LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 <LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HolderControl_Top
 </UL>
 
@@ -2302,10 +2302,10 @@ Global Symbols
 <P><STRONG><a name="[191]"></a>HAL_Init</STRONG> (Thumb, 74 bytes, Stack size 8 bytes, stm32h7xx_hal.o(i.HAL_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = HAL_Init &rArr; HAL_InitTick &rArr; HAL_NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
-<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
-<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriorityGrouping
+<BR>[Calls]<UL><LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriorityGrouping
 <LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_MspInit
+<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
+<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -2531,10 +2531,10 @@ Global Symbols
 <P><STRONG><a name="[1a9]"></a>HAL_TIM_ConfigClockSource</STRONG> (Thumb, 266 bytes, Stack size 16 bytes, stm32h7xx_hal_tim.o(i.HAL_TIM_ConfigClockSource))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_TIM_ConfigClockSource
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI2_ConfigInputStage
+<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ETR_SetConfig
+<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI2_ConfigInputStage
 <LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI1_ConfigInputStage
 <LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ITRx_SetConfig
-<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ETR_SetConfig
 </UL>
 <BR>[Called By]<UL><LI><a href="#[21f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_TIM5_Init
 </UL>
@@ -2795,7 +2795,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[1dc]"></a>HolderControl_Top</STRONG> (Thumb, 660 bytes, Stack size 40 bytes, holder.o(i.HolderControl_Top))
+<P><STRONG><a name="[1dc]"></a>HolderControl_Top</STRONG> (Thumb, 632 bytes, Stack size 40 bytes, holder.o(i.HolderControl_Top))
 <BR><BR>[Stack]<UL><LI>Max Depth = 280<LI>Call Chain = HolderControl_Top &rArr; MotorFillData &rArr; __aeabi_memcpy4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -3274,8 +3274,8 @@ Global Symbols
 <P><STRONG><a name="[12]"></a>PendSV_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32h7xx_it.o(i.PendSV_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32h750xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1e3]"></a>PitchFF_Gravity</STRONG> (Thumb, 82 bytes, Stack size 24 bytes, holder.o(i.PitchFF_Gravity))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = PitchFF_Gravity &rArr; __hardfp_cosf &rArr; __mathlib_rredf2
+<P><STRONG><a name="[1e3]"></a>PitchFF_Gravity</STRONG> (Thumb, 168 bytes, Stack size 56 bytes, holder.o(i.PitchFF_Gravity))
+<BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = PitchFF_Gravity &rArr; __hardfp_cosf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[202]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cosf
 <LI><a href="#[1df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;float_constrain
@@ -3349,10 +3349,10 @@ Global Symbols
 <P><STRONG><a name="[210]"></a>Sensors_I2C_ReadRegister</STRONG> (Thumb, 80 bytes, Stack size 32 bytes, driver_iic.o(i.Sensors_I2C_ReadRegister))
 <BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = Sensors_I2C_ReadRegister &rArr; I2C2_Error &rArr; HAL_I2C_Init &rArr; HAL_I2C_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
-<BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Read
+<BR>[Calls]<UL><LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C2_Error
+<LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Read
 <LI><a href="#[187]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_IsDeviceReady
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_GetState
-<LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C2_Error
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_ReadData
 </UL>
@@ -3360,10 +3360,10 @@ Global Symbols
 <P><STRONG><a name="[211]"></a>Sensors_I2C_WriteRegister</STRONG> (Thumb, 80 bytes, Stack size 32 bytes, driver_iic.o(i.Sensors_I2C_WriteRegister))
 <BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = Sensors_I2C_WriteRegister &rArr; I2C2_Error &rArr; HAL_I2C_Init &rArr; HAL_I2C_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
-<BR>[Calls]<UL><LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Write
+<BR>[Calls]<UL><LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C2_Error
+<LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Write
 <LI><a href="#[187]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_IsDeviceReady
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_GetState
-<LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C2_Error
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_WriteByte
 </UL>
@@ -3411,8 +3411,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> hardware_config.o(i.HardwareConfig)
 </UL>
-<P><STRONG><a name="[af]"></a>TIM14_Task</STRONG> (Thumb, 262 bytes, Stack size 40 bytes, control_logic.o(i.TIM14_Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 320 + Unknown Stack Size
+<P><STRONG><a name="[af]"></a>TIM14_Task</STRONG> (Thumb, 288 bytes, Stack size 56 bytes, control_logic.o(i.TIM14_Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 336 + Unknown Stack Size
 <LI>Call Chain = TIM14_Task &rArr; HolderControl_Top &rArr; MotorFillData &rArr; __aeabi_memcpy4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UsartDmaPrintf
@@ -3522,8 +3522,8 @@ Global Symbols
 <P><STRONG><a name="[1cd]"></a>UART_CheckIdleState</STRONG> (Thumb, 186 bytes, Stack size 32 bytes, stm32h7xx_hal_uart.o(i.UART_CheckIdleState))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = UART_CheckIdleState &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<BR>[Calls]<UL><LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
 </UL>
@@ -3568,8 +3568,8 @@ Global Symbols
 <P><STRONG><a name="[23f]"></a>UART_WaitOnFlagUntilTimeout</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, stm32h7xx_hal_uart.o(i.UART_WaitOnFlagUntilTimeout))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UART_WaitOnFlagUntilTimeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
+<BR>[Calls]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
+<LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 </UL>

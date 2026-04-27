@@ -71,9 +71,9 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
 	// Gravity FeedForward Test
-	UsartDmaPrintf("%.3f, %.3f\r\n", Holder.Motors.Pitch.torque, INS_attitude->roll);
+	// UsartDmaPrintf("%.3f, %.3f\r\n", Holder.Motors.Pitch.torque, INS_attitude->roll);
     // Pitch
-    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 }
 
 void TIM13_Task(void)
