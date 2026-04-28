@@ -54,4 +54,6 @@ typedef struct
 extern Holder_t Holder;;
 void HolderInit_Base(Holder_t* holder,DualPID_Object* yaw_m);
 void HolderControl_Base(Holder_t* holder,Base_t* rec);
+float SavitzkyGolay_dt();
+float SavitzkyGolay_ddt();
 #endif
