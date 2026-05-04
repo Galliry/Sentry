@@ -3,62 +3,96 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: ¦ÌVision V5.29.0.0
-Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: B ROG, CUBOT, LIC=9WSKC-7I63I-EVT1R-K5UG4-I6FJ6-LUQQA
+IDE-Version: ¦ÌVision V5.39.0.0
+Copyright (C) 2023 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 Galliry, 1, LIC=CZLZX-HF073-01RP1-CGGWX-YISFW-CJ522
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.29.0.0
+Toolchain:       MDK-ARM Plus  Version: 5.39.0.0
 Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
 C Compiler:      Armcc.exe V5.06 update 6 (build 750)
 Assembler:       Armasm.exe V5.06 update 6 (build 750)
 Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
 Library Manager: ArmAr.exe V5.06 update 6 (build 750)
 Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
-CPU DLL:         SARMCM3.DLL V5.29.0.0
-Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      CMSIS_AGDI.dll V1.32.0.0
-Dialog DLL:      TCM.DLL V1.36.5.0
+CPU DLL:         SARMCM3.DLL V5.39.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      CMSIS_AGDI.dll V1.33.16.0
+Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-D:\Code\RoboMaster\Sentry2026\Sentry\Code\Base\Sentry_New\MDK-ARM\H7_Base.uvprojx
+D:\My\GitHub\Sentry\Code\Base\Sentry_New\MDK-ARM\H7_Base.uvprojx
 Project File Date:  04/28/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'H7_Base'
+compiling check.c...
+compiling interboard.c...
+..\CubotMiddleware\Modules\interboard.c(67): warning:  #1-D: last line of file ends without a newline
+  }
+..\CubotMiddleware\Modules\interboard.c: 1 warning, 0 errors
 compiling holder.c...
 ..\CubotMiddleware\Modules\holder.h(57): warning:  #1295-D: Deprecated declaration SavitzkyGolay_dt - give arg types
   float SavitzkyGolay_dt();
 ..\CubotMiddleware\Modules\holder.h(58): warning:  #1295-D: Deprecated declaration SavitzkyGolay_ddt - give arg types
   float SavitzkyGolay_ddt();
 ..\CubotMiddleware\Modules\holder.c: 2 warnings, 0 errors
+compiling Supercap.c...
+compiling swerve_chassis.c...
+..\CubotMiddleware\Modules\holder.h(57): warning:  #1295-D: Deprecated declaration SavitzkyGolay_dt - give arg types
+  float SavitzkyGolay_dt();
+..\CubotMiddleware\Modules\holder.h(58): warning:  #1295-D: Deprecated declaration SavitzkyGolay_ddt - give arg types
+  float SavitzkyGolay_ddt();
+..\CubotMiddleware\Modules\swerve_chassis.c(87): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	float angle = (Holder.Motors.Yaw_M.angle_raw-1.803f) + Holder.Motors.Yaw_M.speed_rpm * 0.0026; //Ç°À¡
+..\CubotMiddleware\Modules\swerve_chassis.c: 3 warnings, 0 errors
+compiling control_logic.c...
+../CubotMiddleware/Modules/holder.h(57): warning:  #1295-D: Deprecated declaration SavitzkyGolay_dt - give arg types
+  float SavitzkyGolay_dt();
+../CubotMiddleware/Modules/holder.h(58): warning:  #1295-D: Deprecated declaration SavitzkyGolay_ddt - give arg types
+  float SavitzkyGolay_ddt();
+..\User\control_logic.c: 2 warnings, 0 errors
+compiling communication.c...
+..\CubotMiddleware\Modules\communication.c(59): warning:  #1-D: last line of file ends without a newline
+  }
+..\CubotMiddleware\Modules\communication.c: 1 warning, 0 errors
+compiling dr16.c...
+compiling referee.c...
+compiling shoot.c...
+compiling hardware_config.c...
+../CubotMiddleware/Modules/holder.h(57): warning:  #1295-D: Deprecated declaration SavitzkyGolay_dt - give arg types
+  float SavitzkyGolay_dt();
+../CubotMiddleware/Modules/holder.h(58): warning:  #1295-D: Deprecated declaration SavitzkyGolay_ddt - give arg types
+  float SavitzkyGolay_ddt();
+..\User\hardware_config.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=49930 RO-data=2630 RW-data=420 ZI-data=24192  
+Program Size: Code=50098 RO-data=2630 RW-data=404 ZI-data=24208  
 FromELF: creating hex file...
-".\H7_Base\H7_Base.axf" - 0 Error(s), 2 Warning(s).
+".\H7_Base\H7_Base.axf" - 0 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                https://www.keil.com/pack/ARM.CMSIS.6.3.0.pack
-                ARM.CMSIS.6.3.0
+                http://www.keil.com/pack/ARM.CMSIS.5.9.0.pack
+                ARM::CMSIS@5.9.0
                 CMSIS (Common Microcontroller Software Interface Standard)
-   * Component: CORE Version: 6.2.0
+   * Component: CORE Version: 5.6.0
 
 Package Vendor: Keil
-                https://www.keil.com/pack/Keil.STM32H7xx_DFP.4.0.0.pack
-                Keil.STM32H7xx_DFP.4.0.0
-                STMicroelectronics STM32H7 Series Device Support
+                https://www.keil.com/pack/Keil.STM32H7xx_DFP.2.3.1.pack
+                Keil::STM32H7xx_DFP@2.3.1
+                STMicroelectronics STM32H7 Series Device Support and Examples
 
 <h2>Collection of Component include folders:</h2>
-  .\RTE\_H7_Base
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\6.3.0\CMSIS\Core\Include
+  ./RTE/_H7_Base
+  C:/Users/Galliry/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/Galliry/AppData/Local/Arm/Packs/Keil/STM32H7xx_DFP/2.3.1/Drivers/CMSIS/Device/ST/STM32H7xx/Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE:6.2.0
-Build Time Elapsed:  00:00:04
+   * Component: ARM::CMSIS:CORE@5.6.0
+Build Time Elapsed:  00:00:21
 </pre>
 </body>
 </html>

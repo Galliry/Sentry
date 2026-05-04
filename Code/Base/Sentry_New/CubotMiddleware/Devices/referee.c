@@ -3,29 +3,30 @@
 #include "check.h"
 #include "interaction.h"
 #include "string.h"
+#include "interboard.h"
 
-Referee2022  referee2022;//已更新至2024赛季 版本V1.6.1
-/************************************************************哨兵决策指令，还没封装，有空再说******************************************************************/
-uint32_t sentry_decision;
-uint16_t recieve_time;
-uint8_t sentry_respawn_ok_flag=0;;
-uint8_t sentry_respawn_need;
-uint8_t sentry_respawn_ins_flag=0;
-uint16_t sentry_shooting_num=0;
-uint16_t sentry_shooting_num1;
-uint16_t sentry_shooting_num_syn;//发弹量决策信息同步
-uint8_t sentry_shooting_time=0;
-uint8_t sentry_shooting_time1;
-uint8_t sentry_shooting_time_syn;//兑换发弹次数决策信息同步
-uint8_t sentry_recover_time=0;
-uint8_t sentry_recover_time_syn;//兑换血量次数决策信息同步
-uint16_t sentry_blood=400;
-float lidar_station_x;
-float lidar_station_y;
-uint8_t lidar_station_id;
-uint16_t bullet_num_17mm;
-uint8_t temp[15];
-//uint8_t referee_cnt;
+Referee2022  referee2022;//已更新至2026赛季 版本V1.3.0
+//uint32_t sentry_decision;
+//uint16_t recieve_time;
+//uint8_t sentry_respawn_ok_flag=0;
+//uint8_t sentry_respawn_need;
+//uint8_t sentry_respawn_ins_flag=0;
+//uint16_t sentry_shooting_num=0;
+//uint16_t sentry_shooting_num1;
+//uint16_t sentry_shooting_num_syn;//发弹量决策信息同步
+//uint8_t sentry_shooting_time=0;
+//uint8_t sentry_shooting_time1;
+//uint8_t sentry_shooting_time_syn;//兑换发弹次数决策信息同步
+//uint8_t sentry_recover_time=0;
+//uint8_t sentry_recover_time_syn;//兑换血量次数决策信息同步
+//uint16_t sentry_blood=400;
+//float lidar_station_x;
+//float lidar_station_y;
+//uint8_t lidar_station_id;
+//uint16_t bullet_num_17mm;
+//uint8_t temp[15];
+//int blue_3=0;
+
 /**
   * @brief   串口3裁判系统回调函数 
   * @param[in]  
@@ -38,77 +39,45 @@ uint8_t Referee_callback(uint8_t * recBuffer, uint16_t len)
 	return 0;
 }
 
-int blue_3=0;
-/******************************************************************
-函数名；_Data_Diapcak
+/*函数名；_Data_Diapcak
 功能：  裁判系统数据解算+映射到对应结构体成员
 参数；  uint8_t *pdata
 返回值：无
-上级函数：Referee_Data_Diapcak
-******************************************************************/
+上级函数：Referee_Data_Diapcak*/
 void _Data_Diapcak(uint8_t *pdata)
 {
 	uint16_t cmd_id;
-	cmd_id=*(pdata+6)<<8|*(pdata+5); 
-
-	/**************************************************************读取裁判系统比赛状态，比赛正式开始之后再巡航***********************/
-			if(cmd_id==0x0001)
+	cmd_id= * (pdata + 6) << 8| *(pdata + 5); 
+	/*读取裁判系统比赛状态，比赛正式开始之后再巡航*/
+	if(cmd_id==0x0001)
 	{
 		referee2022.game_status.game_type = (*(pdata + data_addr ))& 0x0F;
 		referee2022.game_status.game_progress = (*(pdata+data_addr )) >>4;
 		referee2022.game_status.stage_remain_time = *(pdata+data_addr+2)<<8|*(pdata+data_addr+1);
-//		referee_cnt++;
 	}
-	
-		if(cmd_id==0x0003)
+	if(cmd_id==0x0003)
 	{
 		for (int i=1;i<=4;i++)
-		{BYTE0(referee2022.game_robot_hp.red_robot_HP[i]) = *(pdata+data_addr+2*i-2);
-		BYTE1(referee2022.game_robot_hp.red_robot_HP[i]) = *(pdata+data_addr +2*i-1);}
-
-
-		BYTE0(referee2022.game_robot_hp.red_robot_HP[7]) = *(pdata+data_addr + 10);
-		BYTE1(referee2022.game_robot_hp.red_robot_HP[7]) = *(pdata+data_addr + 11);
-
-		BYTE0(referee2022.game_robot_hp.red_outpost_HP) = *(pdata+data_addr + 12);
-		BYTE1(referee2022.game_robot_hp.red_outpost_HP) = *(pdata+data_addr + 13);
-
-		BYTE0(referee2022.game_robot_hp.red_base_HP) = *(pdata+data_addr + 14);
-		BYTE1(referee2022.game_robot_hp.red_base_HP) = *(pdata+data_addr + 15);
-		
-		for (int i=1;i<=4;i++)
-		{BYTE0(referee2022.game_robot_hp.blue_robot_HP[i]) = *(pdata+data_addr +2*i+14);
-		BYTE1(referee2022.game_robot_hp.blue_robot_HP[i]) = *(pdata+data_addr +2*i+15);}
-
-		BYTE0(referee2022.game_robot_hp.blue_robot_HP[7]) = *(pdata+data_addr + 26);
-		BYTE1(referee2022.game_robot_hp.blue_robot_HP[7]) = *(pdata+data_addr + 27);
-		
-		BYTE0(referee2022.game_robot_hp.blue_outpost_HP) = *(pdata+data_addr + 28);
-		BYTE1(referee2022.game_robot_hp.blue_outpost_HP) = *(pdata+data_addr + 29);
-
-		BYTE0(referee2022.game_robot_hp.blue_base_HP) = *(pdata+data_addr + 30);
-		BYTE1(referee2022.game_robot_hp.blue_base_HP) = *(pdata+data_addr + 31);
-		
-		for (int i=0;i<8;i++)
-		
 		{
-		if (referee2022.game_robot_hp.blue_robot_HP_last[i]>0&&referee2022.game_robot_hp.blue_robot_HP[i]==0) referee2022.game_robot_hp.blue_robot_revge[i]=0;
-		if (referee2022.game_robot_hp.blue_robot_HP_last[i]==0&&referee2022.game_robot_hp.blue_robot_HP[i]>0 &&  referee2022.game_robot_hp.blue_robot_revge[i]==0) referee2022.game_robot_hp.blue_robot_revge[i]=2;
-		
-		if (referee2022.game_robot_hp.red_robot_HP_last[i]>0&&referee2022.game_robot_hp.red_robot_HP[i]==0) referee2022.game_robot_hp.red_robot_revge[i]=0;
-		if (referee2022.game_robot_hp.red_robot_HP_last[i]==0&&referee2022.game_robot_hp.red_robot_HP[i]>0 &&  referee2022.game_robot_hp.red_robot_revge[i]==0) referee2022.game_robot_hp.red_robot_revge[i]=2;
-		
-		referee2022.game_robot_hp.blue_robot_HP_last[i]=referee2022.game_robot_hp.blue_robot_HP[i];
-		referee2022.game_robot_hp.red_robot_HP_last[i]=referee2022.game_robot_hp.red_robot_HP[i];
-		}				
+			BYTE0(referee2022.game_robot_hp.robot_HP[i]) = *(pdata+data_addr + 2 * i - 2);
+			BYTE1(referee2022.game_robot_hp.robot_HP[i]) = *(pdata+data_addr + 2 * i - 1);
+		}
+
+		BYTE0(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 10);
+		BYTE1(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 11);
+
+		BYTE0(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 12);
+		BYTE1(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 13);
+
+		BYTE0(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 14);
+		BYTE1(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 15);			
 	}	
 		
 	if(cmd_id==0x0101)
 	{
-		referee2022.event_data.event_type = *(pdata + data_addr );
-		//chassis_motor.game1=event_data.event_type >>10;
+		referee2022.event_data.event_type = *(pdata + data_addr);
 	}
-	/********************************************************************************************************************************/
+
 	if(cmd_id==0x201)
 	{
 		referee2022.game_robot_status.robot_id = *(pdata + data_addr);
@@ -128,102 +97,149 @@ void _Data_Diapcak(uint8_t *pdata)
 
 		BYTE0(referee2022.game_robot_status.chassis_power_limit) = *(pdata+data_addr + 10);
 		BYTE1(referee2022.game_robot_status.chassis_power_limit) = *(pdata+data_addr + 11);
-//		
-		referee2022.game_robot_status.mains_power_gimbal_output = (*(pdata + data_addr + 12)) & 0x01 ;// 通过板间通讯发给下云台 云台上电情况  裁判系统的bit是从右往左数
-		referee2022.game_robot_status.mains_power_chassis_output = (*(pdata + data_addr + 12))>>1; //& 0x02 ;
-		referee2022.game_robot_status.mains_power_shooter_output = (*(pdata + data_addr + 12))>>2; //& 0x04 ;
+		
+		referee2022.game_robot_status.mains_power_gimbal_output = (*(pdata + data_addr + 12)) & 0x01 ;
+		referee2022.game_robot_status.mains_power_chassis_output = (*(pdata + data_addr + 12)) >> 1; //& 0x02 ;
+		referee2022.game_robot_status.mains_power_shooter_output = (*(pdata + data_addr + 12)) >> 2; //& 0x04 ;
 	}
 	
 	if(cmd_id==0x202)
 	{
-		BYTE0(referee2022.power_heat_data.chassis_volt) = *(pdata + data_addr);
-		BYTE1(referee2022.power_heat_data.chassis_volt) = *(pdata + data_addr + 1);
-
-		BYTE0(referee2022.power_heat_data.chassis_current) = *(pdata + data_addr + 2);
-		BYTE1(referee2022.power_heat_data.chassis_current) = *(pdata + data_addr + 3);
-
-		BYTE0(referee2022.power_heat_data.chassis_power) = *(pdata + data_addr + 4);
-		BYTE1(referee2022.power_heat_data.chassis_power) = *(pdata + data_addr + 5);
-		BYTE2(referee2022.power_heat_data.chassis_power) = *(pdata + data_addr + 6);
-		BYTE3(referee2022.power_heat_data.chassis_power) = *(pdata + data_addr + 7);
-
 		BYTE0(referee2022.power_heat_data.chassis_power_buffer) = *(pdata + data_addr + 8);
 		BYTE1(referee2022.power_heat_data.chassis_power_buffer) = *(pdata + data_addr + 9);
 
-		BYTE0(referee2022.power_heat_data.shooter_id1_17mm_cooling_heat) = *(pdata + data_addr + 10);//17毫米枪口
+		BYTE0(referee2022.power_heat_data.shooter_id1_17mm_cooling_heat) = *(pdata + data_addr + 10);	//17毫米枪口
 		BYTE1(referee2022.power_heat_data.shooter_id1_17mm_cooling_heat) = *(pdata + data_addr + 11);
-//		
-		BYTE0(referee2022.power_heat_data.shooter_heat1) = *(pdata + data_addr + 12);//机动17毫米枪口
-		BYTE1(referee2022.power_heat_data.shooter_heat1) = *(pdata + data_addr + 13);
+	}		
 
-//		BYTE0(power_heat_data.shooter_id1_42mm_cooling_heat) = *(pdata + data_addr + 14);//42毫米枪口
-//		BYTE1(power_heat_data.shooter_id1_42mm_cooling_heat) = *(pdata + data_addr + 15);
-		referee2022.power_heat_data.renewchassis_power=1;	
-		referee2022.power_heat_data.renewchassis_power_buffer=1;
-		referee2022.power_heat_data.renewshooter_heat0=1;
-	}			
+	if(cmd_id==0x203)
+	{
+		BYTE0(referee2022.game_robot_pos.x) = *(pdata + data_addr);
+		BYTE1(referee2022.game_robot_pos.x) = *(pdata + data_addr + 1);
+		BYTE2(referee2022.game_robot_pos.x) = *(pdata + data_addr + 2);
+		BYTE3(referee2022.game_robot_pos.x) = *(pdata + data_addr + 3);
+		
+		BYTE0(referee2022.game_robot_pos.y) = *(pdata + data_addr + 4);
+		BYTE1(referee2022.game_robot_pos.y) = *(pdata + data_addr + 5);
+		BYTE2(referee2022.game_robot_pos.y) = *(pdata + data_addr + 6);
+		BYTE3(referee2022.game_robot_pos.y) = *(pdata + data_addr + 7);
+		
+		BYTE0(referee2022.game_robot_pos.angle) = *(pdata + data_addr + 8);
+		BYTE1(referee2022.game_robot_pos.angle) = *(pdata + data_addr + 9);
+		BYTE2(referee2022.game_robot_pos.angle) = *(pdata + data_addr + 10);
+		BYTE3(referee2022.game_robot_pos.angle) = *(pdata + data_addr + 11);
+	}
+	
 	if(cmd_id==0x204)
 	{
-		referee2022.buff.recovery_buff=  *(pdata + data_addr);
-		referee2022.buff.cooling_buff =  *(pdata + data_addr + 1);
-		referee2022.buff.defence_buff =  *(pdata + data_addr + 2);
-		referee2022.buff.vulnerability_buff=*(pdata + data_addr + 3);
-		BYTE0(referee2022.buff.attack_buff)=*(pdata + data_addr + 4);
-		BYTE1(referee2022.buff.attack_buff)=*(pdata + data_addr + 5);
-		referee2022.buff.remaining_energy=*(pdata + data_addr + 6);
-		
-
+		referee2022.buff.recovery_buff = *(pdata + data_addr); //回血增益
+		referee2022.buff.cooling_buff = *(pdata + data_addr + 1); //冷却增益
+		referee2022.buff.defence_buff = *(pdata + data_addr + 2); //防御增益
+		referee2022.buff.vulnerability_buff = *(pdata + data_addr + 3); //易伤BUFF
+		BYTE0(referee2022.buff.attack_buff) = *(pdata + data_addr + 4); //攻击增益
+		BYTE1(referee2022.buff.attack_buff) = *(pdata + data_addr + 5);
+		referee2022.buff.remaining_energy = *(pdata + data_addr + 6); //剩余能量
 	}
-//	if(cmd_id==0x0205)
-//	{	
-//		aerial_robot_energy.attack_time=*(pdata+data_addr + 1);		 //剩余时间s		
-//	}
-//	
-		if(cmd_id==0x0206)
+	
+	if(cmd_id==0x0206)
 	{	
-		referee2022.robot_hurt.hurt_type=(*(pdata + data_addr ))>>4;
-		referee2022.robot_hurt.armor_id=(*(pdata + data_addr ))& 0x0F;		 // 新增 不再由血量变化判断挨打 读取受击打装甲板ID 为0时为未被击打
-		referee2022.robot_hurt.armor_id+=1;
+		referee2022.robot_hurt.hurt_type = (*(pdata + data_addr)) >> 4;
+		referee2022.robot_hurt.armor_id = (*(pdata + data_addr)) & 0x0F; // 新增 不再由血量变化判断挨打 读取受击打装甲板ID 为0时为未被击打
+		referee2022.robot_hurt.armor_id += 1;
 	}
 	
 	if(cmd_id==0x0207)
 	{
 		
-		referee2022.shoot_data.bullet_type=*(pdata+data_addr);
-		referee2022.shoot_data.shooter_id =	*(pdata+data_addr + 1);		
-		referee2022.shoot_data.bullet_freq=*(pdata+data_addr + 2);
+		referee2022.shoot_data.bullet_type = *(pdata+data_addr); //弹丸类型
+		referee2022.shoot_data.shooter_id =	*(pdata+data_addr + 1); //发射机构id	
+		referee2022.shoot_data.bullet_freq = *(pdata+data_addr + 2); //弹丸射速
 
-		BYTE0(referee2022.shoot_data.bullet_speed) = *(pdata+data_addr + 3);
+		BYTE0(referee2022.shoot_data.bullet_speed) = *(pdata+data_addr + 3); //弹丸初速度
 		BYTE1(referee2022.shoot_data.bullet_speed) = *(pdata+data_addr + 4);
 		BYTE2(referee2022.shoot_data.bullet_speed) = *(pdata+data_addr + 5);
 		BYTE3(referee2022.shoot_data.bullet_speed) = *(pdata+data_addr + 6);
-//		if (Brain.Autoaim.Mode!=Outpost) {bullet_num_17mm++;Brain.Autoaim.Attack_state.shoot_num++;}
 	}
+	
 	if(cmd_id==0x0208)
 	{
 		BYTE0(referee2022.bullet_remaining.bullet_remaining_num) = *(pdata+data_addr);
 		BYTE1(referee2022.bullet_remaining.bullet_remaining_num) = *(pdata+data_addr + 1);
 		
-	//	BYTE0(referee2022.bullet_remaining_num_42mm) = *(pdata+data_addr + 2);
-	//	BYTE1(referee2022.bullet_remaining_num_42mm) = *(pdata+data_addr + 3);
-
+		BYTE0(referee2022.bullet_remaining.money) = *(pdata+data_addr + 4);
+		BYTE1(referee2022.bullet_remaining.money) = *(pdata+data_addr + 5);
 	}
 	if(cmd_id == 0x209)
 	{
-		referee2022.rfid_status.rfid_status = (*(pdata+data_addr));
-		referee2022.rfid_status.rfid_status_2= *(pdata+data_addr+4);
+		BYTE0(referee2022.rfid_status.rfid_status) = (*(pdata + data_addr));
+		BYTE1(referee2022.rfid_status.rfid_status) = (*(pdata + data_addr + 1));
+		BYTE2(referee2022.rfid_status.rfid_status) = (*(pdata + data_addr + 2));
+		BYTE3(referee2022.rfid_status.rfid_status) = (*(pdata + data_addr + 3));
+		referee2022.rfid_status.rfid_status_2 = *(pdata + data_addr + 4);
 	}
+	
+	if(cmd_id==0x020B)
+	{
+		BYTE0(referee2022.groud_robot_position_t.hero_x)=(*(pdata+data_addr));
+		BYTE1(referee2022.groud_robot_position_t.hero_x)=(*(pdata+data_addr+1));
+		BYTE2(referee2022.groud_robot_position_t.hero_x)=(*(pdata+data_addr+2));
+		BYTE3(referee2022.groud_robot_position_t.hero_x)=(*(pdata+data_addr+3));
+		
+		BYTE0(referee2022.groud_robot_position_t.hero_y)=(*(pdata+data_addr+4));
+		BYTE1(referee2022.groud_robot_position_t.hero_y)=(*(pdata+data_addr+5));
+		BYTE2(referee2022.groud_robot_position_t.hero_y)=(*(pdata+data_addr+6));
+		BYTE3(referee2022.groud_robot_position_t.hero_y)=(*(pdata+data_addr+7));
+		
+		BYTE0(referee2022.groud_robot_position_t.engineer_x)=(*(pdata+data_addr+8));
+		BYTE1(referee2022.groud_robot_position_t.engineer_x)=(*(pdata+data_addr+9));
+		BYTE2(referee2022.groud_robot_position_t.engineer_x)=(*(pdata+data_addr+10));
+		BYTE3(referee2022.groud_robot_position_t.engineer_x)=(*(pdata+data_addr+11));
+		
+		BYTE0(referee2022.groud_robot_position_t.engineer_y)=(*(pdata+data_addr+12));
+		BYTE1(referee2022.groud_robot_position_t.engineer_y)=(*(pdata+data_addr+13));
+		BYTE2(referee2022.groud_robot_position_t.engineer_y)=(*(pdata+data_addr+14));
+		BYTE3(referee2022.groud_robot_position_t.engineer_y)=(*(pdata+data_addr+15));
+		
+		BYTE0(referee2022.groud_robot_position_t.standard_3_x)=(*(pdata+data_addr+16));
+		BYTE1(referee2022.groud_robot_position_t.standard_3_x)=(*(pdata+data_addr+17));
+		BYTE2(referee2022.groud_robot_position_t.standard_3_x)=(*(pdata+data_addr+18));
+		BYTE3(referee2022.groud_robot_position_t.standard_3_x)=(*(pdata+data_addr+19));
+		
+		BYTE0(referee2022.groud_robot_position_t.standard_3_y)=(*(pdata+data_addr+20));
+		BYTE1(referee2022.groud_robot_position_t.standard_3_y)=(*(pdata+data_addr+21));
+		BYTE2(referee2022.groud_robot_position_t.standard_3_y)=(*(pdata+data_addr+22));
+		BYTE3(referee2022.groud_robot_position_t.standard_3_y)=(*(pdata+data_addr+23));
+		
+		BYTE0(referee2022.groud_robot_position_t.standard_4_x)=(*(pdata+data_addr+24));
+		BYTE1(referee2022.groud_robot_position_t.standard_4_x)=(*(pdata+data_addr+25));
+		BYTE2(referee2022.groud_robot_position_t.standard_4_x)=(*(pdata+data_addr+26));
+		BYTE3(referee2022.groud_robot_position_t.standard_4_x)=(*(pdata+data_addr+27));
+		
+		BYTE0(referee2022.groud_robot_position_t.standard_4_y)=(*(pdata+data_addr+28));
+		BYTE1(referee2022.groud_robot_position_t.standard_4_y)=(*(pdata+data_addr+29));
+		BYTE2(referee2022.groud_robot_position_t.standard_4_y)=(*(pdata+data_addr+30));
+		BYTE3(referee2022.groud_robot_position_t.standard_4_y)=(*(pdata+data_addr+31));
+	}
+	
 	if(cmd_id==0x020D)
 	{
-//		BYTE0(referee2022.sentry_info_t.sentry_info)=*(pdata+data_addr);
-//		BYTE1(referee2022.sentry_info_t.sentry_info)=*(pdata+data_addr+1);
-//		BYTE2(referee2022.sentry_info_t.sentry_info)=*(pdata+data_addr+2);
-//		BYTE3(referee2022.sentry_info_t.sentry_info)=*(pdata+data_addr+3);
-//		
-//		//对同步信息进行处理
-//		sentry_shooting_num_syn=referee2022.sentry_info_t.sentry_info&0x3FF;
-//		sentry_shooting_time_syn=(referee2022.sentry_info_t.sentry_info>>10)&0x0F;
-//		sentry_recover_time_syn=(referee2022.sentry_info_t.sentry_info>>14)&0x0F;vg
+		BYTE0(referee2022.sentry_info_t.sentry_info) = *(pdata+data_addr);
+		BYTE1(referee2022.sentry_info_t.sentry_info) = *(pdata+data_addr + 1);
+		BYTE2(referee2022.sentry_info_t.sentry_info) = *(pdata+data_addr + 2);
+		BYTE3(referee2022.sentry_info_t.sentry_info) = *(pdata+data_addr + 3);
+
+		BYTE0(referee2022.sentry_info_t.sentry_info_2)=*(pdata+data_addr + 4);
+		BYTE1(referee2022.sentry_info_t.sentry_info_2)=*(pdata+data_addr + 5);
+		
+		referee2022.sentry_info_t.exchange_bullet = referee2022.sentry_info_t.sentry_info & 0x07FF;		//成功兑换的允许发弹量
+		referee2022.sentry_info_t.remote_bullet = (referee2022.sentry_info_t.sentry_info >> 11) & 0xF;		//远程兑换弹丸的次数
+		referee2022.sentry_info_t.remote_HP = (referee2022.sentry_info_t.sentry_info >> 15) & 0xF;		//远程兑换血量的次数
+		referee2022.sentry_info_t.free_revival = (referee2022.sentry_info_t.sentry_info >> 19) & 1;		//是否可以免费复活
+		
+		referee2022.sentry_info_t.out_of_combat = referee2022.sentry_info_t.sentry_info_2 & 1;		//是否脱战
+		referee2022.sentry_info_t.remain_bullet = (referee2022.sentry_info_t.sentry_info_2 >> 1) & 0x07FF;		//队伍剩余可兑换的17mm弹丸数
+		referee2022.sentry_info_t.posture = (referee2022.sentry_info_t.sentry_info_2 >> 12) & 0x3;		//当前姿态
+		referee2022.sentry_info_t.energy_device = (referee2022.sentry_info_t.sentry_info_2 >> 14) & 1;		//能量机关是否在可激活状态
 	}
 	
 	if(cmd_id == 0x0301)//雷达站通讯
@@ -236,7 +252,6 @@ void _Data_Diapcak(uint8_t *pdata)
 
 		BYTE0(referee2022.ext_student_interactive_header_data.receiver_ID) = *(pdata+data_addr + 4);
 		BYTE1(referee2022.ext_student_interactive_header_data.receiver_ID) = *(pdata+data_addr + 5);
-		// 颠倒 为什么？  问学长   和雷达通信本质是通过裁判系统
 		
 		referee2022.ext_student_interactive_header_data.data[0] = *(pdata+data_addr + 6);
 		referee2022.ext_student_interactive_header_data.data[1] = *(pdata+data_addr + 7);
@@ -244,49 +259,37 @@ void _Data_Diapcak(uint8_t *pdata)
 		referee2022.ext_student_interactive_header_data.data[3] = *(pdata+data_addr + 9);
 		referee2022.ext_student_interactive_header_data.data[4] = *(pdata+data_addr + 10);
 		
-		lidar_station_id=referee2022.ext_student_interactive_header_data.data[0];
-		lidar_station_x=(referee2022.ext_student_interactive_header_data.data[1]+(float)(referee2022.ext_student_interactive_header_data.data[2])/100);
-		lidar_station_y=(referee2022.ext_student_interactive_header_data.data[3]+(float)(referee2022.ext_student_interactive_header_data.data[4])/100);
-		
-//		referee2022.ext_student_interactive_header_data.data[5] = *(pdata+data_addr + 11);
-//		referee2022.ext_student_interactive_header_data.data[6] = *(pdata+data_addr + 12);
-//		
-//		if(ext_student_interactive_header_data.receiver_ID == 9 && ext_student_interactive_header_data.sender_ID == 7)
-//		RadarPackage(pdata+data_addr);
-		
+		referee2022.ext_student_interactive_header_data.lidar_id=referee2022.ext_student_interactive_header_data.data[0];
+		referee2022.ext_student_interactive_header_data.lidar_station_x=(referee2022.ext_student_interactive_header_data.data[1]+(float)(referee2022.ext_student_interactive_header_data.data[2])/100);
+		referee2022.ext_student_interactive_header_data.lidar_station_y=(referee2022.ext_student_interactive_header_data.data[3]+(float)(referee2022.ext_student_interactive_header_data.data[4])/100);	
 	}
-	   if(cmd_id==0x0303)
-		{
-
-			BYTE0(referee2022.map_command_t.target_position_x)=*(pdata+data_addr);
-			BYTE1(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+1);
-			BYTE2(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+2);
-			BYTE3(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+3);
-			
-			BYTE0(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+4);
-			BYTE1(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+5);
-			BYTE2(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+6);
-			BYTE3(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+7);
-			
-			referee2022.map_command_t.cmd_keyboard=*(pdata+data_addr+8);
-			
-
-			
-		}
+   if(cmd_id==0x0303)
+	{
+		BYTE0(referee2022.map_command_t.target_position_x)=*(pdata+data_addr);
+		BYTE1(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+1);
+		BYTE2(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+2);
+		BYTE3(referee2022.map_command_t.target_position_x)=*(pdata+data_addr+3);
+		
+		BYTE0(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+4);
+		BYTE1(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+5);
+		BYTE2(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+6);
+		BYTE3(referee2022.map_command_t.target_position_y)=*(pdata+data_addr+7);
+		
+		referee2022.map_command_t.cmd_keyboard=*(pdata+data_addr+8);
+		referee2022.map_command_t.target_robot_id=*(pdata+data_addr+9);
+		referee2022.map_command_t.cmd_source=*(pdata+data_addr+10);
+	}
 }
 
-//uint8_t ref_packge[packs][max_single_pack_len];  //最多一次收10个包
-uint8_t ref_packge[packs][max_single_pack_len];//__attribute__((at(0x24008000)));  //最多一次收10个包
+uint8_t ref_packge[packs][max_single_pack_len];		//__attribute__((at(0x24008000)));  //最多一次收10个包
 
 //只处理了连续帧，没处理断帧
-/******************************************************************
-函数名；Referee_Data_Diapcak
+/*函数名；Referee_Data_Diapcak
 功能：  裁判系统数据验证＋解算
 参数；  uint8_t *data,uint8_t this_time_len
 返回值：无
 下级函数：_Data_Diapcak
-上级函数：USART3_IDLE_CALLBACK
-******************************************************************/
+上级函数：USART3_IDLE_CALLBACK*/
 uint8_t index_i = 0 ;
 uint8_t max_i=0;//用于在debug中观察
 int x;
@@ -313,20 +316,15 @@ void Referee_Data_Diapcak(uint8_t *data,uint8_t this_time_len)
 				_Data_Diapcak(ref_packge[i]);
 				x=i	;				
 				i++;
-				
 			}
-			
 		//	check_robot_state.usart_state.Check_referee = 0;
 		}
 		data += (7+referee2022.frame_info.head.data_len+2);
-		pack_size += (7+referee2022.frame_info.head.data_len+2);
-		
+		pack_size += (7+referee2022.frame_info.head.data_len+2);	
 	}while(pack_size < this_time_len);
 	index_i = i;
-	if (index_i>max_i) max_i=index_i;//用于在debug中观察
+	if (index_i>max_i) max_i=index_i;	//用于在debug中观察
 }
-
-
 
 //crc8 generator polynomial:G(x)=x8+x5+x4+x0  //1 0011000 1(一共9个bit)  0x31 
 const unsigned char CRC8_INIT = 0xff;
@@ -350,16 +348,15 @@ const unsigned char CRC8_TAB[256] =//8位最多256个
 	0x74, 0x2a, 0xc8, 0x96, 0x15, 0x4b, 0xa9, 0xf7, 0xb6, 0xe8, 0x0a, 0x54, 0xd7, 0x89, 0x6b, 0x35,
 };
 
-
 /**
   * @brief 取得大疆官方crc8检验码
   */
 unsigned char Get_CRC8_Check_Sum(unsigned char *pchMessage,unsigned int dwLength,unsigned char ucCRC8)
 {
 	unsigned char ucIndex;                     //与0异或保持不变，与1异或反转
-	while (dwLength--)   //ucCRC8是什么??
+	while (dwLength--)   //ucCRC8是什么
 	{
-		ucIndex = ucCRC8^(*pchMessage++);//第一次是取反?? 
+		ucIndex = ucCRC8^(*pchMessage++);//第一次是取反 
 		ucCRC8 = CRC8_TAB[ucIndex];//余式表             
 	}                                                   
 	return(ucCRC8);
@@ -480,68 +477,72 @@ void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength)
 	pchMessage[dwLength-1] = (uint8_t)((wCRC >> 8)& 0x00ff);
 }
 
-void sentry_decision_control()//复活，买弹逻辑
-{
-	referee2022.sentry_info_t.sentry_respawn_flag = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
-//	if (referee2022.bullet_remaining.bullet_remaining_num<=50)
-//	referee2022.sentry_info_t.sentry_shooting_num+=100;
+//void sentry_decision_control()//复活，买弹逻辑
+//{
+//	referee2022.sentry_info_t.sentry_respawn_flag = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
+////	if (referee2022.bullet_remaining.bullet_remaining_num<=50)
+////	referee2022.sentry_info_t.sentry_shooting_num+=100;
 
-	sentry_decision=referee2022.sentry_info_t.sentry_respawn_flag+referee2022.sentry_info_t.sentry_shooting_num*4+referee2022.sentry_info_t.sentry_shooting_num_far*4096;
-	sentry_send_meseage();
-}
-	
-uint8_t Data_Pack[50];
-void sentry_send_meseage()//上发哨兵决策信息
+//	sentry_decision=referee2022.sentry_info_t.sentry_respawn_flag+referee2022.sentry_info_t.sentry_shooting_num*4+referee2022.sentry_info_t.sentry_shooting_num_far*4096;
+//	sentry_send_meseage();
+//}
+void Sentry_Decision_Control(void)
 {
+	referee2022.sentry_decision.resurrection = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
+	if(referee2022.bullet_remaining.bullet_remaining_num <= 50 && referee2022.bullet_remaining.money >= 900)
+		referee2022.sentry_decision.shoot_num += 100;
+	referee2022.sentry_decision.target_posture = Base.Lidar.posture;
+	referee2022.sentry_decision.open_energy_device = 0;
 	
+	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~1U) | (referee2022.sentry_decision.resurrection & 1U);
+	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x7FF) << 2)) | (((uint32_t)(referee2022.sentry_decision.shoot_num & 0x7FF)) << 2);
+	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x3) << 21)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 0x3)) << 21);
+	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(1U << 23)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 1U)) << 23);
+}
+
+
+uint8_t Data_Pack[50];
+void sentry_send_meseage()	//上发哨兵决策信息
+{
 	uint16_t crc16_temp;
 	
 	referee2022.robot_interactive_data.header.SOF=0xA5;	
 	referee2022.robot_interactive_data.header.data_length[0]=0x0A;
 	referee2022.robot_interactive_data.header.data_length[1]=0x00;
-	referee2022.robot_interactive_data.header.seq=0;//包序号？
+	referee2022.robot_interactive_data.header.seq=0;		//包序号
 	referee2022.robot_interactive_data.header.CRC8=Get_CRC8_Check_Sum((unsigned char*)&referee2022.robot_interactive_data.header,4,0xFF);
 	
-	referee2022.robot_interactive_data.cmd_id[1]=0x03;
-	referee2022.robot_interactive_data.cmd_id[0]=0x01;
+	referee2022.robot_interactive_data.cmd_id=0x0301;	
+	referee2022.robot_interactive_data.data_cmd_id=0x0120;
+	if(referee2022.game_robot_status.robot_id==0x07){referee2022.robot_interactive_data.sender_ID=0x07;}
+	else if(referee2022.game_robot_status.robot_id==0x6b){referee2022.robot_interactive_data.sender_ID=0x6b;}
+	referee2022.robot_interactive_data.receiver_ID=0x8080;		//裁判系统服务器ID
 	
-	referee2022.robot_interactive_data.data_cmd_id[1]=0x01;
-	referee2022.robot_interactive_data.data_cmd_id[0]=0x20;
-	if(referee2022.game_robot_status.robot_id==0x07){
-	referee2022.robot_interactive_data.sender_ID[0]=0x07;
-	referee2022.robot_interactive_data.sender_ID[1]=0x00;}
-	else if(referee2022.game_robot_status.robot_id==0x6b){
-	referee2022.robot_interactive_data.sender_ID[0]=0x6b;
-	referee2022.robot_interactive_data.sender_ID[1]=0x00;}
-	referee2022.robot_interactive_data.receiver_ID[0]=0x80;
-	referee2022.robot_interactive_data.receiver_ID[1]=0x80;//裁判系统服务器ID
-	
-	referee2022.robot_interactive_data.data[0]=sentry_decision&0xff;
-	referee2022.robot_interactive_data.data[1]=(sentry_decision>>8)&0xff;
-	referee2022.robot_interactive_data.data[2]=(sentry_decision>>16)&0xff;
-	referee2022.robot_interactive_data.data[3]=(sentry_decision>>24)&0xff;
+	referee2022.robot_interactive_data.data[0]=referee2022.sentry_decision.decision_data&0xff;
+	referee2022.robot_interactive_data.data[1]=(referee2022.sentry_decision.decision_data>>8)&0xff;
+	referee2022.robot_interactive_data.data[2]=(referee2022.sentry_decision.decision_data>>16)&0xff;
+	referee2022.robot_interactive_data.data[3]=(referee2022.sentry_decision.decision_data>>24)&0xff;
 	
 	crc16_temp=Get_CRC16_Check_Sum((unsigned char*)&referee2022.robot_interactive_data, 17, 0xFFFF);
 	
 	referee2022.robot_interactive_data.CRC16[0]=crc16_temp&0xff;
 	referee2022.robot_interactive_data.CRC16[1]=crc16_temp>>8;
-	//a=sizeof(referee2022.robot_interactive_data);
 	memcpy(Data_Pack,(unsigned char*)&referee2022.robot_interactive_data,sizeof(referee2022.robot_interactive_data));
 	
-	HAL_UART_Transmit_DMA(&huart3,Data_Pack,19);
+	HAL_UART_Transmit_DMA(&huart4,Data_Pack,19);
 	
 }
 
-void Judege_reverge(void)
-{
-	static uint16_t cnt[16];
-	for (int i=0;i<8;i++)
-	{
-		if  (referee2022.game_robot_hp.blue_robot_revge[i]==2) cnt[i]++;if (cnt[i]>10000) {referee2022.game_robot_hp.blue_robot_revge[i]=1;cnt[i]=0;}
-		if  (referee2022.game_robot_hp.red_robot_revge[i]==2) cnt[i+8]++;if (cnt[i+8]>10000) {referee2022.game_robot_hp.red_robot_revge[i]=1;cnt[i+8]=0;}
-	}
-	
-}
+//void Judege_reverge(void)
+//{
+//	static uint16_t cnt[16];
+//	for (int i=0;i<8;i++)
+//	{
+//		if  (referee2022.game_robot_hp.blue_robot_revge[i]==2) cnt[i]++;if (cnt[i]>10000) {referee2022.game_robot_hp.blue_robot_revge[i]=1;cnt[i]=0;}
+//		if  (referee2022.game_robot_hp.red_robot_revge[i]==2) cnt[i+8]++;if (cnt[i+8]>10000) {referee2022.game_robot_hp.red_robot_revge[i]=1;cnt[i+8]=0;}
+//	}
+//	
+//}
 void Sentry_multiMachineInteraction(void)
 {
 	uint16_t crc16_temp;
@@ -552,21 +553,11 @@ void Sentry_multiMachineInteraction(void)
 	referee2022.robot_interactive_data.header.seq=0;//包序号?
 	referee2022.robot_interactive_data.header.CRC8=Get_CRC8_Check_Sum((unsigned char*)&referee2022.robot_interactive_data.header,4,0xFF);
 	
-	referee2022.robot_interactive_data.cmd_id[1]=0x03;
-	referee2022.robot_interactive_data.cmd_id[0]=0x01;
-	
-	referee2022.robot_interactive_data.data_cmd_id[1]=0x02;
-	referee2022.robot_interactive_data.data_cmd_id[0]=0x00;
-	
-	if(referee2022.game_robot_status.robot_id==0x07){
-	referee2022.robot_interactive_data.sender_ID[0]=0x07;
-	referee2022.robot_interactive_data.sender_ID[1]=0x00;}
-	else if(referee2022.game_robot_status.robot_id==0x6b){
-	referee2022.robot_interactive_data.sender_ID[0]=0x6b;
-	referee2022.robot_interactive_data.sender_ID[1]=0x00;}
-	
-	referee2022.robot_interactive_data.receiver_ID[0]=0x65;
-	referee2022.robot_interactive_data.receiver_ID[1]=0x00;
+	referee2022.robot_interactive_data.cmd_id=0x0301;
+	referee2022.robot_interactive_data.data_cmd_id=0x02;
+	if(referee2022.game_robot_status.robot_id==0x07){referee2022.robot_interactive_data.sender_ID=0x07;}
+	else if(referee2022.game_robot_status.robot_id==0x6b){referee2022.robot_interactive_data.sender_ID=0x6b;}
+	referee2022.robot_interactive_data.receiver_ID=0x65;
 	
 	referee2022.robot_interactive_data.data[0]=0x01;
 	referee2022.robot_interactive_data.data[1]=0x01;
@@ -577,10 +568,8 @@ void Sentry_multiMachineInteraction(void)
 	referee2022.robot_interactive_data.CRC16[0]=crc16_temp&0xff;
 	referee2022.robot_interactive_data.CRC16[1]=crc16_temp>>8;
 	
-	//a=sizeof(referee2022.robot_interactive_data);
-	
 	memcpy(Data_Pack,(unsigned char*)&referee2022.robot_interactive_data,sizeof(referee2022.robot_interactive_data));
 	
-	HAL_UART_Transmit_DMA(&huart3,Data_Pack,19);
+	HAL_UART_Transmit_DMA(&huart3,Data_Pack,sizeof(Data_Pack));
 
 }
