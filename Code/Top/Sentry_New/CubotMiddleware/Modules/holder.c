@@ -10,8 +10,8 @@
 #include "user_lib.h"
 
 Holder_t Holder;
-float Yaw_TD = 200;
-float Pitch_TD = 90;
+float Yaw_TD = 300;
+float Pitch_TD = 400;
 int k = 0;
 float fliter = 0.9;
 volatile float DEBUG_tar = 0.0f;
@@ -63,8 +63,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     if (rc_ctrl->rc.s2 == 1)
     {
         holder->Yaw_S.Target_Angle -= ((rc_ctrl->rc.ch2 - 1024) * holder->Yaw_S.Sensitivity);
+        holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
     }
-    holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
     if (rc_ctrl->rc.s2 == 2 || Top.Referee.game_prograss == 4)
     {
         if (check_robot_state.Check_Usart.Check_vision == 1 || rc_ctrl->rc.s2 == 2)

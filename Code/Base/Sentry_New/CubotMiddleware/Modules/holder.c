@@ -12,7 +12,7 @@ Holder_t Holder;
 volatile float Debug_tar = 0;
 
 /**
- * @brief ÔÆÌ¨³õÊ¼»¯µ×°å
+ * @brief Ã”Ã†ÃŒÂ¨Â³ÃµÃŠÂ¼Â»Â¯ÂµÃ—Â°Ã¥
  */
 void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 {
@@ -22,7 +22,7 @@ void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 }
 
 /**
- * @brief ÔÆÌ¨¿ØÖÆ
+ * @brief Ã”Ã†ÃŒÂ¨Â¿Ã˜Ã–Ã†
  */
 void HolderControl_Base(Holder_t *holder, Base_t *rec)
 {

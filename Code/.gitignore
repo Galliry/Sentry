@@ -1,8 +1,4 @@
-*.o
-*.d
-*.log.*
-*.log
 *.hex
-*.elf
-*.bin
 *.htm
+*.lock
+*.uvoptx
