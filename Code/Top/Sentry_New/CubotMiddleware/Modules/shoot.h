@@ -9,7 +9,8 @@ typedef struct
 	struct
 	{
 		Motor motor2006;
-		SinglePID_t RunPID;
+		SinglePID_t RunPID_angle;
+		SinglePID_t RunPID_speed;
 		float Delta_Angle;//积分角度
 		float Plate_Angle;//拨弹盘角度
 		float Target_Angle;//拨弹盘目标角度
@@ -17,7 +18,7 @@ typedef struct
 		float Plate_Out;//输出
 		uint32_t Shoot_Cut;
 		uint16_t Fire_Rate;
-		uint8_t  Fire_Divider;//分频
+		uint16_t  Fire_Divider;//分频
 		uint8_t  Fire_Margin;//热量余量
 		int16_t ShootNum;
 		uint8_t  Shoot_rest_flag;
@@ -37,7 +38,7 @@ typedef struct
 }Ammo_Booster;
 
 extern Ammo_Booster AmmoBooster;
-void AmmoBoosterInit(Ammo_Booster *ammo_booster,SinglePID_t* friction_pid0, SinglePID_t* friction_pid1,SinglePID_t* load_pid);
+void AmmoBoosterInit(Ammo_Booster *ammo_booster, SinglePID_t *friction_pid0, SinglePID_t *friction_pid1, SinglePID_t *load_pid_angle, SinglePID_t *load_pid_speed);
 void ShootPlantControl(Ammo_Booster* ammo_booster);
 void FrictionWheelControl(Ammo_Booster *ammo_booster);
 #endif

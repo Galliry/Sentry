@@ -3,6 +3,7 @@
 #include "check.h"
 #include "interaction.h"
 #include "string.h"
+#include "transform_functions.h"
 
 Referee2022  referee2022;//已更新至2024赛季 版本V1.6.1
 /************************************************************哨兵决策指令，还没封装，有空再说******************************************************************/
@@ -223,7 +224,13 @@ void _Data_Diapcak(uint8_t *pdata)
 //		//对同步信息进行处理
 //		sentry_shooting_num_syn=referee2022.sentry_info_t.sentry_info&0x3FF;
 //		sentry_shooting_time_syn=(referee2022.sentry_info_t.sentry_info>>10)&0x0F;
-//		sentry_recover_time_syn=(referee2022.sentry_info_t.sentry_info>>14)&0x0F;vg
+//		sentry_recover_time_syn=(referee2022.sentry_info_t.sentry_info>>14)&0x0F;
+		BYTE0(referee2022.sentry_info_rec.sentry_info[0])=*(pdata+data_addr);
+		BYTE0(referee2022.sentry_info_rec.sentry_info[1])=*(pdata+data_addr+1);
+		BYTE0(referee2022.sentry_info_rec.sentry_info[2])=*(pdata+data_addr+2);
+		BYTE0(referee2022.sentry_info_rec.sentry_info[3])=*(pdata+data_addr+3);
+		BYTE0(referee2022.sentry_info_rec.sentry_info[4])=*(pdata+data_addr+4);
+		BYTE0(referee2022.sentry_info_rec.sentry_info[5])=*(pdata+data_addr+5);
 	}
 	
 	if(cmd_id == 0x0301)//雷达站通讯
@@ -482,6 +489,9 @@ void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength)
 
 void sentry_decision_control()//复活，买弹逻辑
 {
+	//		sentry_shooting_num_syn=referee2022.sentry_info_t.sentry_info&0x3FF;
+//		sentry_shooting_time_syn=(referee2022.sentry_info_t.sentry_info>>10)&0x0F;
+//		sentry_recover_time_syn=(referee2022.sentry_info_t.sentry_info>>14)&0x0F;
 	referee2022.sentry_info_t.sentry_respawn_flag = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
 //	if (referee2022.bullet_remaining.bullet_remaining_num<=50)
 //	referee2022.sentry_info_t.sentry_shooting_num+=100;

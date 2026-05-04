@@ -3,6 +3,7 @@
 #include "control_logic.h"
 #include "motor.h"
 #include "dr16.h"
+#include "stm32h7xx_hal.h"
 #include "usart.h"
 #include "driver_timer.h"
 #include "et08.h"
@@ -18,12 +19,19 @@
 #include "LK_motor.h"
 #include "communication.h"
 #include "referee.h"
+#include <stdint.h>
+#include <stdlib.h>
 uint8_t i = 0;
 int flag = 0;
 extern Motor a1308;
 uint8_t ff = 0;
 int ccur = 0;
 uint8_t motor_flag = 0;
+
+uint8_t beHit = 0;
+uint32_t lastBeHitTick = 0;
+uint16_t lastRobotHP = 400;
+
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -35,6 +43,23 @@ void TIM14_Task(void)
 	
 	if(tim14.ClockTime % 9 == 0 && tim14.ClockTime % 2 != 0 && tim14.ClockTime % 2 != 0)
 		SupercapControl(can1,&super_cap);
+
+	if (lastRobotHP > referee2022.game_robot_status.remain_HP && referee2022.game_robot_status.remain_HP != 0) // 被打
+	{
+		lastBeHitTick = HAL_GetTick();
+		beHit = 1;
+		lastRobotHP = referee2022.game_robot_status.remain_HP;
+	}
+	else if (referee2022.game_robot_status.remain_HP == 0)	// 死了
+	{
+		lastBeHitTick = HAL_GetTick();
+		beHit = 0;
+		lastRobotHP = 400;
+	}
+	else if ( HAL_GetTick() - lastBeHitTick >= 5000 )		// 我们安全了...暂时
+	{
+		beHit = 0;
+	}
 	
 	if(Base.Rc.isOnline == 1)
 	{
@@ -77,10 +102,17 @@ void TIM14_Task(void)
 //	UsartDmaPrintf("%d,%d,%d,%d\r\n",swervechassis.Motors3508.motor[0].Data.SpeedRPM,swervechassis.Motors3508.motor[1].Data.SpeedRPM,-swervechassis.Motors3508.motor[2].Data.SpeedRPM,-swervechassis.Motors3508.motor[3].Data.SpeedRPM);
 
 	// Holder Yaw	
-	UsartDmaPrintf("%f,%f,%f,%f\r\n",Holder.Yaw_M.Target_Angle,Holder.Yaw_M.GYRO_Angle,Holder.Yaw_M.PID.ShellPID->Out,Holder.Yaw_M.GYRO_AngleSpeed);
+	// UsartDmaPrintf("%f,%f,%f,%f\r\n",Holder.Yaw_M.Target_Angle,Holder.Yaw_M.GYRO_Angle,Holder.Yaw_M.PID.ShellPID->Out,Holder.Yaw_M.GYRO_AngleSpeed);
 
 	// FeedForward Friction
 	// UsartDmaPrintf("\r\n");
+
+	// Chassis Livewatch
+	UsartDmaPrintf("%d, %d, %d, %d\r\n",
+		abs(swervechassis.Motors3508.motor[0].Data.SpeedRPM),
+		abs(swervechassis.Motors3508.motor[1].Data.SpeedRPM),
+		abs(swervechassis.Motors3508.motor[2].Data.SpeedRPM),
+		abs(swervechassis.Motors3508.motor[3].Data.SpeedRPM));
 }
 
 

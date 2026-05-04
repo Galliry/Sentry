@@ -31,7 +31,8 @@ void TIM14_Task(void)
         TopBoardDataTrans(&rc_Ctrl_et);
     // ET08¿ØÖÆ
 
-    // if(tim14.ClockTime > 500) FrictionWheelControl(&AmmoBooster);
+    if (tim14.ClockTime > 500)
+        FrictionWheelControl(&AmmoBooster);
 
     if (rc_Ctrl_et.isOnline == 1)
     {
@@ -39,7 +40,9 @@ void TIM14_Task(void)
         if (i % 10 == 0)
             DMiao_Enable(can1, &Holder.Motors.Pitch);
         else
+        {
             HolderControl_Top(&Holder, &rc_Ctrl_et);
+        }
         if (tim14.ClockTime % 10 == 0)
             Trans_forToptoBase(&rc_Ctrl);
         ShootPlantControl(&AmmoBooster);
@@ -61,6 +64,7 @@ void TIM14_Task(void)
     MotorCanOutput(can1, 0x1FF);
     MotorCanOutput(can1, 0x200);
     DMiao_CanOutput(can1, &Holder.Motors.Pitch);
+
     //	if (tim14.ClockTime%4==0)
     //	MotorCanOutput(can2, 0x1FE);
     //	MotorCanOutput(can2, 0x200);
@@ -70,10 +74,26 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%d,%d,%d,%d,%d\r\n",error_flag,huart5.ErrorCode,Receive.Top.Referee.robot_HP,Receive.Top.Referee.robot_id,Receive.Top.Referee.game_prograss);
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
-	// Gravity FeedForward Test
-	// UsartDmaPrintf("%.3f, %.3f\r\n", Holder.Motors.Pitch.torque, INS_attitude->roll);
+    // Gravity FeedForward Test
+    // UsartDmaPrintf("%.3f, %.3f\r\n", Holder.Motors.Pitch.torque, INS_attitude->roll);
     // Pitch
-    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+
+    // Yaw
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.GYRO_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);
+
+    // UsartDmaPrintf("%.2f\r\n", INS_attitude->pitch);
+
+    // Autoaim
+    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n",
+                   Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
+                   Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
+                   Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle);
+
+    // ShootPlate
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %d\r\n",
+    //                AmmoBooster.Shoot_Plate.Target_Angle, AmmoBooster.Shoot_Plate.Plate_Angle,
+    //                AmmoBooster.Shoot_Plate.RunPID_angle.Out, AmmoBooster.Shoot_Plate.motor2006.Data.SpeedRPM);
 }
 
 void TIM13_Task(void)

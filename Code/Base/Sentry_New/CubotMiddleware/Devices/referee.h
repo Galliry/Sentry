@@ -2,6 +2,7 @@
 #define __REFEREE_H
 
 #include "stm32h7xx_hal.h"
+#include <stdint.h>
 
 #define data_addr 7
 #define max_single_pack_len 50
@@ -247,6 +248,27 @@ typedef struct
 		uint16_t last_dart_launch_time;
 		uint16_t operate_launch_cmd_time;
 	} dart_client_cmd;
+
+	//20. 烧饼机器人状态数据: 0x020D。
+	struct{
+		/**
+		 * |bit|func|
+		 * |-|-|
+		 * |0-10|哨兵已成功兑换的发弹量|
+		 * |11-14|哨兵已成功兑换发弹量的次数|
+		 * |15-18|哨兵已成功兑换血量的次数|
+		 * |19|哨兵是否可以确认免费复活|
+		 * |20|哨兵是否可以兑换立即复活|
+		 * |21-30|哨兵如果兑换立即复活所需花费的金币数|
+		 * |31|保留|
+		 * |32|哨兵是否处于脱战|
+		 * |33-43|队伍小弹丸剩余可兑换数|
+		 * |44-45|哨兵当前姿态，1为进攻，2为防御，3为移动|
+		 * |46|己方能力机关是否能够进入正在激活状态|
+		 * |47|保留|
+		 */
+		uint8_t sentry_info[6];
+	} sentry_info_rec;
 
 	//机器人间交互数据
 

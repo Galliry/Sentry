@@ -1,6 +1,7 @@
 #include "pid.h"
 
-SinglePID_t pid_load;
+SinglePID_t pid_load_angle;
+SinglePID_t pid_load_speed;
 SinglePID_t pid_friction0;
 SinglePID_t pid_friction1;
 SinglePID_t pid_yaw_m_angle;
@@ -57,7 +58,7 @@ float BasePID_SpeedControl(SinglePID_t *base_pid, float target_speed, float feed
     base_pid->KpPart = base_pid->Error * base_pid->Kp;
     base_pid->KiPart += base_pid->Error * base_pid->Ki;
 
-    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.1f)
+    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.02f)
         base_pid->KiPart = 0;
 
     base_pid->KdPart = (-1) * base_pid->Kd * (base_pid->Error - base_pid->LastError);
@@ -75,7 +76,7 @@ float BasePID_AngleControl(SinglePID_t *base_pid, float target_angle, float feed
     base_pid->KpPart = base_pid->Error * base_pid->Kp;
     base_pid->KiPart += base_pid->Error * base_pid->Ki;
 
-    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.1f)
+    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.02f)
         base_pid->KiPart = 0;
 
     base_pid->KdPart = (-1) * base_pid->Kd * (base_pid->Error - base_pid->LastError);
@@ -101,7 +102,7 @@ float BasePID_AngleControl_Swerve(SinglePID_t *base_pid, float target_angle, flo
     base_pid->KpPart = base_pid->Error * base_pid->Kp;
     base_pid->KiPart += base_pid->Error * base_pid->Ki;
 
-    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.1f)
+    if (fabs(base_pid->Error) > base_pid->KiPartDetachment || fabs(base_pid->Error) < 0.02f)
         base_pid->KiPart = 0;
 
     base_pid->KdPart = (-1) * base_pid->Kd * (base_pid->Error - base_pid->LastError);
@@ -111,12 +112,13 @@ float BasePID_AngleControl_Swerve(SinglePID_t *base_pid, float target_angle, flo
 }
 void PID_Init(void)
 {
-    BasePID_Init(&pid_load, 4, 0, 0, 0);         // ²¦µ¯ÅÌ
+    BasePID_Init(&pid_load_angle, 4, 0, 0, 0);         // ²¦µ¯ÅÌ½Ç¶È
+    BasePID_Init(&pid_load_speed, 0,0,0,0);// ²¦µ¯ÅÌËÙ¶È
     BasePID_Init(&pid_friction0, 10, 1.5, 2, 0); // Ä¦²ÁÂÖ
     BasePID_Init(&pid_friction1, 10, 1.5, 2, 0);
-    BasePID_Init(&pid_pitch_angle, 0.55, 0.011f, -0.0045, 0); // ÔÆÌ¨
+    BasePID_Init(&pid_pitch_angle, 0.48, 0.005f, -0.005, 1.5); // ÔÆÌ¨
     BasePID_Init(&pid_pitch_speed, 0.60, 0, 3, 0);
-    BasePID_Init(&pid_yaw_s_angle, 2, 0.005, 1, 0.5);
+    BasePID_Init(&pid_yaw_s_angle, 1.9, 0.0045, -2.5, 2);
     BasePID_Init(&pid_yaw_s_speed, 2400, 0, 0, 0);
     BasePID_Init(&pid_run, 20, 0, 0, 0);   // µ×ÅÌÔË¶¯ 20
     BasePID_Init(&pid_follow, 0, 0, 0, 0); // µ×ÅÌ¸úËæ

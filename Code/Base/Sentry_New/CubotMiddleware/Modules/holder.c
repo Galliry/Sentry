@@ -10,12 +10,12 @@ Holder_t Holder;
 
 // float Yaw_targets[5];
 
-// float SavitzkyGolay_dt()
+// float SavitzkyGolay_dt(void)
 // {
 //     return (4 * Yaw_targets[0] + 3 * Yaw_targets[1] + 2 * Yaw_targets[2] + Yaw_targets[3]) * 100; // /10/0.001
 // }
 
-// float SavitzkyGolay_ddt()
+// float SavitzkyGolay_ddt(void)
 // {
 //     return (2 * Yaw_targets[0] - Yaw_targets[1] - 2 * Yaw_targets[2] - Yaw_targets[3] + 2 * Yaw_targets[4]) / 7 * 1000000;
 // }

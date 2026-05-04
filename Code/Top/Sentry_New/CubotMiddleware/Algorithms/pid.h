@@ -56,7 +56,8 @@ float  BasePID_AngleControl(SinglePID_t* base_pid, float target_angle, float fee
 float  BasePID_AngleControl_Swerve(SinglePID_t* base_pid, float target_angle, float feedback_angle);
 
 void PID_Init(void);
-extern SinglePID_t pid_load;
+extern SinglePID_t pid_load_angle;
+extern SinglePID_t pid_load_speed;
 extern SinglePID_t pid_friction0;
 extern SinglePID_t pid_friction1;
 extern DualPID_Object pid_yaw_m;
