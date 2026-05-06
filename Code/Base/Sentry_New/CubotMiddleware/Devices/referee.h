@@ -82,7 +82,7 @@ typedef struct
 	 struct
 	{
 		uint32_t event_type;
-	} event_data;
+	}event_data;
 
 	/*7. 补给站动作标识：0x0102。发送频率：动作触发后发送，发送范围：己方机器人。*/
 	 struct
@@ -91,14 +91,14 @@ typedef struct
 		uint8_t supply_robot_id;
 		uint8_t supply_projectile_step;
 		uint8_t supply_projectile_num;
-	} supply_projectile_action;
+	}supply_projectile_action;
 
 	/*8. 裁判警告信息： cmd_id (0x0104)。发送频率：警告发生后发送*/
 	struct
 	{
 		uint8_t level;
 		uint8_t foul_robot_id;
-	} referee_warning;
+	}referee_warning;
 
 	/*9. 飞镖发射口倒计时：cmd_id (0x0105)。发送频率：1Hz 周期发送，发送范围：己方机器人。*/
 	 struct
@@ -119,14 +119,14 @@ typedef struct
 		uint8_t mains_power_shooter_output : 1;
 		uint16_t shooter_id1_17mm_cooling_rate;
 		uint16_t shooter_id1_17mm_cooling_limit;
-	} game_robot_status;
+	}game_robot_status;
 
 	/*11. 实时功率热量数据： 0x0202。 发送频率： 50Hz，发送范围：单一机器人。*/
 	 struct
 	{
 		uint16_t chassis_power_buffer; 
 		uint16_t shooter_id1_17mm_cooling_heat;
-	} power_heat_data;
+	}power_heat_data;
 
 	/*12. 机器人位置： 0x0203。 发送频率： 10Hz，发送范围：单一机器人。*/
 	struct
@@ -134,7 +134,7 @@ typedef struct
 		float x;
 		float y;
 		float angle;
-	} game_robot_pos;
+	}game_robot_pos;
 
 	/*13. 机器人增益： 0x0204。发送频率：1Hz 周期发送，发送范围：单一机器人。*/
 	 struct
@@ -152,7 +152,7 @@ typedef struct
 	{
 		uint16_t energy_point;
 		uint8_t attack_time;
-	} ext_aerial_robot_energy_t;
+	}ext_aerial_robot_energy_t;
 
 
 	/*15. 伤害状态： 0x0206。 发送频率：伤害发生后发送 */
@@ -176,14 +176,14 @@ typedef struct
 	{
 		uint16_t bullet_remaining_num;
 		uint16_t money;
-	} bullet_remaining;
+	}bullet_remaining;
 
 	//18.机器人 RFID 状态：0x0209。发送频率：1Hz，发送范围：单一机器人。
 	 struct
 	{
 		uint32_t rfid_status;
 		uint8_t rfid_status_2;
-	}  rfid_status;
+	}rfid_status;
 	
 	//哨兵自主决策信息
 	struct
@@ -226,27 +226,6 @@ typedef struct
 		float standard_4_x;
 		float standard_4_y;
 	}groud_robot_position_t;
-
-	//20. 烧饼机器人状态数据: 0x020D。
-	struct{
-		/**
-		 * |bit|func|
-		 * |-|-|
-		 * |0-10|哨兵已成功兑换的发弹量|
-		 * |11-14|哨兵已成功兑换发弹量的次数|
-		 * |15-18|哨兵已成功兑换血量的次数|
-		 * |19|哨兵是否可以确认免费复活|
-		 * |20|哨兵是否可以兑换立即复活|
-		 * |21-30|哨兵如果兑换立即复活所需花费的金币数|
-		 * |31|保留|
-		 * |32|哨兵是否处于脱战|
-		 * |33-43|队伍小弹丸剩余可兑换数|
-		 * |44-45|哨兵当前姿态，1为进攻，2为防御，3为移动|
-		 * |46|己方能力机关是否能够进入正在激活状态|
-		 * |47|保留|
-		 */
-		uint8_t sentry_info[6];
-	} sentry_info_rec;
 
 	//机器人间交互数据
 	//1. 交互数据接收信息：0x0301。
@@ -306,8 +285,8 @@ unsigned int Verify_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLen
 uint32_t Verify_CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength);
 void Referee_Data_Diapcak(uint8_t *data,uint8_t this_time_len);
 void sentry_send_meseage(void);
-void sentry_decision_control(void);
-void Judege_reverge(void);
+void Sentry_Decision_Control(void);
 void Sentry_multiMachineInteraction(void);
 uint8_t Referee_callback(uint8_t * recBuffer, uint16_t len);
+void Sentry_To_Referee(void);
 #endif

@@ -33,7 +33,7 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
 
 const float chassis_unit_trans = 60 * 15.74f / 0.110f / 3.1415926f;
 
-#define LOGIC_VERSION 2
+#define LOGIC_VERSION 1
 void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 {
 #if LOGIC_VERSION == 1

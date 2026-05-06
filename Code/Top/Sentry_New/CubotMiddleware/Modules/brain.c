@@ -71,8 +71,6 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 		{
 			brain->Lidar.vx = (((recBuffer[3] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((recBuffer[3] & 0x3F) * 100 + recBuffer[4]) / 100.0f)) ;
 			brain->Lidar.vy = ((recBuffer[5] & 0x40) ? -1.0f : 1.0f) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100.0f) ;
-			memcpy(&brain->Lidar.MyPosition_x,&recBuffer[7],sizeof(float));
-			memcpy(&brain->Lidar.MyPosition_y,&recBuffer[11],sizeof(float));
 		}
 	}
 }
@@ -107,11 +105,12 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[15] = tmp2 >> 8;
 	RobotToBrainTimeBuffer[16] = tmp3 & 0xFF;
 	RobotToBrainTimeBuffer[17] = tmp3 >> 8;
-
+	
 	RobotToBrainTimeBuffer[18] = 0x01; // 0是预测 1是跟随 4 ceres 静止或低速
 	RobotToBrainTimeBuffer[19] = 0x01;
 
-	RobotToBrainTimeBuffer[20] = 0x04; // 1 是ekf 0是shou 23 fu 4 ceres
+	brain->Autoaim.Mode = EKF;
+	RobotToBrainTimeBuffer[20] = brain->Autoaim.Mode;	//1 是ekf  23 fu 4 ceres
 	RobotToBrainTimeBuffer[21] = 0xDD; // 忽略装甲板
 
 	RobotToBrainTimeBuffer[22] = 0xDD;
@@ -121,8 +120,6 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 
 void RobotToBrain_Lidar(Brain_t* Brain)
 {
-	//  x = referee2022.map_command_t.target_position_x * 100;
-	//	y = referee2022.map_command_t.target_position_y * 100;
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
 	RobotToBrainChassisTimeBuffer[1] = Receive.Top.Referee.game_prograss;
 	if ( Receive.Top.Referee.game_prograss == 3){

@@ -6,6 +6,7 @@
 #include "referee.h"
 #include "hardware_config.h"
 #include "check.h"
+#include "interboard.h"
 CAN_TxBuffer txBuffer0x6FFforCAN1={
 	.Identifier = 0x6ff
 };
@@ -52,3 +53,12 @@ void SupercapControl(CAN_Object can, Supercap* Cap)
 	
 	CAN_Send(&can, &txBuffer0x6FFforCAN1);   
 }
+
+void SuperCupLogic(Supercap* cap)
+{
+	if(referee2022.robot_hurt.hurt_type == 0 && referee2022.robot_hurt.armor_id != 0)
+	{
+		cap->cap_state.Supercap_Mode = 1;
+	}
+}
+
