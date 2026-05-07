@@ -38,28 +38,13 @@ void TIM14_Task(void)
 	tim14.ClockTime++;
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
+	Sentry_To_Referee();
+	
 	if(tim14.ClockTime % 10 == 0) 
 		RefereeDataTrans(&referee2022);
 	
 	if(tim14.ClockTime % 9 == 0 && tim14.ClockTime % 2 != 0 && tim14.ClockTime % 2 != 0)
 		SupercapControl(can1,&super_cap);
-
-	if (lastRobotHP > referee2022.game_robot_status.remain_HP && referee2022.game_robot_status.remain_HP != 0) // 被打
-	{
-		lastBeHitTick = HAL_GetTick();
-		beHit = 1;
-		lastRobotHP = referee2022.game_robot_status.remain_HP;
-	}
-	else if (referee2022.game_robot_status.remain_HP == 0)	// 死了
-	{
-		lastBeHitTick = HAL_GetTick();
-		beHit = 0;
-		lastRobotHP = 400;
-	}
-	else if ( HAL_GetTick() - lastBeHitTick >= 5000 )		// 我们安全了...暂时
-	{
-		beHit = 0;
-	}
 	
 	if(Base.Rc.isOnline == 1)
 	{

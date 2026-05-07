@@ -29,6 +29,7 @@ typedef struct
 		float Vy;
 		uint8_t isOnline;
 		uint8_t Movemode;
+		uint8_t posture;
 	}Lidar;
 }Base_t;
 

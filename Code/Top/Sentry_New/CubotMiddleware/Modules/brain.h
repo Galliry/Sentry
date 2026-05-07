@@ -22,26 +22,26 @@ typedef enum
 	ROBOT_TO_BRAIN_CMD   = 5
 }BrainFrameType;
 
-typedef enum {
-    Single_IDLE = 0,   
-    Single_Arrive,	
-    Single_Find,    
-    Single_Exit,    
-}Singe_state;
+//typedef enum {
+//    Single_IDLE = 0,   
+//    Single_Arrive,	
+//    Single_Find,    
+//    Single_Exit,    
+//}Singe_state;
 
 typedef enum
 {
-	Autoaim = 0,             
-	Outpost = 1,
-	Single = 2
-}
-Brain_mode;		//三种模式，切换相关一部分在回调函数中，一部分在contro_logic中
+	Cesis = 1,             
+	Small_Buff = 2,
+	Big_Buff = 3,
+	EKF = 4
+}Brain_mode;		//三种模式，切换相关一部分在回调函数中，一部分在contro_logic中
 
 typedef enum
 {
 	Cruise = 0,             
 	Lock = 1,
-	Change = 2
+	Change = 2 	//
 }Brain_Autoaim_mode; 
 
 typedef enum
@@ -77,6 +77,7 @@ typedef struct
 		float Distance;
 		uint8_t IsFire;
 		uint8_t Rune_Flag;
+		uint8_t All_Sense; //全向感知
 	}Autoaim;
 	 
 	struct{
@@ -85,22 +86,19 @@ typedef struct
 		uint8_t	movemode;
 		float vx;
         float vy;
-		uint8_t Posture;
-		float MyPosition_x;
-		float MyPosition_y;
 	}Lidar;
 	 
-	struct
-	{
-		Brain_All_See_mode mode;
-		uint16_t mode_cnt[3];
-		uint8_t Find_size;
-		uint8_t Camera_Index[10];
-		uint8_t armorNumber[10];
-		float Pitch_add[10];
-		float Yaw_add[10];
-		float Distance[10];//mm
-	}All_See;
+//	struct
+//	{
+//		Brain_All_See_mode mode;
+//		uint16_t mode_cnt[3];
+//		uint8_t Find_size;
+//		uint8_t Camera_Index[10];
+//		uint8_t armorNumber[10];
+//		float Pitch_add[10];
+//		float Yaw_add[10];
+//		float Distance[10];//mm
+//	}All_See;
 	
 }Brain_t;
   
