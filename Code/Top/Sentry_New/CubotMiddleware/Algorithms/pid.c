@@ -119,7 +119,7 @@ void PID_Init(void)
     BasePID_Init(&pid_pitch_angle, 0.48, 0.005f, -0.005, 1.5); // ÔÆÌ¨
     BasePID_Init(&pid_pitch_speed, 0.60, 0, 3, 0);
     BasePID_Init(&pid_yaw_s_angle, 1.9, 0.0045, -2.5, 2);
-    BasePID_Init(&pid_yaw_s_speed, 2400, 0, 0, 0);
+    BasePID_Init(&pid_yaw_s_speed, 2400, 0, 0, 2); // 2400
     BasePID_Init(&pid_run, 20, 0, 0, 0);   // µ×ÅÌÔË¶¯ 20
     BasePID_Init(&pid_follow, 0, 0, 0, 0); // µ×ÅÌ¸úËæ
     for (int i = 0; i < 4; i++)
