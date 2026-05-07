@@ -20,6 +20,7 @@
 
 int i = 0;
 extern int error_flag;
+
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -80,15 +81,29 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 
     // Yaw
-    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.GYRO_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);
+    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.GYRO_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);
+    // UsartDmaPrintf("%.2f\r\n",Holder.Yaw_S.PID.CorePID->Out);
+
+    // Pitch Friction Test
+    // if (fabs(Holder.Pitch.GYRO_Angle) < 12)
+    // UsartDmaPrintf("%.2f, %.2f\r\n", Holder.Pitch.GYRO_AngleSpeed, Holder.Pitch.PID.CorePID->Out - PitchFF_Gravity(Holder.Pitch.GYRO_Angle));
+
+    // Yaw Friction Test
+//    if (fabs(Holder.Yaw_S.Can_Angle) < 28)
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n",
+    //     Holder.Yaw_S.GYRO_AngleSpeed,
+    //     Holder.Yaw_S.PID.CorePID->Out,
+    //     // Holder.Motors.Yaw_S.Data.TorqueCurrent,
+    //     INS_attitude->accel[2] - mpu6050.mpu6050_Data.accel[2],
+    //     Holder.Yaw_S.Can_Angle);
 
     // UsartDmaPrintf("%.2f\r\n", INS_attitude->pitch);
 
     // Autoaim
-    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n",
-                   Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
-                   Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
-                   Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle);
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n",
+    //                Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
+    //                Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
+    //                Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle);
 
     // ShootPlate
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %d\r\n",

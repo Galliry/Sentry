@@ -39,7 +39,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15f + Holder.Pitch.GYRO_Angle;
 			}
 			
-			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.8f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.8f)
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.4f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.4f)
 				brain->Autoaim.IsFire = 1;
 			else brain->Autoaim.IsFire = 0;
 		} else

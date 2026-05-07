@@ -1,4 +1,5 @@
 CompileFlags:
+  Compiler: "C:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe"
   CompilationDatabase: None
   Add:
     - --target=arm-none-eabi

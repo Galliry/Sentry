@@ -31,6 +31,7 @@ void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
     DMiaoInit(&holder->Motors.Yaw_M, 0x01, 0x02, MIT);
     DualPID_Init(&holder->Yaw_M.PID, yaw_m->ShellPID, yaw_m->CorePID);
     holder->Yaw_M.Sensitivity = 0.00085f; // 0.003f 0.0015
+    holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle;
 }
 
 /**
