@@ -16,7 +16,7 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Data[4] = (uint8_t)((referee->power_heat_data.shooter_id1_17mm_cooling_heat >> 8) & 0xff);
 		RefereeData.Data[5] = referee->game_robot_status.mains_power_shooter_output;
 		RefereeData.Data[6] = (uint8_t)(referee->game_robot_status.remain_HP & 0xff);
-		RefereeData.Data[7] =  (uint8_t)((referee->game_robot_status.remain_HP >> 8) & 0xff);
+		RefereeData.Data[7] = (uint8_t)((referee->game_robot_status.remain_HP >> 8) & 0xff);
 		CAN_Send(&can1,&RefereeData);
 		i++;
 	}else if(i == 1)
@@ -30,6 +30,11 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Data[5] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
 		CAN_Send(&can1,&RefereeData);
 		i = 0;
+	}else if(i == 2)
+	{
+		RefereeData.Identifier = 0x106;
+		memcpy(&RefereeData.Data[0],&referee->ext_student_interactive_header_data.lidar_station_x,sizeof(float));
+		memcpy(&RefereeData.Data[4],&referee->ext_student_interactive_header_data.lidar_station_y,sizeof(float));
 	}
 }
 
@@ -51,6 +56,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Rc.isOnline = (rxBuffer->Data[6] & 0x01);
 		Base.Lidar.isOnline = ((rxBuffer->Data[6] >> 1) & 0x01);
 		Base.Lidar.Movemode = ((rxBuffer->Data[6] >> 2) & 0x03);
+		Base.Lidar.posture = 2;
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{

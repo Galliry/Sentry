@@ -490,6 +490,7 @@ void Sentry_Decision_Control(void)
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x7FF) << 2)) | (((uint32_t)(referee2022.sentry_decision.shoot_num & 0x7FF)) << 2);
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x3) << 21)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 0x3)) << 21);
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(1U << 23)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 1U)) << 23);
+	sentry_send_meseage();
 }
 
 
@@ -504,11 +505,16 @@ void sentry_send_meseage()	//上发哨兵决策信息
 	referee2022.robot_interactive_data.header.seq=0;		//包序号
 	referee2022.robot_interactive_data.header.CRC8=Get_CRC8_Check_Sum((unsigned char*)&referee2022.robot_interactive_data.header,4,0xFF);
 	
-	referee2022.robot_interactive_data.cmd_id=0x0301;	
-	referee2022.robot_interactive_data.data_cmd_id=0x0120;
-	if(referee2022.game_robot_status.robot_id==0x07){referee2022.robot_interactive_data.sender_ID=0x07;}
-	else if(referee2022.game_robot_status.robot_id==0x6b){referee2022.robot_interactive_data.sender_ID=0x6b;}
-	referee2022.robot_interactive_data.receiver_ID=0x8080;		//裁判系统服务器ID
+	referee2022.robot_interactive_data.cmd_id[0]=0x01;
+	referee2022.robot_interactive_data.cmd_id[1]=0x03;
+	referee2022.robot_interactive_data.data_cmd_id[0]=0x20;
+	referee2022.robot_interactive_data.data_cmd_id[1]=0x01;
+	if(referee2022.game_robot_status.robot_id==0x07)
+		{referee2022.robot_interactive_data.sender_ID[0]=0x07;referee2022.robot_interactive_data.sender_ID[1]=0x00;}
+	else if(referee2022.game_robot_status.robot_id==0x6b)
+		{referee2022.robot_interactive_data.sender_ID[0]=0x6b;referee2022.robot_interactive_data.sender_ID[1]=0x00;}
+	referee2022.robot_interactive_data.receiver_ID[0]=0x80;		//裁判系统服务器ID
+	referee2022.robot_interactive_data.receiver_ID[1]=0x80;
 	
 	referee2022.robot_interactive_data.data[0]=referee2022.sentry_decision.decision_data&0xff;
 	referee2022.robot_interactive_data.data[1]=(referee2022.sentry_decision.decision_data>>8)&0xff;
@@ -535,17 +541,25 @@ void Sentry_multiMachineInteraction(void)
 	referee2022.robot_interactive_data.header.seq=0;//包序号?
 	referee2022.robot_interactive_data.header.CRC8=Get_CRC8_Check_Sum((unsigned char*)&referee2022.robot_interactive_data.header,4,0xFF);
 	
-	referee2022.robot_interactive_data.cmd_id=0x0301;
-	referee2022.robot_interactive_data.data_cmd_id=0x0222;
+	referee2022.robot_interactive_data.cmd_id[0]=0x01;
+	referee2022.robot_interactive_data.cmd_id[1]=0x03;
+	referee2022.robot_interactive_data.data_cmd_id[0]=0x22;
+	referee2022.robot_interactive_data.data_cmd_id[1]=0x02;
 	if(referee2022.game_robot_status.robot_id==0x07)
 	{
-		referee2022.robot_interactive_data.sender_ID=0x07;
-		referee2022.robot_interactive_data.receiver_ID=0x09;
+		referee2022.robot_interactive_data.sender_ID[0]=0x07;
+		referee2022.robot_interactive_data.sender_ID[1]=0x00;
+		
+		referee2022.robot_interactive_data.receiver_ID[0]=0x09;
+		referee2022.robot_interactive_data.receiver_ID[1]=0x00;
 	}
 	else if(referee2022.game_robot_status.robot_id==0x6b)
 	{
-		referee2022.robot_interactive_data.sender_ID=0x6b;
-		referee2022.robot_interactive_data.receiver_ID=0x6d;
+		referee2022.robot_interactive_data.sender_ID[0]=0x06b;
+		referee2022.robot_interactive_data.sender_ID[1]=0x00;
+		
+		referee2022.robot_interactive_data.receiver_ID[0]=0x6d;
+		referee2022.robot_interactive_data.receiver_ID[1]=0x00;
 	}
 	
 	referee2022.robot_interactive_data.data[0]=0x01;
@@ -553,11 +567,11 @@ void Sentry_multiMachineInteraction(void)
 	referee2022.robot_interactive_data.data[2]=0x01;
 	referee2022.robot_interactive_data.data[3]=0x01;
 	
-	crc16_temp=Get_CRC16_Check_Sum((unsigned char*)&referee2022.robot_interactive_data, 17, 0xFFFF);
+	crc16_temp=Get_CRC16_Check_Sum((unsigned char*)&referee2022.robot_interactive_data,17, 0xFFFF);
 	referee2022.robot_interactive_data.CRC16[0]=crc16_temp&0xff;
 	referee2022.robot_interactive_data.CRC16[1]=crc16_temp>>8;
 	
-	memcpy(Data_Pack,(unsigned char*)&referee2022.robot_interactive_data,sizeof(referee2022.robot_interactive_data));
+	memcpy(Data_Pack,(unsigned char*)&referee2022.robot_interactive_data,19);
 	
 	HAL_UART_Transmit_DMA(&huart4,Data_Pack,19);
 }

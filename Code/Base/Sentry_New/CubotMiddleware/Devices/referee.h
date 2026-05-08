@@ -238,10 +238,10 @@ typedef struct
 			uint8_t seq;	
 			uint8_t CRC8;
 		}header;
-		uint16_t cmd_id;
-		uint16_t data_cmd_id;
-		uint16_t sender_ID;
-		uint16_t receiver_ID;
+		uint8_t cmd_id[2];
+		uint8_t data_cmd_id[2];
+		uint8_t sender_ID[2];
+		uint8_t receiver_ID[2];
 		uint8_t data[4];
 		uint8_t CRC16[2];
 	}robot_interactive_data;
@@ -249,9 +249,9 @@ typedef struct
 	 struct //0x0301 ¿Í»§¶ËÄÚÈİid 0xd180
 	{
 		uint8_t data[30];
-		uint16_t data_cmd_id;
-		uint16_t sender_ID;
-		uint16_t receiver_ID;
+		uint8_t data_cmd_id[2];
+		uint8_t sender_ID[2];
+		uint8_t receiver_ID[2];
 		float lidar_station_x;
 		float lidar_station_y;
 		uint8_t lidar_id;
