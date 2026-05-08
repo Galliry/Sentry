@@ -55,6 +55,10 @@ void BaseBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Top.Referee.gimbal_output = rxBuffer->Data[2];
 		Top.Referee.robot_id = rxBuffer->Data[3];
 		Top.Referee.shoot_num = ((uint16_t)rxBuffer->Data[4] | (uint16_t)(rxBuffer->Data[5] << 8));
+	}else if(rxBuffer->Header.Identifier == 0x106)
+	{
+		memcpy(&Top.Referee.lidar_pos_x,&rxBuffer->Data[0],4);
+		memcpy(&Top.Referee.lidar_pos_y,&rxBuffer->Data[4],4);
 	}
 
 }

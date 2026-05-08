@@ -203,9 +203,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     {
         if (check_robot_state.Check_Usart.Check_vision == 1 || rc_ctrl->rc.s2 == 2)
         {
-            if (Brain.Autoaim.mode == Cruise // &&
-                                             //      (  )
-            )
+            if (Brain.Autoaim.mode == Cruise)
             {
                 // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
                 holder->Yaw_S.Target_Angle = 0;
@@ -269,7 +267,6 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
                                                                                                             holder->Yaw_S.Can_Angle) +
                                                                                            YawFF_Speed(holder->Yaw_S.v1),
                                                                                        holder->Yaw_S.GYRO_AngleSpeed);
-        // + 0.4f * YawFF_Friction(holder->Yaw_S.GYRO_AngleSpeed,holder->Yaw_S.Can_Angle);
         holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                  BasePID_AngleControl(holder->Pitch.PID.ShellPID,
                                                                                       holder->Pitch.v1,
@@ -286,7 +283,6 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
                                                                                      holder->Yaw_S.Can_Angle) +
                                                                     YawFF_Speed(holder->Yaw_S.Target_Angle),
                                                                 holder->Yaw_S.GYRO_AngleSpeed);
-        // + 0.4f * YawFF_Friction(holder->Yaw_S.GYRO_AngleSpeed,holder->Yaw_S.Can_Angle);
         holder->Motors.Pitch.motor_output = BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                  BasePID_AngleControl(holder->Pitch.PID.ShellPID,
                                                                                       holder->Pitch.Target_Angle,

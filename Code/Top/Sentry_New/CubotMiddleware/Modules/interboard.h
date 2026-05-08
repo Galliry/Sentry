@@ -18,6 +18,9 @@ typedef struct
 		uint8_t gimbal_output;
 		uint8_t robot_id;
 		uint16_t shoot_num;
+		uint8_t lidar_rob_id;
+		float lidar_pos_x;
+		float lidar_pos_y;
 	}Referee;
 
 }Top_t;

@@ -153,22 +153,23 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//·¢¸ø×ÔÃé
 void RobotToBrain_Lidar(Brain_t* Brain)
 {
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
-	RobotToBrainChassisTimeBuffer[1] = Receive.Top.Referee.game_prograss;
-	if ( Receive.Top.Referee.game_prograss == 3){
+	RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_prograss;
+	if (Top.Referee.game_prograss == 3)
+	{
 		RobotToBrainChassisTimeBuffer[1] = 4;
 	}
-	if (referee2022.game_status.game_progress == 4)
+	if (Top.Referee.game_prograss == 4)
 	{
-		RobotToBrainChassisTimeBuffer[2] = Receive.Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
-		RobotToBrainChassisTimeBuffer[3] = Receive.Top.Referee.game_time >> 8;
+		RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
+		RobotToBrainChassisTimeBuffer[3] = Top.Referee.game_time >> 8;
 	}
 	else
 	{
 		RobotToBrainChassisTimeBuffer[2] = 0;
 		RobotToBrainChassisTimeBuffer[3] = 0;
 	}
-	RobotToBrainChassisTimeBuffer[4] = Receive.Top.Referee.robot_HP & 0xff;
-	RobotToBrainChassisTimeBuffer[5] = Receive.Top.Referee.robot_HP >> 8;
+	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP & 0xff;
+	RobotToBrainChassisTimeBuffer[5] = Top.Referee.robot_HP >> 8;
 	RobotToBrainChassisTimeBuffer[6] = Brain->Autoaim.Rune_Flag;
 	RobotToBrainChassisTimeBuffer[7] = 0x00;
 	RobotToBrainChassisTimeBuffer[8] = 0xDD;
