@@ -13,36 +13,36 @@ CompileFlags:
     - -DSTM32H750xx
 
     # Top project include paths
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Inc
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Algorithms
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Devices
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Drivers
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Modules
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Support
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/User
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Inc
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Algorithms
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Devices
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Drivers
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Modules
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Support
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/User
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
 
     # Base project include paths
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Inc
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Algorithms
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Devices
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Drivers
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Modules
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Support
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/User
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include
-    - -ID:/Code/RoboMaster/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/Inc
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/Drivers/CMSIS/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Algorithms
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Devices
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Drivers
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Modules
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/CubotMiddleware/Support
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/User
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include
+    - -ID:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Base/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
 
     # Toolchain system headers (for std headers like math.h)
     - -isystemC:/Keil_v5/ARM/ARMCLANG/include

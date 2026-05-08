@@ -49,9 +49,9 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
     if (rc_Ctrl_et.isOnline == 1 && Top.Referee.shooter_output == 1 && ammo_booster->Shoot_Plate.heat_status == 1)
     {
         if (Top.Referee.cooling_heat >= (Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin - 70))
-            ammo_booster->Shoot_Plate.Fire_Divider = 1000; // 125
+            ammo_booster->Shoot_Plate.Fire_Divider = 500; // 125
         else
-            ammo_booster->Shoot_Plate.Fire_Divider = 1000; // 50
+            ammo_booster->Shoot_Plate.Fire_Divider = 500; // 50
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;
         if (ammo_booster->Shoot_Plate.Shoot_Cut % ammo_booster->Shoot_Plate.Fire_Divider == 0)
@@ -79,6 +79,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
             ammo_booster->Shoot_Plate.Jam++;
             ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, -2000, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
             if (ammo_booster->Shoot_Plate.Jam > 1600)
+                // ammo_booster->Shoot_Plate.Target_Angle = ammo_booster->Shoot_Plate.Plate_Angle - fmod(ammo_booster->Shoot_Plate.Plate_Angle,45);
                 ammo_booster->Shoot_Plate.Jam = 0;
         }
     }
