@@ -35,6 +35,7 @@ uint8_t SolutionData_FromTop(uint8_t *rxBuffer, uint16_t len)
 	memcpy(&Receive.Base.Lidar.Vy,&rxBuffer[19],sizeof(float));
 	Receive.Base.Lidar.Movemode =rxBuffer[23];
 	Receive.Base.AutoAim.mode = rxBuffer[24];
+	Receive.Base.AutoAim.AllroundSense = rxBuffer[25];
 	return 0;
 }
 

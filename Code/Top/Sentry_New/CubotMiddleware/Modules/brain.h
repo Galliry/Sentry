@@ -77,7 +77,18 @@ typedef struct
 		float Distance;
 		uint8_t IsFire;
 		uint8_t Rune_Flag;
-		uint8_t All_Sense; //全向感知
+		/**
+		 * |value|sense|
+		* |-|-|
+		* |0|未识别到|
+		* |1|左|
+		* |2|左后|
+		* |3|后|
+		* |4|右后|
+		* |5|右|
+		 * 
+		 */
+		uint8_t All_Sense; 
 	}Autoaim;
 	 
 	struct{

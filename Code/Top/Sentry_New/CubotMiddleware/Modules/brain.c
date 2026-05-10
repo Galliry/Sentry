@@ -1,5 +1,7 @@
 #include "brain.h"
 #include "holder.h"
+#include "mpu6050.h"
+#include "interboard.h"
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
@@ -36,7 +38,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			
 			brain->Autoaim.Yaw_add = ((recBuffer[3] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[3] & 0x3f) * 100 + recBuffer[4]) / 100);
 			brain->Autoaim.Pitch_add = ((recBuffer[5] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100);
-			brain->Autoaim.Distance = (float)(recBuffer[7]) / 10;
+			brain->Autoaim.All_Sense = recBuffer[7];
 			
 			if(rc_Ctrl_et.rc.s2 == 2)
 			{

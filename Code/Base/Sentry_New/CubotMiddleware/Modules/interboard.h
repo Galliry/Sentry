@@ -5,7 +5,7 @@
 #include "et08.h"
 #include "user_lib.h"
 #include "referee.h"
-#include "check.h"
+#include <stdint.h>
 typedef struct
 {
 	struct
@@ -31,6 +31,12 @@ typedef struct
 		uint8_t Movemode;
 		uint8_t posture;
 	}Lidar;
+
+	struct 
+	{
+		uint8_t All_Sense;
+	}Autoaim;
+	
 }Base_t;
 
 extern Base_t Base;

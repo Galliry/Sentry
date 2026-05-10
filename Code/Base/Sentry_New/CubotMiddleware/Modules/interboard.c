@@ -1,4 +1,5 @@
 #include "interboard.h"
+#include "check.h"
 
 CAN_TxBuffer RefereeData;
 Base_t Base;
@@ -57,6 +58,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Lidar.isOnline = ((rxBuffer->Data[6] >> 1) & 0x01);
 		Base.Lidar.Movemode = ((rxBuffer->Data[6] >> 2) & 0x03);
 		Base.Lidar.posture = 2;
+		Base.Autoaim.All_Sense = rxBuffer->Data[7];
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{
@@ -69,5 +71,6 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Lidar.Vx,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Lidar.Vy,&rxBuffer->Data[4],sizeof(float));
+		
 	}
 }

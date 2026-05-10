@@ -72,7 +72,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
             {
                 chassis->Movement.Vx_Move = 0;
                 chassis->Movement.Vy_Move = 0;
-                chassis->Movement.Omega = 6000;
+                // chassis->Movement.Omega = 6000;
             }
             else if (rec->Lidar.Movemode == 1)
             {
@@ -84,7 +84,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
             {
                 chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
                 chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = 6000;
+                // chassis->Movement.Omega = 6000;
             }
             if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
             {

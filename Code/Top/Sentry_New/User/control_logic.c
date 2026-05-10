@@ -100,11 +100,12 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%.2f\r\n", INS_attitude->pitch);
 
     // Autoaim
-    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n",
+    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %d\r\n",
                    Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
                    Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
                    Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle,
-                   Brain.Autoaim.Pitch_add, Brain.Autoaim.Yaw_add);
+                   Brain.Autoaim.Pitch_add, Brain.Autoaim.Yaw_add,
+                   Brain.Autoaim.IsFire);
 
     // ShootPlate
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %d\r\n",

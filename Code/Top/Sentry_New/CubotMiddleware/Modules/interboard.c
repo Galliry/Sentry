@@ -1,4 +1,6 @@
 #include "interboard.h"
+#include "check.h"
+#include "brain.h"
 CAN_TxBuffer RemoteData = {.Identifier = 0x101};
 CAN_TxBuffer GyroData = {.Identifier = 0x102};
 CAN_TxBuffer LidarData = {.Identifier = 0x103};
@@ -12,6 +14,8 @@ void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
     RemoteData.Data[4] = (rc_ctrl->rc.ch2 >> 10) | ((rc_ctrl->rc.ch3 & 0x7F) << 1);  
     RemoteData.Data[5] = (rc_ctrl->rc.ch3 >> 7) | ((rc_ctrl->rc.s1 & 0x03) << 4) | ((rc_ctrl->rc.s2 & 0x03) << 6);
 	RemoteData.Data[6] = ((rc_ctrl->isOnline & 0x01) | ((check_robot_state.Check_Usart.Check_lidar & 0x01) << 1) | ((Brain.Lidar.movemode & 0x03) << 2));
+
+	RemoteData.Data[7] = Brain.Autoaim.All_Sense;
 	
 	CAN_Send(&can2,&RemoteData);
 }
@@ -28,6 +32,8 @@ void LidarDataTrans(void)
 {
 	memcpy(&LidarData.Data[0],&Brain.Lidar.vx,sizeof(float));
 	memcpy(&LidarData.Data[4],&Brain.Lidar.vy,sizeof(float));
+
+	// LidarData.Data[9] = Brain.Autoaim.All_Sense;
 	
 	CAN_Send(&can2,&LidarData);
 }

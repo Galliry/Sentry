@@ -1,6 +1,6 @@
 #include "holder.h"
 #include "DM_motor.h"
-#include "communication.h"
+// #include "communication.h"
 #include "driver_timer.h"
 #include "et08.h"
 #include "fast_math_functions.h"
@@ -10,6 +10,9 @@
 #include "stm32h7xx_hal.h"
 #include "user_lib.h"
 #include <stdint.h>
+#include "check.h"
+#include "interboard.h"
+#include "brain.h"
 
 Holder_t Holder;
 float Yaw_TD = 240;
@@ -180,7 +183,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     if (rc_ctrl->rc.s2 == 1)
     {
         holder->Yaw_S.Target_Angle -= ((rc_ctrl->rc.ch2 - 1024) * holder->Yaw_S.Sensitivity);
-        holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
+        
         // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
         // holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
 
@@ -199,6 +202,10 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
         // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / w);
         // holder->Pitch.Target_Angle = 20 * cos(HAL_GetTick() / w);
     }
+    if (rc_ctrl->rc.s2 != 2)
+    {
+        holder->Pitch.Target_Angle += ((rc_ctrl->rc.ch3 - 1024) * holder->Pitch.Sensitivity);
+    }
     if (rc_ctrl->rc.s2 == 2 || Top.Referee.game_prograss == 4)
     {
         if (check_robot_state.Check_Usart.Check_vision == 1 || rc_ctrl->rc.s2 == 2)
@@ -207,6 +214,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
             {
                 // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
                 holder->Yaw_S.Target_Angle = 0;
+                holder->Pitch.Target_Angle = 0;
                 // holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
             }
             else if (Brain.Autoaim.mode == Lock)
@@ -239,21 +247,21 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 
     if (holder->Pitch.GYRO_Angle > 20)
     {
-        holder->Pitch.PID.ShellPID->Kp = 0.35f;
+        holder->Pitch.PID.ShellPID->Kp = 0.40f;
         holder->Pitch.PID.ShellPID->Ki = 0.005f;
         holder->Pitch.PID.ShellPID->Kd = -0.2f;
-        holder->Pitch.PID.CorePID->Kp = 0.32f;
+        holder->Pitch.PID.CorePID->Kp = 0.37f;
         holder->Pitch.PID.CorePID->Ki = 0;
         holder->Pitch.PID.CorePID->Kd = 2;
     }
     else
     {
         // BasePID_Init(&pid_pitch_angle, 0.48, 0.005f, -0.005, 1.5);
-        holder->Pitch.PID.ShellPID->Kp = 0.40f;
+        holder->Pitch.PID.ShellPID->Kp = 0.45f;
         holder->Pitch.PID.ShellPID->Ki = 0.005f;
         holder->Pitch.PID.ShellPID->Kd = -0.005f;
         // BasePID_Init(&pid_pitch_speed, 0.60, 0, 3, 0)
-        holder->Pitch.PID.CorePID->Kp = 0.50;
+        holder->Pitch.PID.CorePID->Kp = 0.55;
         holder->Pitch.PID.CorePID->Ki = 0;
         holder->Pitch.PID.CorePID->Kd = 3;
     }

@@ -60,7 +60,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
             ammo_booster->Shoot_Plate.Shoot_Cut++;
         if (ammo_booster->Shoot_Plate.Shoot_Cut % ammo_booster->Shoot_Plate.Fire_Divider == 0)
             ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;
-        if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 && Top.Referee.shoot_num >= 20)
+        if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 && Top.Referee.shoot_num >= 0)
         {
             ammo_booster->Shoot_Plate.Target_Angle += 45;
             ammo_booster->Shoot_Plate.ShootNum++;
