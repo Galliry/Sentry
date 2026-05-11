@@ -3,9 +3,10 @@
 #include "control_logic.h"
 #include "referee.h"
 #include "user_lib.h"
-
+float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step);
 SwerveChassis swervechassis;
 void SwerveChassisSetSpeed(SwerveChassis *chassis);
+
 void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SinglePID_t *run_pid, SinglePID_t *follow_pid)
 {
     uint8_t i;
@@ -31,7 +32,6 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
     chassis->Movement.Vy_Sensitivity = 5;
 }
 
-const float chassis_unit_trans = 60 * 15.74f / 0.110f / 3.1415926f;
 
 #define LOGIC_VERSION 1
 void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
@@ -43,13 +43,13 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 		{
 			chassis->Movement.Vx_Move = 0;
             chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = 6000;
+			chassis->Movement.Omega = 8000;
 			super_cap.cap_state.Supercap_Mode = 1;
 		}else if(rec->Rc.rc_Ctrl_ch1 - 1024 < -300)
 		{
 			chassis->Movement.Vx_Move = 0;
             chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = -6000;
+			chassis->Movement.Omega = -8000;
 			super_cap.cap_state.Supercap_Mode = 1;
 		}
 		else
@@ -59,6 +59,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 			chassis->Movement.Omega = 0;
 			super_cap.cap_state.Supercap_Mode = 0;
 		}
+		
 		if (rec->Lidar.isOnline == 0 && referee2022.game_status.game_progress == 4)
         {
 			chassis->Movement.Vx_Move = 0;
@@ -72,7 +73,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
             {
                 chassis->Movement.Vx_Move = 0;
                 chassis->Movement.Vy_Move = 0;
-                chassis->Movement.Omega = 6000;
+                chassis->Movement.Omega = 8000;
             }
             else if (rec->Lidar.Movemode == 1)
             {
@@ -84,107 +85,23 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
             {
                 chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
                 chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = 6000;
+                chassis->Movement.Omega = -8000;
             }
             if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
             {
                 ;
             }
             else
-                SwerveChassisSetSpeed(chassis);
+				SwerveChassisSetSpeed(chassis);
         }
     }
     else
     {
-        chassis->Movement.Vx_Move = (rec->Rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
-        chassis->Movement.Vy_Move = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
-        chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-        super_cap.cap_state.Supercap_Mode = 0;
-        SwerveChassisSetSpeed(chassis);
-    }
-#endif
-#if LOGIC_VERSION == 2
-    if (rec->Rc.rc_Ctrl_s1 == 2 ||                  // 遥控器模拟比赛条件
-        referee2022.game_status.game_progress == 4) // 真实比赛中比赛开始信号
-    {
-        if (rec->Lidar.isOnline) // 雷达在线
-        {
-            if (rec->Lidar.Movemode == 0) // 无需要移动的目标点
-            {
-
-                chassis->Movement.Vx_Move = 0;
-                chassis->Movement.Vy_Move = 0;
-                if (beHit == 1) // 5s内掉过血
-                {
-                    chassis->Movement.Omega = 6000;
-                    // 超电电较多时开超电
-                    if (super_cap.cap_state.Voltage >= 18)
-                    {
-                        super_cap.cap_state.Supercap_Mode = 1;
-                    }
-                    else
-                    {
-                        super_cap.cap_state.Supercap_Mode = 0;
-                    }
-                    // 开移动姿态
-                }
-                else // 没被打
-                {
-                    chassis->Movement.Omega = 0;
-                    // 关超电
-                    super_cap.cap_state.Supercap_Mode = 0;
-                    // 开进攻姿态
-                }
-            }
-            else if (rec->Lidar.Movemode == 1) // 需要跑路
-            {
-                // 开移动姿态
-                chassis->Movement.Vx_Move = rec->Lidar.Vx * chassis_unit_trans;
-                chassis->Movement.Vy_Move = rec->Lidar.Vy * chassis_unit_trans;
-                if (beHit == 1) // 5s内掉过血
-                {
-                    chassis->Movement.Omega = 2000;
-                    // 开超电
-                    if (super_cap.cap_state.Voltage >= 18)
-                    {
-                        super_cap.cap_state.Supercap_Mode = 1;
-                    }
-                    else
-                    {
-                        super_cap.cap_state.Supercap_Mode = 0;
-                    }
-                }
-                else // 没被打
-                {
-                    // 底盘跟随
-                    chassis->Movement.Omega =
-                        BasePID_SpeedControl(&chassis->Motors6020.FollowPID,
-                                             103.28,
-                                             Holder.Motors.Yaw_M.angle);
-                    if (rec->Lidar.Vx * rec->Lidar.Vx + rec->Lidar.Vy * rec->Lidar.Vy >= 4 // 需要的移动速度较大
-                        && super_cap.cap_state.Voltage >= 18)                              // 超电还有较多电
-                    {
-                        super_cap.cap_state.Supercap_Mode = 1;
-                    }
-                    else
-                    {
-                        super_cap.cap_state.Supercap_Mode = 0;
-                    }
-                }
-            }
-        }
-        else // 雷达离线
-        {
-            chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
-            chassis->Movement.Omega = 6000;
-        }
-    }
-    else // 非比赛条件下，手动遥控烧饼机器人
-    {
-        chassis->Movement.Vx_Move = (rec->Rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
-        chassis->Movement.Vy_Move = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
-        chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+        chassis->Movement.Vx_Tar = (rec->Rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
+        chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
+		chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
+        chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
+		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
         super_cap.cap_state.Supercap_Mode = 0;
         SwerveChassisSetSpeed(chassis);
     }
@@ -343,3 +260,26 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
         MotorFillData(&chassis->Motors3508.motor[j], chassis->Motors3508.motor[j].Data.Output);
     } // 最后上一层保险
 }
+// 防止急停翘头
+float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step) 
+{
+    if (target == current) return current;
+    
+    int is_accelerating = (fabsf(target) > fabsf(current)) && ((target * current) >= 0);
+    
+    float step = is_accelerating ? accel_step : decel_step;
+    
+    if (target > current) 
+    {
+        current += step;
+        if (current > target) current = target;
+    } 
+    else 
+    {
+        current -= step;
+        if (current < target) current = target;
+    }
+    
+    return current;
+}
+
