@@ -46,6 +46,8 @@ typedef struct
         float Vy;
 		float Vx_Move;
 		float Vy_Move;
+		float Vx_Tar;
+		float Vy_Tar;
         float Omega;
         float Vx_Sensitivity;       //灵敏度
 		float Vy_Sensitivity;
