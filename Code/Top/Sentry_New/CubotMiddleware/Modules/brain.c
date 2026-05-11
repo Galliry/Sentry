@@ -138,8 +138,11 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	}
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[5] = Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[6] = Brain->Autoaim.Rune_Flag;
-	RobotToBrainChassisTimeBuffer[7] = 0x00;
+	RobotToBrainChassisTimeBuffer[6] = Brain->Autoaim.Rune_Flag;	//开符标志位
+	if(Top.Referee.shoot_num <= 20)
+		RobotToBrainChassisTimeBuffer[7] = 0x01;
+	else
+		RobotToBrainChassisTimeBuffer[7] = 0x00;
 	RobotToBrainChassisTimeBuffer[8] = 0xDD;
 	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer, 9);
 

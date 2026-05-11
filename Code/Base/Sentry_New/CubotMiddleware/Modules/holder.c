@@ -28,7 +28,7 @@ void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 void HolderControl_Base(Holder_t *holder, Base_t *rec)
 {
 #if DEBUG_YAW == 0
-    if (rec->Rc.rc_Ctrl_s2 == 3)
+    if (rec->Rc.rc_Ctrl_s2 != 1)
         holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
 #else
     holder->Yaw_M.Target_Angle = Debug_tar;

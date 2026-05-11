@@ -41,59 +41,61 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
     {
         if(rec->Rc.rc_Ctrl_ch1 - 1024 > 300)
 		{
-			chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
+			chassis->Movement.Vx_Tar = 0;
+            chassis->Movement.Vy_Tar = 0;
 			chassis->Movement.Omega = 8000;
 			super_cap.cap_state.Supercap_Mode = 1;
+			SwerveChassisSetSpeed(chassis);
 		}else if(rec->Rc.rc_Ctrl_ch1 - 1024 < -300)
 		{
-			chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
+			chassis->Movement.Vx_Tar = 0;
+            chassis->Movement.Vy_Tar = 0;
 			chassis->Movement.Omega = -8000;
 			super_cap.cap_state.Supercap_Mode = 1;
+			SwerveChassisSetSpeed(chassis);
 		}
 		else
 		{
-			chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
-			chassis->Movement.Omega = 0;
 			super_cap.cap_state.Supercap_Mode = 0;
-		}
-		
-		if (rec->Lidar.isOnline == 0 && referee2022.game_status.game_progress == 4)
-        {
-			chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
-            chassis->Movement.Omega = 6000;
-            SwerveChassisSetSpeed(chassis);
-        }
-        else
-        {
-            if (rec->Lidar.Movemode == 0)
-            {
-                chassis->Movement.Vx_Move = 0;
-                chassis->Movement.Vy_Move = 0;
-                chassis->Movement.Omega = 8000;
-            }
-            else if (rec->Lidar.Movemode == 1)
-            {
-                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
-                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-            }
-            else if (rec->Lidar.Movemode == 2)
-            {
-                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
-                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = -8000;
-            }
-            if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
-            {
-                ;
-            }
-            else
+			if (rec->Lidar.isOnline == 0 && referee2022.game_status.game_progress == 4)
+			{
+				chassis->Movement.Vx_Tar = 0;
+				chassis->Movement.Vy_Tar = 0;
+				chassis->Movement.Omega = 6000;
+				super_cap.cap_state.Supercap_Mode = 0;
 				SwerveChassisSetSpeed(chassis);
-        }
+			}
+			else
+			{
+				if (rec->Lidar.Movemode == 1)
+				{
+					chassis->Movement.Vx_Tar = 0;
+				chassis->Movement.Vy_Tar = 0;
+					chassis->Movement.Omega = 8000;
+				}
+				else if (rec->Lidar.Movemode == 0)
+				{
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+				}
+				else if (rec->Lidar.Movemode == 2)
+				{
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
+					chassis->Movement.Omega = -8000;
+				}
+				
+				chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
+				chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
+				if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
+				{
+					;
+				}
+				else
+					SwerveChassisSetSpeed(chassis);
+			}
+		}
     }
     else
     {
