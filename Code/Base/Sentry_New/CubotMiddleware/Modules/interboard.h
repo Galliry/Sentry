@@ -32,7 +32,8 @@ typedef struct
 	}Lidar;
 	struct
 	{
-		uint8_t Target_Yaw_angle;
+		uint8_t All_Sense_cnt;
+		uint16_t All_Sense_Angle[6];
 	}All_sense;
 }Base_t;
 

@@ -73,14 +73,14 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}
 				else if (rec->Lidar.Movemode == 0)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * speed_trans;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * speed_trans;
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
 					chassis->Movement.Posture = 3;	//移动姿态
 				}
 				else if (rec->Lidar.Movemode == 2)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * speed_trans;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * speed_trans;
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
 					chassis->Movement.Posture = 3;
 				}
 				
@@ -94,21 +94,21 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}else if(referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					if(Base.All_sense.Target_Yaw_angle == 0)
+					if(Base.All_sense.All_Sense_cnt == 0)
 						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 					else 
 						chassis->Movement.Omega = 0;
 				}else if(Base.Lidar.Movemode == 2)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					if(Base.All_sense.Target_Yaw_angle == 0)
+					if(Base.All_sense.All_Sense_cnt == 0)
 						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 					else 
 						chassis->Movement.Omega = 0;
 				}
 				else
 				{
-					if(Base.All_sense.Target_Yaw_angle == 0)
+					if(Base.All_sense.All_Sense_cnt == 0)
 						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 					else 
 						chassis->Movement.Omega = 0;

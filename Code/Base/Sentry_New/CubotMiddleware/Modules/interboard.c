@@ -4,6 +4,24 @@
 CAN_TxBuffer RefereeData;
 Base_t Base;
 
+void InterboardData_Init(Base_t* base)
+{
+	base->All_sense.All_Sense_Angle[0] = 0;
+	base->All_sense.All_Sense_Angle[1] = -60;
+	base->All_sense.All_Sense_Angle[2] = -120;
+	base->All_sense.All_Sense_Angle[3] = -180;
+	base->All_sense.All_Sense_Angle[4] = 120;
+	base->All_sense.All_Sense_Angle[5] = 60;
+	
+	base->Rc.rc_Ctrl_ch0 = 1024;
+    base->Rc.rc_Ctrl_ch1 = 1024;
+    base->Rc.rc_Ctrl_ch2 = 1024;
+	base->Rc.rc_Ctrl_ch3 = 1024;
+	base->Rc.rc_Ctrl_s1 = 3;
+    base->Rc.rc_Ctrl_s2 = 3;
+	base->Rc.isOnline = 0;
+}
+
 void RefereeDataTrans(Referee2022* referee)
 {
 	static uint8_t i = 0;
@@ -58,7 +76,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Rc.isOnline = (rxBuffer->Data[6] & 0x01);
 		Base.Lidar.isOnline = ((rxBuffer->Data[6] >> 1) & 0x01);
 		Base.Lidar.Movemode = ((rxBuffer->Data[6] >> 2) & 0x03);
-		Base.All_sense.Target_Yaw_angle = ((rxBuffer->Data[6] >> 4) & 0x07);
+		Base.All_sense.All_Sense_cnt = ((rxBuffer->Data[6] >> 4) & 0x07);
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{

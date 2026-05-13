@@ -34,7 +34,8 @@ typedef enum
 	Cesis = 1,             
 	Small_Buff = 2,
 	Big_Buff = 3,
-	EKF = 4
+	EKF = 4,
+	Outpost = 5
 }Brain_mode;		//三种模式，切换相关一部分在回调函数中，一部分在contro_logic中
 
 typedef enum

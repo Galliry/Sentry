@@ -13,7 +13,7 @@ Holder_t Holder;
 volatile float Debug_tar = 0;
 
 /**
- * @brief ÔÆÌ¨³õÊ¼»¯µ×°å
+ * @brief 云台初始化
  */
 void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 {
@@ -23,32 +23,32 @@ void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
     holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle;
 }
 
-float AngleMinus(float a, float b)
-{
-    float r = a - b;
-    if (r > 180)
-        r -= 360;
-    if (r < -180)
-        r += 360;
-    return r;
-}
+//float AngleMinus(float a, float b)
+//{
+//    float r = a - b;
+//    if (r > 180)
+//        r -= 360;
+//    if (r < -180)
+//        r += 360;
+//    return r;
+//}
 
-void AngleLim(float *a)
-{
-    if (*a > 360)
-    {
-        *a -= 360;
-    }
-    if (*a < 0)
-    {
-        *a += 360;
-    }
-}
+//void AngleLim(float *a)
+//{
+//    if (*a > 360)
+//    {
+//        *a -= 360;
+//    }
+//    if (*a < 0)
+//    {
+//        *a += 360;
+//    }
+//}
 
 uint16_t AllSenseDelayCount = 0;
 
 /**
- * @brief ÔÆÌ¨¿ØÖÆ
+ * @brief  下板云台控制
  */
 void HolderControl_Base(Holder_t *holder, Base_t *rec)
 {
@@ -57,51 +57,46 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
     holder->Yaw_M.Can_Angle = holder->Motors.Yaw_M.angle;
     holder->Yaw_M.Can_AngleSpeed = holder->Motors.Yaw_M.speed_rpm;
 
-    AngleLim(&holder->Yaw_M.GYRO_Angle);
+//    AngleLim(&holder->Yaw_M.GYRO_Angle);
 
 #if DEBUG_YAW == 0
-    if (rec->Rc.rc_Ctrl_s2 == 3)
+    if (rec->Rc.rc_Ctrl_s2 != 1)
     {
-        holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
+        holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity) + Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
     }
-    if (AllSenseDelayCount == 0)
-    {
-        if (rec->Autoaim.All_Sense == 1)
-        {
-            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 60;
-        }
-        if (rec->Autoaim.All_Sense == 2)
-        {
-            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 120;
-        }
-        if (rec->Autoaim.All_Sense == 3)
-        {
-            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 180;
-        }
-        if (rec->Autoaim.All_Sense == 4)
-        {
-            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 120;
-        }
-        if (rec->Autoaim.All_Sense == 5)
-        {
-            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 60;
-        }
-        AllSenseDelayCount = 125;
-    }
-    else
-    {
-        AllSenseDelayCount--;
-    }
+//    if (AllSenseDelayCount == 0)
+//    {
+//        if (rec->Autoaim.All_Sense == 1)
+//        {
+//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 60;
+//        }
+//        if (rec->Autoaim.All_Sense == 2)
+//        {
+//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 120;
+//        }
+//        if (rec->Autoaim.All_Sense == 3)
+//        {
+//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 180;
+//        }
+//        if (rec->Autoaim.All_Sense == 4)
+//        {
+//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 120;
+//        }
+//        if (rec->Autoaim.All_Sense == 5)
+//        {
+//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 60;
+//        }
+//        AllSenseDelayCount = 125;
+//    }
+//    else
+//    {
+//        AllSenseDelayCount--;
+//    }
 
-    AngleLim(&holder->Yaw_M.Target_Angle);
+//    AngleLim(&holder->Yaw_M.Target_Angle);
 #else
     holder->Yaw_M.Target_Angle = Debug_tar;
 #endif
-
-    //	else if (rec->Base.AutoAim.mode == 0x00 /*Cruise*/ && (referee2022.game_status.game_progress == 4 || rec->Base.rc.rc_Ctrl_s2 == 2) && Receive.Base.Lidar.Movemode == 0 && Receive.Base.Lidar.Online == 1)
-    //	{
-    //		holder->Yaw_M.Target_Angle -= 0.08f;
-    //	}
 
 #if DEBUG_YAW == 0
     holder->Motors.Yaw_M.motor_output = BasePID_SpeedControl(holder->Yaw_M.PID.CorePID,
@@ -113,7 +108,6 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
     DMiaoMitControl(&holder->Motors.Yaw_M, 0, 0, 0, 0, holder->Motors.Yaw_M.motor_output);
 
 #else
-
     DMiaoMitControl(&holder->Motors.Yaw_M, 0, 0, 0, 0, Debug_tar);
 #endif
 }
