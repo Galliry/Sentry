@@ -78,6 +78,7 @@ typedef struct
 		uint8_t IsFire;
 		uint8_t Rune_Flag;
 		uint8_t All_Sense; //全向感知
+		uint8_t All_Sense_id;
 	}Autoaim;
 	 
 	struct{

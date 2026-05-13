@@ -42,15 +42,16 @@ typedef struct
     
     struct
     {
-        float Vx;
+        float Vx;	//加入云台坐标系转换速度
         float Vy;
-		float Vx_Move;
+		float Vx_Move;	//平滑后速度
 		float Vy_Move;
-		float Vx_Tar;
+		float Vx_Tar; // 原始目标速度
 		float Vy_Tar;
         float Omega;
         float Vx_Sensitivity;       //灵敏度
 		float Vy_Sensitivity;
+		uint8_t Posture;
     }Movement;
 
     struct 

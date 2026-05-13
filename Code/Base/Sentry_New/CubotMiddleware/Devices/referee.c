@@ -4,7 +4,7 @@
 #include "interaction.h"
 #include "string.h"
 #include "interboard.h"
-
+#include "swerve_chassis.h"
 Referee2022  referee2022;//已更新至2026赛季 版本V1.3.0
 //uint32_t sentry_decision;
 //uint16_t recieve_time;
@@ -482,8 +482,8 @@ void Sentry_Decision_Control(void)
 	referee2022.sentry_decision.resurrection = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
 	if(referee2022.bullet_remaining.bullet_remaining_num <= 50 && referee2022.bullet_remaining.money >= 900)
 		referee2022.sentry_decision.shoot_num += 100;
-	if(referee2022.sentry_info_t.posture != Base.Lidar.posture)
-		referee2022.sentry_decision.target_posture = Base.Lidar.posture;
+	if(referee2022.sentry_info_t.posture != swervechassis.Movement.Posture)
+		referee2022.sentry_decision.target_posture = swervechassis.Movement.Posture;
 	referee2022.sentry_decision.open_energy_device = 0;
 	
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~1U) | (referee2022.sentry_decision.resurrection & 1U);
@@ -589,3 +589,4 @@ void Sentry_To_Referee(void)
 		i = 0;
 	}
 }
+

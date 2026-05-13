@@ -32,6 +32,8 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			brain->Autoaim.Yaw_add = ((recBuffer[3] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[3] & 0x3f) * 100 + recBuffer[4]) / 100);
 			brain->Autoaim.Pitch_add = ((recBuffer[5] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100);
 			brain->Autoaim.Distance = (float)(recBuffer[7]) / 10;
+			brain->Autoaim.All_Sense = recBuffer[8];
+			brain->Autoaim.All_Sense_id = recBuffer[9];
 			
 			if(rc_Ctrl_et.rc.s2 == 2)
 			{
@@ -139,12 +141,13 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[5] = Top.Referee.robot_HP >> 8;
 	RobotToBrainChassisTimeBuffer[6] = Brain->Autoaim.Rune_Flag;	//开符标志位
-	if(Top.Referee.shoot_num <= 20)
-		RobotToBrainChassisTimeBuffer[7] = 0x01;
+	RobotToBrainChassisTimeBuffer[7] = 0x00; //保护英雄标志位 确认为1
+	if(Top.Referee.shoot_num <= 20) //发弹量标志位
+		RobotToBrainChassisTimeBuffer[8] = 0x01;
 	else
-		RobotToBrainChassisTimeBuffer[7] = 0x00;
-	RobotToBrainChassisTimeBuffer[8] = 0xDD;
-	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer, 9);
+		RobotToBrainChassisTimeBuffer[8] = 0x00;
+	RobotToBrainChassisTimeBuffer[9] = 0xDD;
+	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer, 10);
 
 }
 

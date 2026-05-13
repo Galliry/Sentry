@@ -3,9 +3,15 @@
 #include "control_logic.h"
 #include "referee.h"
 #include "user_lib.h"
+#include "arm_math.h"
+#ifndef PI
+#define PI 3.1415926535f
+#endif
+
 float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step);
-SwerveChassis swervechassis;
+float Calculate_Variable_Omega(float amplitude, float offset, float period_s, float dt_s);
 void SwerveChassisSetSpeed(SwerveChassis *chassis);
+SwerveChassis swervechassis;
 
 void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SinglePID_t *run_pid, SinglePID_t *follow_pid)
 {
@@ -32,25 +38,17 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
     chassis->Movement.Vy_Sensitivity = 5;
 }
 
+const float speed_trans = 60 * 15.74f / 0.11f / 3.1415f;
 
-#define LOGIC_VERSION 1
 void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 {
-#if LOGIC_VERSION == 1
     if (rec->Rc.rc_Ctrl_s1 == 2 || referee2022.game_status.game_progress == 4)
     {
-        if(rec->Rc.rc_Ctrl_ch1 - 1024 > 300)
+        if(ABS(rec->Rc.rc_Ctrl_ch1 - 1024) > 300)
 		{
 			chassis->Movement.Vx_Tar = 0;
             chassis->Movement.Vy_Tar = 0;
-			chassis->Movement.Omega = 8000;
-			super_cap.cap_state.Supercap_Mode = 1;
-			SwerveChassisSetSpeed(chassis);
-		}else if(rec->Rc.rc_Ctrl_ch1 - 1024 < -300)
-		{
-			chassis->Movement.Vx_Tar = 0;
-            chassis->Movement.Vy_Tar = 0;
-			chassis->Movement.Omega = -8000;
+			chassis->Movement.Omega = (rec->Rc.rc_Ctrl_ch1 - 1024) * 15;
 			super_cap.cap_state.Supercap_Mode = 1;
 			SwerveChassisSetSpeed(chassis);
 		}
@@ -61,7 +59,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 			{
 				chassis->Movement.Vx_Tar = 0;
 				chassis->Movement.Vy_Tar = 0;
-				chassis->Movement.Omega = 6000;
+				chassis->Movement.Omega = -8000;
 				super_cap.cap_state.Supercap_Mode = 0;
 				SwerveChassisSetSpeed(chassis);
 			}
@@ -70,25 +68,54 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				if (rec->Lidar.Movemode == 1)
 				{
 					chassis->Movement.Vx_Tar = 0;
-				chassis->Movement.Vy_Tar = 0;
-					chassis->Movement.Omega = 8000;
+					chassis->Movement.Vy_Tar = 0;
+					chassis->Movement.Posture = 1;	//进攻姿态
 				}
 				else if (rec->Lidar.Movemode == 0)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * speed_trans;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * speed_trans;
+					chassis->Movement.Posture = 3;	//移动姿态
 				}
 				else if (rec->Lidar.Movemode == 2)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
-					chassis->Movement.Omega = -8000;
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * speed_trans;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * speed_trans;
+					chassis->Movement.Posture = 3;
 				}
 				
 				chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
 				chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
-				if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
+				if(referee2022.robot_hurt.hurt_type == 0 && referee2022.robot_hurt.armor_id != 0)
+				{
+					chassis->Movement.Omega = Calculate_Variable_Omega(2000,6000,2.0f,0.001f);
+					if(referee2022.game_robot_status.remain_HP < 400)
+						super_cap.cap_state.Supercap_Mode = 1;
+				}else if(referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.game_progress == 4)
+				{
+					super_cap.cap_state.Supercap_Mode = 1;
+					if(Base.All_sense.Target_Yaw_angle == 0)
+						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					else 
+						chassis->Movement.Omega = 0;
+				}else if(Base.Lidar.Movemode == 2)
+				{
+					super_cap.cap_state.Supercap_Mode = 1;
+					if(Base.All_sense.Target_Yaw_angle == 0)
+						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					else 
+						chassis->Movement.Omega = 0;
+				}
+				else
+				{
+					if(Base.All_sense.Target_Yaw_angle == 0)
+						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					else 
+						chassis->Movement.Omega = 0;
+					super_cap.cap_state.Supercap_Mode = 0;
+				}
+				
+				if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 0 || rec->Lidar.Movemode == 2))
 				{
 					;
 				}
@@ -107,7 +134,6 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
         super_cap.cap_state.Supercap_Mode = 0;
         SwerveChassisSetSpeed(chassis);
     }
-#endif
 }
 
 void SwerveChassisSetSpeed(SwerveChassis *chassis)
@@ -284,4 +310,24 @@ float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, f
     
     return current;
 }
+/**
+ * @brief  生成正弦波动的角速度 (或任意随时间正弦变化的变量)
+ * @param  amplitude: 波动振幅 
+ * @param  offset:    中心偏置 
+ * @param  period_s:  完成一次完整波动的时间，单位：秒
+ * @param  dt_s:      该函数被调用的周期，单位：秒
+ * @retval 当前时刻应该输出的目标值
+ */
+float Calculate_Variable_Omega(float amplitude, float offset, float period_s, float dt_s)
+{
+    static float phase_angle = 0.0f;	//相位角
+    if (period_s <= 0.0f){return offset;}
 
+    float angle_step = (2.0f * PI) * (dt_s / period_s);	//步长
+    phase_angle += angle_step;	// 累加相位
+    if (phase_angle >= 2.0f * PI)
+    {
+        phase_angle -= 2.0f * PI;
+    }
+    return (amplitude * arm_sin_f32(phase_angle)) + offset;
+}

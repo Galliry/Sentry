@@ -24,10 +24,11 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Identifier = 0x105;
 		RefereeData.Data[0] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 		RefereeData.Data[1] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
-		RefereeData.Data[2] = referee2022.game_robot_status.mains_power_gimbal_output;
-		RefereeData.Data[3] = referee2022.game_robot_status.robot_id;
+		RefereeData.Data[2] = referee->game_robot_status.mains_power_gimbal_output;
+		RefereeData.Data[3] = referee->game_robot_status.robot_id;
 		RefereeData.Data[4] = (uint8_t)(referee->bullet_remaining.bullet_remaining_num & 0xff);
 		RefereeData.Data[5] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
+		RefereeData.Data[6] = (uint8_t)referee->ext_student_interactive_header_data.lidar_id;
 		CAN_Send(&can1,&RefereeData);
 		i = 0;
 	}else if(i == 2)
@@ -56,7 +57,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Rc.isOnline = (rxBuffer->Data[6] & 0x01);
 		Base.Lidar.isOnline = ((rxBuffer->Data[6] >> 1) & 0x01);
 		Base.Lidar.Movemode = ((rxBuffer->Data[6] >> 2) & 0x03);
-		Base.Lidar.posture = 2;
+		Base.All_sense.Target_Yaw_angle = ((rxBuffer->Data[6] >> 4) & 0x07);
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{

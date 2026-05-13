@@ -7,6 +7,7 @@
 #include "hardware_config.h"
 #include "check.h"
 #include "interboard.h"
+#include "swerve_chassis.h"
 CAN_TxBuffer txBuffer0x6FFforCAN1={
 	.Identifier = 0x6ff
 };
@@ -27,7 +28,10 @@ void SupercapControl(CAN_Object can, Supercap* Cap)
 {
 	Cap->cap_state.Voltage_Flag = 1;
 	
-	if(Cap->cap_state.Voltage < 9.0f)
+	if(Cap->cap_state.Voltage < 13.0f && Base.Lidar.Movemode != 2)
+	{
+		Cap->cap_state.Voltage_Flag=0;
+	}else if(Cap->cap_state.Voltage < 9.0f && Base.Lidar.Movemode == 2)
 	{
 		Cap->cap_state.Voltage_Flag=0;
 	}
@@ -52,13 +56,5 @@ void SupercapControl(CAN_Object can, Supercap* Cap)
 	txBuffer0x6FFforCAN1.Data[7] = 0;
 	
 	CAN_Send(&can, &txBuffer0x6FFforCAN1);   
-}
-
-void SuperCupLogic(Supercap* cap)
-{
-	if(referee2022.robot_hurt.hurt_type == 0 && referee2022.robot_hurt.armor_id != 0)
-	{
-		cap->cap_state.Supercap_Mode = 1;
-	}
 }
 

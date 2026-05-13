@@ -66,6 +66,10 @@
 ".\h7_base\user_lib.o"
 ".\h7_base\ins.o"
 ".\h7_base\matrixfunctions.o"
+".\h7_base\fastmathfunctions.o"
+".\h7_base\basicmathfunctions.o"
+".\h7_base\commontables.o"
+".\h7_base\quaternionmathfunctions.o"
 --strict --scatter ".\H7_Base\H7_Base.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
