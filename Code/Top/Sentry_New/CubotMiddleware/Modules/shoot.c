@@ -54,7 +54,8 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
             ammo_booster->Shoot_Plate.Fire_Divider = 50; // 50
 		if(Top.Referee.game_prograss != 4)
 		{
-			ammo_booster->Shoot_Plate.Fire_Divider = 1000;
+			ammo_booster->Shoot_Plate.Fire_Divider = 1000
+			;
 		}
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;

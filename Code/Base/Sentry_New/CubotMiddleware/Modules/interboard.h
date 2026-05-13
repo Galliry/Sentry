@@ -29,14 +29,11 @@ typedef struct
 		float Vy;
 		uint8_t isOnline;
 		uint8_t Movemode;
-		uint8_t posture;
 	}Lidar;
-
-	struct 
+	struct
 	{
-		uint8_t All_Sense;
-	}Autoaim;
-	
+		uint8_t Target_Yaw_angle;
+	}All_sense;
 }Base_t;
 
 extern Base_t Base;

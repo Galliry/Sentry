@@ -3,7 +3,6 @@
 
 #include "stm32h7xx_hal.h"
 #include <stdint.h>
-
 #define data_addr 7
 #define max_single_pack_len 50
 #define packs 15

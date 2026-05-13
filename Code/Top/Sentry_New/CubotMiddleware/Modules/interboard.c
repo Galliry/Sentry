@@ -13,9 +13,7 @@ void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
     RemoteData.Data[3] = (rc_ctrl->rc.ch2 >> 2) & 0xFF;             
     RemoteData.Data[4] = (rc_ctrl->rc.ch2 >> 10) | ((rc_ctrl->rc.ch3 & 0x7F) << 1);  
     RemoteData.Data[5] = (rc_ctrl->rc.ch3 >> 7) | ((rc_ctrl->rc.s1 & 0x03) << 4) | ((rc_ctrl->rc.s2 & 0x03) << 6);
-	RemoteData.Data[6] = ((rc_ctrl->isOnline & 0x01) | ((check_robot_state.Check_Usart.Check_lidar & 0x01) << 1) | ((Brain.Lidar.movemode & 0x03) << 2));
-
-	RemoteData.Data[7] = Brain.Autoaim.All_Sense;
+	RemoteData.Data[6] = ((rc_ctrl->isOnline & 0x01) | ((check_robot_state.Check_Usart.Check_lidar & 0x01) << 1) | ((Brain.Lidar.movemode & 0x03) << 2) | ((Brain.Autoaim.All_Sense & 0x07) << 4));
 	
 	CAN_Send(&can2,&RemoteData);
 }
@@ -61,6 +59,7 @@ void BaseBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Top.Referee.gimbal_output = rxBuffer->Data[2];
 		Top.Referee.robot_id = rxBuffer->Data[3];
 		Top.Referee.shoot_num = ((uint16_t)rxBuffer->Data[4] | (uint16_t)(rxBuffer->Data[5] << 8));
+		Top.Referee.lidar_rob_id = rxBuffer->Data[6];
 	}else if(rxBuffer->Header.Identifier == 0x106)
 	{
 		memcpy(&Top.Referee.lidar_pos_x,&rxBuffer->Data[0],4);

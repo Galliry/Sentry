@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H750xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../CubotMiddleware;../CubotMiddleware/Algorithms;../CubotMiddleware/Devices;../CubotMiddleware/Drivers;../CubotMiddleware/Modules;../CubotMiddleware/Support;../User;../MIddlewaves/ARM/DSP/Include;../MIddlewaves/ARM/DSP/Include/dsp</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../CubotMiddleware;../CubotMiddleware/Algorithms;../CubotMiddleware/Devices;../CubotMiddleware/Drivers;../CubotMiddleware/Modules;../CubotMiddleware/Support;../User;../MIddlewaves/ARM/DSP/Include;../MIddlewaves/ARM/DSP/Include/dsp;..\MIddlewaves\ARM\DSP\Source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -2055,6 +2055,26 @@
               <FileType>1</FileType>
               <FilePath>..\MIddlewaves\ARM\DSP\Source\MatrixFunctions\MatrixFunctions.c</FilePath>
             </File>
+            <File>
+              <FileName>FastMathFunctions.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MIddlewaves\ARM\DSP\Source\FastMathFunctions\FastMathFunctions.c</FilePath>
+            </File>
+            <File>
+              <FileName>BasicMathFunctions.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MIddlewaves\ARM\DSP\Source\BasicMathFunctions\BasicMathFunctions.c</FilePath>
+            </File>
+            <File>
+              <FileName>CommonTables.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MIddlewaves\ARM\DSP\Source\CommonTables\CommonTables.c</FilePath>
+            </File>
+            <File>
+              <FileName>QuaternionMathFunctions.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MIddlewaves\ARM\DSP\Source\QuaternionMathFunctions\QuaternionMathFunctions.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2076,5 +2096,14 @@
     </components>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>H7_Base</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>
