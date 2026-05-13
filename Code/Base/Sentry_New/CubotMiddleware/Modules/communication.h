@@ -5,6 +5,7 @@
 #include "et08.h"
 #include "user_lib.h"
 #include "referee.h"
+#include <stdint.h>
 typedef struct 
 {
     struct 
@@ -41,6 +42,7 @@ typedef struct
 		struct
 		{
 			uint8_t mode;
+			uint8_t AllroundSense;
 		}AutoAim;
     }Base;
     

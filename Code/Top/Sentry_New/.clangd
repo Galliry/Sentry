@@ -14,33 +14,33 @@ CompileFlags:
     - -DSTM32H750xx
 
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Inc
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Inc
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Include
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/Drivers/CMSIS/Include
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Algorithms
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Algorithms
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Devices
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Devices
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Drivers
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Drivers
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Modules
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Modules
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Support
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/CubotMiddleware/Support
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/User
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/User
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include
     - -I
-    - D:/Code/RoboMaster/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
+    - D:/Code/RoboMaster/Based on MDK/Sentry2026/Sentry/Code/Top/Sentry_New/MIddlewaves/ARM/DSP/Include/dsp
 
     # Toolchain system headers (for std headers like math.h)
     - -isystem

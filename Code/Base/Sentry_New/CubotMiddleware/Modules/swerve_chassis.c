@@ -38,7 +38,7 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
     chassis->Movement.Vy_Sensitivity = 5;
 }
 
-const float speed_trans = 60 * 15.74f / 0.11f / 3.1415f;
+const float chassis_unit_trans = 60 * 15.74f / 0.110f / 3.1415926f;
 
 void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 {
@@ -69,13 +69,13 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				{
 					chassis->Movement.Vx_Tar = 0;
 					chassis->Movement.Vy_Tar = 0;
-					chassis->Movement.Posture = 1;	//½ø¹¥×ËÌ¬
+					chassis->Movement.Posture = 1;	//è¿›æ”»å§¿æ€
 				}
 				else if (rec->Lidar.Movemode == 0)
 				{
 					chassis->Movement.Vx_Tar = rec->Lidar.Vx * speed_trans;
 					chassis->Movement.Vy_Tar = rec->Lidar.Vy * speed_trans;
-					chassis->Movement.Posture = 3;	//ÒÆ¶¯×ËÌ¬
+					chassis->Movement.Posture = 3;	//ç§»åŠ¨å§¿æ€
 				}
 				else if (rec->Lidar.Movemode == 2)
 				{
@@ -123,6 +123,40 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 					SwerveChassisSetSpeed(chassis);
 			}
 		}
+		if (rec->Lidar.isOnline == 0 && referee2022.game_status.game_progress == 4)
+        {
+			chassis->Movement.Vx_Move = 0;
+            chassis->Movement.Vy_Move = 0;
+            chassis->Movement.Omega = 6000;
+            SwerveChassisSetSpeed(chassis);
+        }
+        else
+        {
+            if (rec->Lidar.Movemode == 0)
+            {
+                chassis->Movement.Vx_Move = 0;
+                chassis->Movement.Vy_Move = 0;
+                chassis->Movement.Omega = 6000;
+            }
+            else if (rec->Lidar.Movemode == 1)
+            {
+                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
+                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
+                chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+            }
+            else if (rec->Lidar.Movemode == 2)
+            {
+                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
+                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
+                chassis->Movement.Omega = 6000;
+            }
+            if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
+            {
+                ;
+            }
+            else
+                SwerveChassisSetSpeed(chassis);
+        }
     }
     else
     {
@@ -139,7 +173,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 void SwerveChassisSetSpeed(SwerveChassis *chassis)
 {
     float error;
-    float angle = (Holder.Motors.Yaw_M.angle_raw - 1.803f) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // Ç°À¡
+    float angle = (Holder.Motors.Yaw_M.angle_raw - 1.803f) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // å‰é¦ˆ
     chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
     chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
@@ -187,7 +221,7 @@ void SwerveChassisSetSpeed(SwerveChassis *chassis)
     {
         chassis->Motors6020.motor[i].Data.Output = BasePID_SpeedControl(chassis->Motors6020.TurnPID[i].CorePID,
                                                                         BasePID_AngleControl_Swerve(chassis->Motors6020.TurnPID[i].ShellPID, chassis->Vectors.Target_Angle[i], -(chassis->Motors6020.motor[i].Data.Angle)), chassis->Motors6020.motor[i].Data.SpeedRPM);
-        // ÏŞ·ù
+        // é™å¹…
         chassis->Motors6020.motor[i].Data.Output = float_constrain(chassis->Motors6020.motor[i].Data.Output, -16000, 16000);
         chassis->Motors3508.motor[i].Data.Output = float_constrain(chassis->Motors3508.motor[i].Data.Output, -16000, 16000);
     }
@@ -286,9 +320,9 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
         chassis->Motors3508.motor[j].Data.Output = float_constrain(chassis->Motors3508.motor[j].Data.Output, -16000, 16000);
         MotorFillData(&chassis->Motors6020.motor[j], chassis->Motors6020.motor[j].Data.Output);
         MotorFillData(&chassis->Motors3508.motor[j], chassis->Motors3508.motor[j].Data.Output);
-    } // ×îºóÉÏÒ»²ã±£ÏÕ
+    } // æœ€åä¸Šä¸€å±‚ä¿é™©
 }
-// ·ÀÖ¹¼±Í£ÇÌÍ·
+// é˜²æ­¢æ€¥åœç¿˜å¤´
 float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step) 
 {
     if (target == current) return current;
@@ -311,20 +345,20 @@ float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, f
     return current;
 }
 /**
- * @brief  Éú³ÉÕıÏÒ²¨¶¯µÄ½ÇËÙ¶È (»òÈÎÒâËæÊ±¼äÕıÏÒ±ä»¯µÄ±äÁ¿)
- * @param  amplitude: ²¨¶¯Õñ·ù 
- * @param  offset:    ÖĞĞÄÆ«ÖÃ 
- * @param  period_s:  Íê³ÉÒ»´ÎÍêÕû²¨¶¯µÄÊ±¼ä£¬µ¥Î»£ºÃë
- * @param  dt_s:      ¸Ãº¯Êı±»µ÷ÓÃµÄÖÜÆÚ£¬µ¥Î»£ºÃë
- * @retval µ±Ç°Ê±¿ÌÓ¦¸ÃÊä³öµÄÄ¿±êÖµ
+ * @brief  ç”Ÿæˆæ­£å¼¦æ³¢åŠ¨çš„è§’é€Ÿåº¦ (æˆ–ä»»æ„éšæ—¶é—´æ­£å¼¦å˜åŒ–çš„å˜é‡)
+ * @param  amplitude: æ³¢åŠ¨æŒ¯å¹… 
+ * @param  offset:    ä¸­å¿ƒåç½® 
+ * @param  period_s:  å®Œæˆä¸€æ¬¡å®Œæ•´æ³¢åŠ¨çš„æ—¶é—´ï¼Œå•ä½ï¼šç§’
+ * @param  dt_s:      è¯¥å‡½æ•°è¢«è°ƒç”¨çš„å‘¨æœŸï¼Œå•ä½ï¼šç§’
+ * @retval å½“å‰æ—¶åˆ»åº”è¯¥è¾“å‡ºçš„ç›®æ ‡å€¼
  */
 float Calculate_Variable_Omega(float amplitude, float offset, float period_s, float dt_s)
 {
-    static float phase_angle = 0.0f;	//ÏàÎ»½Ç
+    static float phase_angle = 0.0f;	//ç›¸ä½è§’
     if (period_s <= 0.0f){return offset;}
 
-    float angle_step = (2.0f * PI) * (dt_s / period_s);	//²½³¤
-    phase_angle += angle_step;	// ÀÛ¼ÓÏàÎ»
+    float angle_step = (2.0f * PI) * (dt_s / period_s);	//æ­¥é•¿
+    phase_angle += angle_step;	// ç´¯åŠ ç›¸ä½
     if (phase_angle >= 2.0f * PI)
     {
         phase_angle -= 2.0f * PI;

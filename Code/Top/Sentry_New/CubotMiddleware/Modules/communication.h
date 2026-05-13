@@ -1,12 +1,7 @@
 #ifndef _COMMUNICATION_H
 #define _COMMUNICATION_H
-#include "driver_can.h"
 #include "dr16.h"
 #include "et08.h"
-#include "mpu6050.h"
-#include "check.h"
-#include "brain.h"
-#include "usart.h"
 typedef struct 
 {
     uint8_t TransData[50];

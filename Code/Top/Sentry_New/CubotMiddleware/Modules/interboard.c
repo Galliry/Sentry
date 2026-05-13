@@ -1,4 +1,6 @@
 #include "interboard.h"
+#include "check.h"
+#include "brain.h"
 CAN_TxBuffer RemoteData = {.Identifier = 0x101};
 CAN_TxBuffer GyroData = {.Identifier = 0x102};
 CAN_TxBuffer LidarData = {.Identifier = 0x103};
@@ -28,6 +30,8 @@ void LidarDataTrans(void)
 {
 	memcpy(&LidarData.Data[0],&Brain.Lidar.vx,sizeof(float));
 	memcpy(&LidarData.Data[4],&Brain.Lidar.vy,sizeof(float));
+
+	// LidarData.Data[9] = Brain.Autoaim.All_Sense;
 	
 	CAN_Send(&can2,&LidarData);
 }

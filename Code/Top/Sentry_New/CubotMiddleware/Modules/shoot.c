@@ -84,6 +84,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
             ammo_booster->Shoot_Plate.Jam++;
             ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, -2000, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
             if (ammo_booster->Shoot_Plate.Jam > 1600)
+                // ammo_booster->Shoot_Plate.Target_Angle = ammo_booster->Shoot_Plate.Plate_Angle - fmod(ammo_booster->Shoot_Plate.Plate_Angle,45);
                 ammo_booster->Shoot_Plate.Jam = 0;
         }
     }

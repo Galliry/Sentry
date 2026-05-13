@@ -111,9 +111,9 @@ float BasePID_AngleControl_Swerve(SinglePID_t *base_pid, float target_angle, flo
 }
 void PID_Init(void)
 {
-    BasePID_Init(&pid_yaw_m_angle, -0.200, 0, 0, 0); 
-    BasePID_Init(&pid_yaw_m_speed, 2.5, 0, -5, 0);
-    BasePID_Init(&pid_run, 20, 0, 0, 0);       // 底盘运动 10
+    BasePID_Init(&pid_yaw_m_angle, -0.150, 0, 0, 0); 
+    BasePID_Init(&pid_yaw_m_speed, 2.4, 0, -8, 0);
+    BasePID_Init(&pid_run, 18, 0, 0, 0);       // 底盘运动 10
     BasePID_Init(&pid_follow, 50, 0.01, 0, 0); // 底盘跟随
     // BasePID_Init(&pid_run, 0, 0, 0, 0);       // 底盘运动 disable
     // BasePID_Init(&pid_follow, 0, 0, 0, 0); // 底盘跟随 disable
