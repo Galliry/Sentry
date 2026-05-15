@@ -213,8 +213,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
             if (Brain.Autoaim.mode == Cruise)
             {
                 // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
-                holder->Yaw_S.Target_Angle = 0;
-                holder->Pitch.Target_Angle = 0;
+//                holder->Yaw_S.Target_Angle = 0;
+//                holder->Pitch.Target_Angle = 0;
                 // holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
             }
             else if (Brain.Autoaim.mode == Lock)
@@ -237,29 +237,29 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     holder->Pitch.GYRO_AngleSpeed = -INS_attitude->gyro[1];
 
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -38, 38);
-    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 34);
+    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 30);
 
 //    holder->Yaw_S.Target_Angle = LPFilter(holder->Yaw_S.Target_Angle, &LPF_yaw_mpu);
 //    holder->Pitch.Target_Angle = LPFilter(holder->Pitch.Target_Angle, &LPF_pitch_mpu);
 
-    if (holder->Pitch.GYRO_Angle > 20)
-    {
-        holder->Pitch.PID.ShellPID->Kp = 0.40f;
-        holder->Pitch.PID.ShellPID->Ki = 0.005f;
-        holder->Pitch.PID.ShellPID->Kd = -0.2f;
-        holder->Pitch.PID.CorePID->Kp = 0.37f;
-        holder->Pitch.PID.CorePID->Ki = 0;
-        holder->Pitch.PID.CorePID->Kd = 2;
-    }
-    else
-    {
-        holder->Pitch.PID.ShellPID->Kp = 0.45f;
-        holder->Pitch.PID.ShellPID->Ki = 0.005f;
-        holder->Pitch.PID.ShellPID->Kd = -0.005f;
-        holder->Pitch.PID.CorePID->Kp = 0.55;
-        holder->Pitch.PID.CorePID->Ki = 0;
-        holder->Pitch.PID.CorePID->Kd = 3;
-    }
+//    if (holder->Pitch.GYRO_Angle > 20)
+//    {
+//        holder->Pitch.PID.ShellPID->Kp = 0.40f;
+//        holder->Pitch.PID.ShellPID->Ki = 0.005f;
+//        holder->Pitch.PID.ShellPID->Kd = -0.2f;
+//        holder->Pitch.PID.CorePID->Kp = 0.37f;
+//        holder->Pitch.PID.CorePID->Ki = 0;
+//        holder->Pitch.PID.CorePID->Kd = 2;
+//    }
+//    else
+//    {
+//        holder->Pitch.PID.ShellPID->Kp = 0.45f;
+//        holder->Pitch.PID.ShellPID->Ki = 0.005f;
+//        holder->Pitch.PID.ShellPID->Kd = -0.005f;
+//        holder->Pitch.PID.CorePID->Kp = 0.55;
+//        holder->Pitch.PID.CorePID->Ki = 0;
+//        holder->Pitch.PID.CorePID->Kd = 3;
+//    }
 
 #if DEBUG_HOLDER == 0
     if (rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)

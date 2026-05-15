@@ -159,6 +159,7 @@ typedef struct
 	{
 		uint8_t armor_id;
 		uint8_t hurt_type;
+		uint32_t last_hurt_time; 
 	}robot_hurt;
 
 	/*16. 实时射击信息： 0x0207。 发送频率：射击后发送*/

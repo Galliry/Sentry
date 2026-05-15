@@ -101,8 +101,8 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 #if DEBUG_YAW == 0
     holder->Motors.Yaw_M.motor_output = BasePID_SpeedControl(holder->Yaw_M.PID.CorePID,
                                                              BasePID_AngleControl(holder->Yaw_M.PID.ShellPID,
-                                                                                  0,
-                                                                                  AngleMinus(holder->Yaw_M.GYRO_Angle, holder->Yaw_M.Target_Angle)),
+                                                                                  holder->Yaw_M.Target_Angle,
+                                                                                  holder->Yaw_M.GYRO_Angle),
                                                              holder->Yaw_M.GYRO_AngleSpeed);
     holder->Motors.Yaw_M.motor_output = float_constrain(holder->Motors.Yaw_M.motor_output, -10, 10);
     DMiaoMitControl(&holder->Motors.Yaw_M, 0, 0, 0, 0, holder->Motors.Yaw_M.motor_output);

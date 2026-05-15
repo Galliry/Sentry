@@ -31,10 +31,10 @@ typedef enum
 
 typedef enum
 {
-	Cesis = 1,             
+	EKF = 1,             
 	Small_Buff = 2,
 	Big_Buff = 3,
-	EKF = 4,
+	Cesis = 4,
 	Outpost = 5
 }Brain_mode;		//三种模式，切换相关一部分在回调函数中，一部分在contro_logic中
 
@@ -77,7 +77,6 @@ typedef struct
 		float Yaw_add;
 		float Distance;
 		uint8_t IsFire;
-		uint8_t Rune_Flag;
 		uint8_t All_Sense; //全向感知
 		uint8_t All_Sense_id;
 	}Autoaim;
@@ -88,6 +87,7 @@ typedef struct
 		uint8_t	movemode;
 		float vx;
         float vy;
+		uint8_t Rune_Flag;
 	}Lidar;
 	 
 //	struct

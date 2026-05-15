@@ -8,7 +8,6 @@
 #include "pid.h"
 #include "user_lib.h"
 
-extern int flag_fire;
 Ammo_Booster AmmoBooster;
 
 void AmmoBoosterInit(Ammo_Booster *ammo_booster, SinglePID_t *friction_pid0, SinglePID_t *friction_pid1, SinglePID_t *load_pid_angle, SinglePID_t *load_pid_speed)
@@ -52,18 +51,22 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
             ammo_booster->Shoot_Plate.Fire_Divider = 125; // 125
         else
             ammo_booster->Shoot_Plate.Fire_Divider = 50; // 50
+		if(Brain.Autoaim.Mode == Outpost)
+			ammo_booster->Shoot_Plate.Fire_Divider = 500;
 		if(Top.Referee.game_prograss != 4)
-		{
-			ammo_booster->Shoot_Plate.Fire_Divider = 1000
-			;
-		}
+			ammo_booster->Shoot_Plate.Fire_Divider = 500;
+		
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;
         if (ammo_booster->Shoot_Plate.Shoot_Cut % ammo_booster->Shoot_Plate.Fire_Divider == 0)
             ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;
+		
         if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 && Top.Referee.shoot_num >= 0)
         {
-            ammo_booster->Shoot_Plate.Target_Angle += 45;
+            if(Brain.Autoaim.Mode == Outpost)
+				ammo_booster->Shoot_Plate.Target_Angle += 22.5;
+			else
+				ammo_booster->Shoot_Plate.Target_Angle += 45;
             ammo_booster->Shoot_Plate.ShootNum++;
             ammo_booster->Shoot_Plate.Shoot_rest_flag = 1;
             ammo_booster->Shoot_Plate.Shoot_Cut = 0;

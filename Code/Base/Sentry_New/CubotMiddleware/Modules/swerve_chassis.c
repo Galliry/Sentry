@@ -34,8 +34,8 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
     BasePID_Init(&chassis->Motors3508.RunPID[3], run_pid->Kp, run_pid->Ki, run_pid->Kd, run_pid->KiPartDetachment);
 
     BasePID_Init(&chassis->Motors6020.FollowPID, follow_pid->Kp, follow_pid->Ki, follow_pid->Kd, follow_pid->KiPartDetachment);
-    chassis->Movement.Vx_Sensitivity = 5;
-    chassis->Movement.Vy_Sensitivity = 5;
+    chassis->Movement.Move_Sensitivity = 5;
+    chassis->Movement.Lidar_Sensitivity = 2732.852;
 }
 
 const float chassis_unit_trans = 60 * 15.74f / 0.110f / 3.1415926f;
@@ -73,20 +73,20 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}
 				else if (rec->Lidar.Movemode == 0)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
 					chassis->Movement.Posture = 3;	//移动姿态
 				}
 				else if (rec->Lidar.Movemode == 2)
 				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * 200;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * 200;
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
 					chassis->Movement.Posture = 3;
 				}
 				
 				chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
 				chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
-				if(referee2022.robot_hurt.hurt_type == 0 && referee2022.robot_hurt.armor_id != 0)
+				if(referee2022.robot_hurt.hurt_type == 1 && referee2022.robot_hurt.armor_id != 0)
 				{
 					chassis->Movement.Omega = Calculate_Variable_Omega(2000,6000,2.0f,0.001f);
 					if(referee2022.game_robot_status.remain_HP < 400)
@@ -122,46 +122,12 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				else
 					SwerveChassisSetSpeed(chassis);
 			}
-		}
-		if (rec->Lidar.isOnline == 0 && referee2022.game_status.game_progress == 4)
-        {
-			chassis->Movement.Vx_Move = 0;
-            chassis->Movement.Vy_Move = 0;
-            chassis->Movement.Omega = 6000;
-            SwerveChassisSetSpeed(chassis);
-        }
-        else
-        {
-            if (rec->Lidar.Movemode == 0)
-            {
-                chassis->Movement.Vx_Move = 0;
-                chassis->Movement.Vy_Move = 0;
-                chassis->Movement.Omega = 6000;
-            }
-            else if (rec->Lidar.Movemode == 1)
-            {
-                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
-                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-            }
-            else if (rec->Lidar.Movemode == 2)
-            {
-                chassis->Movement.Vx_Move = rec->Lidar.Vx * 200;
-                chassis->Movement.Vy_Move = rec->Lidar.Vy * 200;
-                chassis->Movement.Omega = 6000;
-            }
-            if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 1 || rec->Lidar.Movemode == 2))
-            {
-                ;
-            }
-            else
-                SwerveChassisSetSpeed(chassis);
-        }
+		}          
     }
     else
     {
-        chassis->Movement.Vx_Tar = (rec->Rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Vx_Sensitivity;
-        chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Vy_Sensitivity;
+        chassis->Movement.Vx_Tar = (rec->Rc.rc_Ctrl_ch1 - 1024) * chassis->Movement.Move_Sensitivity;
+        chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Move_Sensitivity;
 		chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
         chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
 		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);

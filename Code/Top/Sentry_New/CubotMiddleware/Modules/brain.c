@@ -8,7 +8,7 @@ uint8_t RobotToBrainChassisTimeBuffer[22];
 
 #define HOLDER_MODE 1
 
-#define AUTOAIM_Q_SELECT 2
+#define AUTOAIM_Q_SELECT 1
 
 uint8_t Brain_Autoaim_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -46,27 +46,24 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			{
 				#if HOLDER_MODE == 1
 				Holder.Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + Holder.Yaw_S.Can_Angle;
-				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15f + Holder.Pitch.GYRO_Angle;
+				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.0f + Holder.Pitch.GYRO_Angle;
 				#endif
 				#if HOLDER_MODE == 2
 				// 此时和自瞄的通信协议为：原先表示增量的数据变为位置的数据
 				Holder.Yaw_S.Target_Angle = Brain.Autoaim.Yaw_add;
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add;
 				#endif
-				#if HOLDER_MODE == 3
-				Holder.Yaw_S.Target_Angle = -Brain.Autoaim.Yaw_add + Holder.Yaw_S.Target_Angle;
-				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.15f + Holder.Pitch.Target_Angle;
-				#endif
 			}
-			
-			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.4f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.4f)
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.2f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.2f && brain->Autoaim.Mode == EKF)
+				brain->Autoaim.IsFire = 1;
+			else if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.4f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.4f && (brain->Autoaim.Mode == Small_Buff || brain->Autoaim.Mode == Big_Buff))
 				brain->Autoaim.IsFire = 1;
 			else brain->Autoaim.IsFire = 0;
-		} else
+		}
+		else
 		{
 			if (brain->Autoaim.mode_cnt >= 4)
 			{
-				
 				brain->Autoaim.mode = Cruise;
 				brain->Autoaim.IsFire = 0;
 			}else 
@@ -131,8 +128,7 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[7] = ((tim14.ClockTime >> 8) & 0xff);
 	RobotToBrainTimeBuffer[8] = ((tim14.ClockTime & 0xff));
 
-	RobotToBrainTimeBuffer[9] = (Receive.Top.Referee.robot_id > 10) ? 1 : 0;
-#if AUTOAIM_Q_SELECT == 1 || AUTOAIM_Q_SELECT == 2
+	RobotToBrainTimeBuffer[9] = (Top.Referee.robot_id > 10) ? 1 : 0;
 	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// 四元数q0，float型
 	RobotToBrainTimeBuffer[11] = tmp0 >> 8;
 	RobotToBrainTimeBuffer[12] = tmp1 & 0xFF;
@@ -141,13 +137,11 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[15] = tmp2 >> 8;
 	RobotToBrainTimeBuffer[16] = tmp3 & 0xFF;
 	RobotToBrainTimeBuffer[17] = tmp3 >> 8;
-#endif
-	RobotToBrainTimeBuffer[18] = 0x01; // 0是预测 1是跟随 4 ceres 静止或低速
+	RobotToBrainTimeBuffer[18] = 0x01;
 	RobotToBrainTimeBuffer[19] = 0x01;
 
-	brain->Autoaim.Mode = EKF;
-	RobotToBrainTimeBuffer[20] = brain->Autoaim.Mode;	//1 是ekf  23 fu 4 ceres
-	RobotToBrainTimeBuffer[21] = 0xDD; // 忽略装甲板
+	RobotToBrainTimeBuffer[20] = brain->Autoaim.Mode;
+	RobotToBrainTimeBuffer[21] = 0xDD;
 
 	RobotToBrainTimeBuffer[22] = 0xDD;
 
@@ -174,7 +168,7 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	}
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[5] = Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[6] = Brain->Autoaim.Rune_Flag;	//开符标志位
+	RobotToBrainChassisTimeBuffer[6] = Brain->Lidar.Rune_Flag;	//开符标志位
 	RobotToBrainChassisTimeBuffer[7] = 0x00; //保护英雄标志位 确认为1
 	if(Top.Referee.shoot_num <= 20) //发弹量标志位
 		RobotToBrainChassisTimeBuffer[8] = 0x01;

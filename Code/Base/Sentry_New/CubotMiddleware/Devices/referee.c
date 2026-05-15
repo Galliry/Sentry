@@ -141,11 +141,13 @@ void _Data_Diapcak(uint8_t *pdata)
 		referee2022.buff.remaining_energy = *(pdata + data_addr + 6); //剩余能量
 	}
 	
-	if(cmd_id==0x0206)
+	if(cmd_id==0x0206)	
 	{	
 		referee2022.robot_hurt.hurt_type = (*(pdata + data_addr)) >> 4;
 		referee2022.robot_hurt.armor_id = (*(pdata + data_addr)) & 0x0F; // 新增 不再由血量变化判断挨打 读取受击打装甲板ID 为0时为未被击打
+		referee2022.robot_hurt.hurt_type += 1;
 		referee2022.robot_hurt.armor_id += 1;
+		referee2022.robot_hurt.last_hurt_time = HAL_GetTick();
 	}
 	
 	if(cmd_id==0x0207)

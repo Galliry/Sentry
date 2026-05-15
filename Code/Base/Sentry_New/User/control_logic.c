@@ -40,6 +40,12 @@ void TIM14_Task(void)
 	FPS_Check(&tim14_FPS);
 	Sentry_To_Referee();
 	
+	if(HAL_GetTick() - referee2022.robot_hurt.last_hurt_time > 5000)
+	{
+		referee2022.robot_hurt.armor_id = 0;
+		referee2022.robot_hurt.hurt_type = 0;
+	}
+	
 	if(tim14.ClockTime % 10 == 0) 
 		RefereeDataTrans(&referee2022);
 	

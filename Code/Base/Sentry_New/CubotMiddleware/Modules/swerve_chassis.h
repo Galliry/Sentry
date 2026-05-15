@@ -49,8 +49,8 @@ typedef struct
 		float Vx_Tar; // 原始目标速度
 		float Vy_Tar;
         float Omega;
-        float Vx_Sensitivity;       //灵敏度
-		float Vy_Sensitivity;
+        float Move_Sensitivity;       //灵敏度
+		float Lidar_Sensitivity;
 		uint8_t Posture;
     }Movement;
 

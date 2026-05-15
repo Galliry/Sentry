@@ -30,11 +30,25 @@ void TIM14_Task(void)
     RobotToBrain(&Brain);
     if (tim14.ClockTime % 4 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
-    // ET08¿ØÖÆ
-
+	
+	if(Top.Referee.game_time > 360)
+	{
+		Brain.Lidar.Rune_Flag = 1;
+		Brain.Autoaim.Mode = Small_Buff;
+	}else if(Top.Referee.game_time > 240 && Top.Referee.game_time <360)
+	{
+		Brain.Autoaim.Mode = Outpost;
+		Brain.Lidar.Rune_Flag = 0;
+	}else
+	{
+		Brain.Autoaim.Mode = EKF;
+	}
+		
+	
+	// ET08¿ØÖÆ
     if (tim14.ClockTime > 500)
         FrictionWheelControl(&AmmoBooster);
-
+	
     if (rc_Ctrl_et.isOnline == 1)
     {
         i++;
@@ -44,8 +58,6 @@ void TIM14_Task(void)
         {
             HolderControl_Top(&Holder, &rc_Ctrl_et);
         }
-        if (tim14.ClockTime % 10 == 0)
-            Trans_forToptoBase(&rc_Ctrl);
         ShootPlantControl(&AmmoBooster);
     }
 
@@ -70,8 +82,8 @@ void TIM14_Task(void)
     //	MotorCanOutput(can2, 0x1FE);
     //	MotorCanOutput(can2, 0x200);
 
-    // UsartDmaPrintf("%f,%f,%d,%f,%f,%d,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
-    // Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Yaw_S.v1,Holder.Pitch.v1);
+     UsartDmaPrintf("%f,%f,%d,%f,%f,%f,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
+		Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Yaw_S.v1,Holder.Pitch.v1);
     // UsartDmaPrintf("%d,%d,%d,%d,%d\r\n",error_flag,huart5.ErrorCode,Receive.Top.Referee.robot_HP,Receive.Top.Referee.robot_id,Receive.Top.Referee.game_prograss);
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
@@ -100,12 +112,12 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%.2f\r\n", INS_attitude->pitch);
 
     // Autoaim
-    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %d\r\n",
-                   Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
-                   Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
-                   Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle,
-                   Brain.Autoaim.Pitch_add, Brain.Autoaim.Yaw_add,
-                   Brain.Autoaim.IsFire);
+//    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %d\r\n",
+//                   Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
+//                   Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
+//                   Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle,
+//                   Brain.Autoaim.Pitch_add, Brain.Autoaim.Yaw_add,
+//                   Brain.Autoaim.IsFire);
 
     // ShootPlate
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %d\r\n",
