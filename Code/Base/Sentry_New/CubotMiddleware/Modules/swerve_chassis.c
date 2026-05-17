@@ -36,9 +36,8 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
     BasePID_Init(&chassis->Motors6020.FollowPID, follow_pid->Kp, follow_pid->Ki, follow_pid->Kd, follow_pid->KiPartDetachment);
     chassis->Movement.Move_Sensitivity = 5;
     chassis->Movement.Lidar_Sensitivity = 2732.852;
+	chassis->Movement.Posture = 3;
 }
-
-const float chassis_unit_trans = 60 * 15.74f / 0.110f / 3.1415926f;
 
 void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 {
@@ -94,24 +93,15 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}else if(referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					if(Base.All_sense.All_Sense_cnt == 0)
-						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-					else 
-						chassis->Movement.Omega = 0;
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 				}else if(Base.Lidar.Movemode == 2)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					if(Base.All_sense.All_Sense_cnt == 0)
-						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-					else 
-						chassis->Movement.Omega = 0;
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 				}
 				else
 				{
-					if(Base.All_sense.All_Sense_cnt == 0)
-						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-					else 
-						chassis->Movement.Omega = 0;
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 					super_cap.cap_state.Supercap_Mode = 0;
 				}
 				

@@ -62,6 +62,7 @@ void HardwareConfig(void)
 	PID_Init(); 	
 	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
 	HolderInit_Base(&Holder,&pid_yaw_m);
+	InterboardData_Init(&Base);
 	
 //	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);

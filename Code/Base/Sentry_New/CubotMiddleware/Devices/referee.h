@@ -81,6 +81,8 @@ typedef struct
 	 struct
 	{
 		uint32_t event_type;
+		uint8_t Big_Buff;
+		uint8_t Small_Buff;
 	}event_data;
 
 	/*7. 补给站动作标识：0x0102。发送频率：动作触发后发送，发送范围：己方机器人。*/
@@ -255,6 +257,8 @@ typedef struct
 		float lidar_station_x;
 		float lidar_station_y;
 		uint8_t lidar_id;
+		uint8_t hero_flag;
+		uint8_t target_pos;
 	}ext_student_interactive_header_data;
 	//0x303 云台手小地图数据
 	struct 

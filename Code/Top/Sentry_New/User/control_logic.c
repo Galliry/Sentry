@@ -30,18 +30,19 @@ void TIM14_Task(void)
     RobotToBrain(&Brain);
     if (tim14.ClockTime % 4 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
-	
+	//决策还不全，具体时间还没测 只有开局开小符代码
 	if(Top.Referee.game_time > 360)
 	{
-		Brain.Lidar.Rune_Flag = 1;
+		Brain.Lidar.Outpost_Flag = 0;
 		Brain.Autoaim.Mode = Small_Buff;
-	}else if(Top.Referee.game_time > 240 && Top.Referee.game_time <360)
+	}else if((Top.Referee.game_time > 240 && Top.Referee.game_time <360))
 	{
 		Brain.Autoaim.Mode = Outpost;
-		Brain.Lidar.Rune_Flag = 0;
+		Brain.Lidar.Outpost_Flag = 1;
 	}else
 	{
 		Brain.Autoaim.Mode = EKF;
+		Brain.Lidar.Outpost_Flag = 0;
 	}
 		
 	

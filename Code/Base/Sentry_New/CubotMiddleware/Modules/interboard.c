@@ -47,15 +47,16 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Data[3] = referee->game_robot_status.robot_id;
 		RefereeData.Data[4] = (uint8_t)(referee->bullet_remaining.bullet_remaining_num & 0xff);
 		RefereeData.Data[5] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
-		RefereeData.Data[6] = (uint8_t)referee->ext_student_interactive_header_data.lidar_id;
+		RefereeData.Data[6] = ((referee->ext_student_interactive_header_data.target_pos & 0x03) | ((referee2022.event_data.Small_Buff & 0x03) << 2) | ((referee2022.event_data.Big_Buff & 0x03) << 4));
 		CAN_Send(&can1,&RefereeData);
 		i = 0;
-	}else if(i == 2)
-	{
-		RefereeData.Identifier = 0x106;
-		memcpy(&RefereeData.Data[0],&referee->ext_student_interactive_header_data.lidar_station_x,sizeof(float));
-		memcpy(&RefereeData.Data[4],&referee->ext_student_interactive_header_data.lidar_station_y,sizeof(float));
 	}
+//	else if(i == 2)
+//	{
+//		RefereeData.Identifier = 0x106;
+//		memcpy(&RefereeData.Data[0],&referee->ext_student_interactive_header_data.lidar_station_x,sizeof(float));
+//		memcpy(&RefereeData.Data[4],&referee->ext_student_interactive_header_data.lidar_station_y,sizeof(float));
+//	}
 }
 
 void TopBoard_Callback(CAN_RxBuffer* rxBuffer)

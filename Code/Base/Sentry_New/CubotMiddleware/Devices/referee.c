@@ -6,26 +6,6 @@
 #include "interboard.h"
 #include "swerve_chassis.h"
 Referee2022  referee2022;//已更新至2026赛季 版本V1.3.0
-//uint32_t sentry_decision;
-//uint16_t recieve_time;
-//uint8_t sentry_respawn_ok_flag=0;
-//uint8_t sentry_respawn_need;
-//uint8_t sentry_respawn_ins_flag=0;
-//uint16_t sentry_shooting_num=0;
-//uint16_t sentry_shooting_num1;
-//uint16_t sentry_shooting_num_syn;//发弹量决策信息同步
-//uint8_t sentry_shooting_time=0;
-//uint8_t sentry_shooting_time1;
-//uint8_t sentry_shooting_time_syn;//兑换发弹次数决策信息同步
-//uint8_t sentry_recover_time=0;
-//uint8_t sentry_recover_time_syn;//兑换血量次数决策信息同步
-//uint16_t sentry_blood=400;
-//float lidar_station_x;
-//float lidar_station_y;
-//uint8_t lidar_station_id;
-//uint16_t bullet_num_17mm;
-//uint8_t temp[15];
-//int blue_3=0;
 
 /**
   * @brief   串口3裁判系统回调函数 
@@ -76,6 +56,8 @@ void _Data_Diapcak(uint8_t *pdata)
 	if(cmd_id==0x0101)
 	{
 		referee2022.event_data.event_type = *(pdata + data_addr);
+		referee2022.event_data.Small_Buff = (referee2022.event_data.event_type >> 3) & 0x03;
+		referee2022.event_data.Big_Buff = (referee2022.event_data.event_type >> 5) & 0x03;
 	}
 
 	if(cmd_id==0x201)
@@ -256,14 +238,18 @@ void _Data_Diapcak(uint8_t *pdata)
 		BYTE1(referee2022.ext_student_interactive_header_data.receiver_ID) = *(pdata+data_addr + 5);
 		
 		referee2022.ext_student_interactive_header_data.data[0] = *(pdata+data_addr + 6);
-		referee2022.ext_student_interactive_header_data.data[1] = *(pdata+data_addr + 7);
-		referee2022.ext_student_interactive_header_data.data[2] = *(pdata+data_addr + 8);
-		referee2022.ext_student_interactive_header_data.data[3] = *(pdata+data_addr + 9);
-		referee2022.ext_student_interactive_header_data.data[4] = *(pdata+data_addr + 10);
 		
-		referee2022.ext_student_interactive_header_data.lidar_id=referee2022.ext_student_interactive_header_data.data[0];
-		referee2022.ext_student_interactive_header_data.lidar_station_x=(referee2022.ext_student_interactive_header_data.data[1]+(float)(referee2022.ext_student_interactive_header_data.data[2])/100);
-		referee2022.ext_student_interactive_header_data.lidar_station_y=(referee2022.ext_student_interactive_header_data.data[3]+(float)(referee2022.ext_student_interactive_header_data.data[4])/100);	
+		referee2022.ext_student_interactive_header_data.target_pos = referee2022.ext_student_interactive_header_data.data[0];
+//		referee2022.ext_student_interactive_header_data.data[1] = *(pdata+data_addr + 7);
+//		referee2022.ext_student_interactive_header_data.data[2] = *(pdata+data_addr + 8);
+//		referee2022.ext_student_interactive_header_data.data[3] = *(pdata+data_addr + 9);
+//		referee2022.ext_student_interactive_header_data.data[4] = *(pdata+data_addr + 10);
+//		referee2022.ext_student_interactive_header_data.data[5] = *(pdata+data_addr + 11);
+//		
+//		referee2022.ext_student_interactive_header_data.lidar_id=referee2022.ext_student_interactive_header_data.data[0];
+//		referee2022.ext_student_interactive_header_data.lidar_station_x=(referee2022.ext_student_interactive_header_data.data[1]+(float)(referee2022.ext_student_interactive_header_data.data[2])/100);
+//		referee2022.ext_student_interactive_header_data.lidar_station_y=(referee2022.ext_student_interactive_header_data.data[3]+(float)(referee2022.ext_student_interactive_header_data.data[4])/100);	
+//		referee2022.ext_student_interactive_header_data.hero_flag = referee2022.ext_student_interactive_header_data.data[5];
 	}
    if(cmd_id==0x0303)
 	{
@@ -482,16 +468,19 @@ void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength)
 void Sentry_Decision_Control(void)
 {
 	referee2022.sentry_decision.resurrection = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
-	if(referee2022.bullet_remaining.bullet_remaining_num <= 50 && referee2022.bullet_remaining.money >= 900)
+	if(referee2022.bullet_remaining.bullet_remaining_num <= 50 && referee2022.bullet_remaining.money >= 900 && referee2022.game_status.game_progress == 4)
 		referee2022.sentry_decision.shoot_num += 100;
 	if(referee2022.sentry_info_t.posture != swervechassis.Movement.Posture)
 		referee2022.sentry_decision.target_posture = swervechassis.Movement.Posture;
-	referee2022.sentry_decision.open_energy_device = 0;
+	if(Base.Lidar.Movemode == 1 && referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.stage_remain_time < 420 && referee2022.sentry_info_t.energy_device == 1)
+		referee2022.sentry_decision.open_energy_device = 1;
+	else
+		referee2022.sentry_decision.open_energy_device = 0;
 	
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~1U) | (referee2022.sentry_decision.resurrection & 1U);
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x7FF) << 2)) | (((uint32_t)(referee2022.sentry_decision.shoot_num & 0x7FF)) << 2);
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(((uint32_t)0x3) << 21)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 0x3)) << 21);
-	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(1U << 23)) | (((uint32_t)(referee2022.sentry_decision.target_posture & 1U)) << 23);
+	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~(1U << 23)) | (((uint32_t)(referee2022.sentry_decision.open_energy_device & 1U)) << 23);
 	sentry_send_meseage();
 }
 

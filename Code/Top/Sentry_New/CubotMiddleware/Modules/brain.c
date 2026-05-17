@@ -151,31 +151,34 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 void RobotToBrain_Lidar(Brain_t* Brain)
 {
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
-	RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_prograss;
-	if (Top.Referee.game_prograss == 3)
-	{
-		RobotToBrainChassisTimeBuffer[1] = 4;
-	}
+//	RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_prograss;
+//	if (Top.Referee.game_prograss == 3)
+//	{
+//		RobotToBrainChassisTimeBuffer[1] = 4;
+//	}
 	if (Top.Referee.game_prograss == 4)
 	{
-		RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
-		RobotToBrainChassisTimeBuffer[3] = Top.Referee.game_time >> 8;
+		RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
+		RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time >> 8;
 	}
 	else
 	{
+		RobotToBrainChassisTimeBuffer[1] = 0;
 		RobotToBrainChassisTimeBuffer[2] = 0;
-		RobotToBrainChassisTimeBuffer[3] = 0;
 	}
-	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP & 0xff;
-	RobotToBrainChassisTimeBuffer[5] = Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[6] = Brain->Lidar.Rune_Flag;	//开符标志位
-	RobotToBrainChassisTimeBuffer[7] = 0x00; //保护英雄标志位 确认为1
+	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
+	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
+	RobotToBrainChassisTimeBuffer[5] = Brain->Lidar.Outpost_Flag;	//开符标志位
+	RobotToBrainChassisTimeBuffer[6] = Top.Referee.lidar_target_pos; //保护英雄标志位 确认为1
 	if(Top.Referee.shoot_num <= 20) //发弹量标志位
-		RobotToBrainChassisTimeBuffer[8] = 0x01;
+		RobotToBrainChassisTimeBuffer[7] = 0x01;
 	else
-		RobotToBrainChassisTimeBuffer[8] = 0x00;
-	RobotToBrainChassisTimeBuffer[9] = 0xDD;
-	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer, 10);
+		RobotToBrainChassisTimeBuffer[7] = 0x00;
+//	RobotToBrainChassisTimeBuffer[9] = Top.Referee.lidar_target_pos;
+//	memcpy(&RobotToBrainChassisTimeBuffer[9],&Top.Referee.lidar_pos_x,4);
+//	memcpy(&RobotToBrainChassisTimeBuffer[13],&Top.Referee.lidar_pos_y,4);
+	RobotToBrainChassisTimeBuffer[8] = 0xDD;
+	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,9);
 
 }
 

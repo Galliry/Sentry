@@ -87,7 +87,7 @@ typedef struct
 		uint8_t	movemode;
 		float vx;
         float vy;
-		uint8_t Rune_Flag;
+		uint8_t Outpost_Flag;
 	}Lidar;
 	 
 //	struct

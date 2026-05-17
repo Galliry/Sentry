@@ -40,4 +40,5 @@ typedef struct
 extern Base_t Base;
 void RefereeDataTrans(Referee2022* referee);
 void TopBoard_Callback(CAN_RxBuffer* rxBuffer);
+void InterboardData_Init(Base_t* base);
 #endif 
