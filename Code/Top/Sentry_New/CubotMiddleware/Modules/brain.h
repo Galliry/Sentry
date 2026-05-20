@@ -52,12 +52,12 @@ typedef enum
 	Lidar_RevolveMove = 2,
 }Brain_Lidar_mode;
 
-typedef enum
-{
-	None=0,
-	Found=1,
-	Wait=2
-}Brain_All_See_mode;
+//typedef enum
+//{
+//	None=0,
+//	Found=1,
+//	Wait=2
+//}Brain_All_See_mode;
 
 typedef struct
 { 
@@ -70,7 +70,7 @@ typedef struct
 	
 	struct{
 		Brain_Autoaim_mode mode; 	//下位机模式
-		uint16_t mode_cnt;
+		uint8_t mode_cnt;
 		CubotBrain_t Brain_Data;
 		Brain_mode  Mode; 	//上位机模式
 		float Pitch_add;
@@ -78,7 +78,7 @@ typedef struct
 		float Distance;
 		uint8_t IsFire;
 		uint8_t All_Sense; //全向感知
-		uint8_t All_Sense_id;
+		uint8_t IsFire_Autaim;
 	}Autoaim;
 	 
 	struct{

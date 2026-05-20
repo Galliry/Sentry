@@ -20,7 +20,9 @@
 
 int i = 0;
 extern int error_flag;
-
+extern uint16_t ignore_outpost;
+uint8_t state_flag = 0;
+int state_cnt = 0;
 //< TIM14的触发频率在CubeMX中被配置为1000Hz
 void TIM14_Task(void)
 {
@@ -31,20 +33,67 @@ void TIM14_Task(void)
     if (tim14.ClockTime % 4 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
 	//决策还不全，具体时间还没测 只有开局开小符代码
-	if(Top.Referee.game_time > 360)
+//	if(Top.Referee.game_prograss == 3 && state_flag == 0)
+//	{
+//		Brain.Lidar.Outpost_Flag = 0;
+//		Brain.Autoaim.Mode = Small_Buff;
+//		state_flag = 1;
+//	}else if(Top.Referee.small_buff == 2 && state_flag == 1)
+//	{
+//		state_cnt++;
+//		if(state_cnt > 20000)
+//		{
+//			state_flag = 2;
+//		}
+//	}else if(state_flag == 2 && Top.Referee.small_buff != 2 && ignore_outpost == 0)
+//	{
+//		Brain.Lidar.Outpost_Flag = 1;
+//		Brain.Autoaim.Mode = Outpost;
+//		if(Top.Referee.game_time <= 340)
+//		{
+//			state_cnt = 0;
+//			state_flag = 3;
+//		}
+//	}else if(state_flag == 3)
+//	{
+//		Brain.Lidar.Outpost_Flag = 0;
+//		Brain.Autoaim.Mode = Small_Buff;
+//		state_flag = 4;
+//	}else if(state_flag == 4 && Top.Referee.small_buff == 2)
+//	{
+//		state_cnt++;
+//		if(state_cnt > 20000)
+//		{
+//			state_flag = 5;
+//		}
+//	}else
+//	{
+//		Brain.Autoaim.Mode = EKF;
+//	}
+
+	if(Top.Referee.game_prograss == 4 && ignore_outpost == 0)
 	{
-		Brain.Lidar.Outpost_Flag = 0;
-		Brain.Autoaim.Mode = Small_Buff;
-	}else if((Top.Referee.game_time > 240 && Top.Referee.game_time <360))
-	{
-		Brain.Autoaim.Mode = Outpost;
 		Brain.Lidar.Outpost_Flag = 1;
+		Brain.Autoaim.Mode = Outpost;
 	}else
 	{
-		Brain.Autoaim.Mode = EKF;
 		Brain.Lidar.Outpost_Flag = 0;
+		Brain.Autoaim.Mode = EKF;
 	}
-		
+//	if(Top.Referee.game_prograss == 3 && state_flag == 0)
+//	{
+//		Brain.Lidar.Outpost_Flag = 1;
+//		Brain.Autoaim.Mode = Outpost;
+//		state_flag++;
+//	}else if(state_flag == 1 && ignore_outpost == 0)
+//	{
+//		Brain.Lidar.Outpost_Flag = 1;
+//		Brain.Autoaim.Mode = Outpost;
+//	}else
+//	{
+//		Brain.Lidar.Outpost_Flag = 1;
+//		Brain.Autoaim.Mode = Outpost;
+//	}
 	
 	// ET08控制
     if (tim14.ClockTime > 500)

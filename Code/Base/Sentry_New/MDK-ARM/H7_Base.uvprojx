@@ -81,7 +81,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
+            <RunUserProg2>0</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -1933,14 +1933,14 @@
               <FilePath>..\CubotMiddleware\Modules\shoot.c</FilePath>
             </File>
             <File>
-              <FileName>holder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\CubotMiddleware\Modules\holder.c</FilePath>
-            </File>
-            <File>
               <FileName>swerve_chassis.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CubotMiddleware\Modules\swerve_chassis.c</FilePath>
+            </File>
+            <File>
+              <FileName>holder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CubotMiddleware\Modules\holder.c</FilePath>
             </File>
             <File>
               <FileName>check.c</FileName>

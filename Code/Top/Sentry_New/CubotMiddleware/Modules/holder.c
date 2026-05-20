@@ -21,6 +21,9 @@ int k = 0;
 float fliter = 0.9;
 volatile float DEBUG_tar = 0.0f;
 
+float x = 0.45;
+float y = 0.007;
+float z = -0.2;
 #define DEBUG_HOLDER 0
 #if DEBUG_HOLDER == 2
 float pitch_speed = 0.7f;
@@ -36,130 +39,36 @@ float yaw_speed = 1.2f;
 float PitchFF_Gravity(float target) // 重力补偿前馈
 {
     // 测试源数据https://www.desmos.com/calculator/ikerwae6cv
-    float ff1, ff2;
+//    float ff1, ff2;
     target = -target;
 
-    const float A = 0.94273f;   // 水平时重力力矩
-    const float B = -0.063365f; // 重心偏角 (rad)
+//    const float A = 0.94273f;   // 水平时重力力矩
+//    const float B = -0.063365f; // 重心偏角 (rad)
     const float pi = 3.1415926f;
-    const float a = 0.670588f;
-    const float b = -0.31886f;
-    ff1 = A * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + B); // R^2 = 0.9921
-    ff2 = a * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + b); // R^2 = 0.9836
+//    const float a = 0.670588f;
+//    const float b = -0.31886f;
+//    ff1 = A * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + B); // R^2 = 0.9921
+//    ff2 = a * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + b); // R^2 = 0.9836
 
-    // float ff3;
-    // const float a3 = (A+a)/2;
-    // const float b3 = (B+b)/2;
-    // ff3 = a3 * arm_cos_f32(float_constrain(target, -35, 38) * 2 * pi / 360 + b3);
+    float ff3;
+    const float a3 = 0.865;
+    const float b3 = -0.222;
+	const float c3 = -0.035;
+    ff3 = a3 * arm_cos_f32(float_constrain(target, -35, 38) * 2 * pi / 360 + b3)+c3;
 
-    // return ((target + 45) * ff1 + (65 - target) * ff2) / 115;
+//    return ((target + 45) * ff1 + (65 - target) * ff2) / 115;
 
-    const float n_below = -46.5;
-    const float n_top = 62;
+//    const float n_below = -42.5;
+//    const float n_top = 62;
 
-    return ((target - n_below) * ff1 + (n_top - target) * ff2) / (n_top - n_below);
+//    return ((target - n_below) * ff1 + (n_top - target) * ff2) / (n_top - n_below);
 
-    // return ff3;
+    return ff3;
 
     // return target < -18 ? float_constrain(ff2, 0.35, 0.55) :
     // target < 0 ? float_constrain((0.738015f - 0.540642f) / 18.0f * target + 0.738015f, 0.54, 0.74) :
     // float_constrain((ff1 + 2 * ff2) / 3, 0.66, 0.76);
 }
-
-//const float pitch_k = 0.0f;//6
-//const float yaw_k = 0.0f;//8
-
-//#define TarCache 6
-//float yawTar[TarCache];
-//float pitchTar[TarCache];
-
-//float SG_dYaw(float Target)
-//{
-//    for (int i = TarCache - 1; i > 0; i--)
-//    {
-//        yawTar[i] = yawTar[i - 1];
-//    }
-//    yawTar[0] = Target;
-//    float res = 0;
-//    for (int i = 0; i < TarCache; i++)
-//    {
-//        if (i < TarCache / 2)
-//        {
-//            res += yawTar[i];
-//        }
-//        else
-//        {
-//            res -= yawTar[i];
-//        }
-//    }
-//    return res / TarCache * 2;
-//}
-
-//float SG_dPitch(float Target)
-//{
-//    for (int i = TarCache - 1; i > 0; i--)
-//    {
-//        pitchTar[i] = pitchTar[i - 1];
-//    }
-//    pitchTar[0] = Target;
-//    float res = 0;
-//    for (int i = 0; i < TarCache; i++)
-//    {
-//        if (i < TarCache / 2)
-//        {
-//            res += pitchTar[i];
-//        }
-//        else
-//        {
-//            res -= pitchTar[i];
-//        }
-//    }
-//    return res / TarCache * 2;
-//}
-
-//float YawFF_Speed(float Target)
-//{
-//    return yaw_k * SG_dYaw(Target);
-//}
-
-//float PitchFF_Speed(float Target)
-//{
-//    return pitch_k * SG_dPitch(Target);
-//}
-
-// float YawFF_Friction(float AngleSpeed, float Angle)
-// {
-//     // const float a = 5962.9f;
-//     // const float b = 1.7597f;
-//     // const float c = -67.2418f;
-//     // const float d = -984.3845f;
-//     // const float e = 811.0453f;
-//     // const float f = e * 0.0136f;
-//     // const float h = e * -0.0014f;
-//     // const float g = e * -8.5133e-5;
-
-//     // return a*atanf(b*AngleSpeed)+c*AngleSpeed*AngleSpeed+d*AngleSpeed
-//     // + e + f*Angle + h*Angle*Angle + g*Angle*Angle*Angle;
-
-//     const float a = 1978.5f;
-//     const float b = 14.7484f;
-//     const float c = 97.0689f;
-//     const float d = 1028.0f;
-//     // const float e = 0.0f;
-//     const float f = -13.1279f;
-//     const float h = 0.0f;
-//     const float g = 24.3479f;
-//     const float A = -16.1188f;
-//     const float B = -4.7396f;
-//     const float C = 1.7413f;
-//     const float D = 0.0328f;
-
-//     return a*atan(b*AngleSpeed)+
-//     d*AngleSpeed+f*Angle+
-//     c*AngleSpeed*AngleSpeed+h*Angle*Angle+g*AngleSpeed*Angle
-//     +A*AngleSpeed*AngleSpeed*AngleSpeed+B*AngleSpeed*AngleSpeed*Angle+C*AngleSpeed*Angle*Angle+D*Angle*Angle*Angle;
-//     // R^2: 0.88483
-// }
 
 /**
  * @brief 云台初始化上板
@@ -183,24 +92,6 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     if (rc_ctrl->rc.s2 == 1)
     {
         holder->Yaw_S.Target_Angle -= ((rc_ctrl->rc.ch2 - 1024) * holder->Yaw_S.Sensitivity);
-        
-        // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
-        // holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
-
-        // 模拟自瞄跟踪装甲板
-        // const float w = 100.0f;
-        // holder->Yaw_S.Target_Angle = 30 * (sin(HAL_GetTick()/w)+sin(HAL_GetTick()/w*2)/6.0f);
-
-        // holder->Yaw_S.Target_Angle -= 0.02f;
-        // if (holder->Yaw_S.Target_Angle < -5)
-        // {
-        //     holder->Yaw_S.Target_Angle = 5;
-        // }
-
-        // 模拟跟踪大符
-        // const float w = 150.0f;
-        // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / w);
-        // holder->Pitch.Target_Angle = 20 * cos(HAL_GetTick() / w);
     }
     if (rc_ctrl->rc.s2 == 1)
     {
@@ -212,10 +103,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
         {
             if (Brain.Autoaim.mode == Cruise)
             {
-                // holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
-//                holder->Yaw_S.Target_Angle = 0;
-//                holder->Pitch.Target_Angle = 0;
-                // holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
+                holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+                holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
             }
             else if (Brain.Autoaim.mode == Lock)
             {
@@ -242,24 +131,24 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 //    holder->Yaw_S.Target_Angle = LPFilter(holder->Yaw_S.Target_Angle, &LPF_yaw_mpu);
 //    holder->Pitch.Target_Angle = LPFilter(holder->Pitch.Target_Angle, &LPF_pitch_mpu);
 
-//    if (holder->Pitch.GYRO_Angle > 20)
-//    {
-//        holder->Pitch.PID.ShellPID->Kp = 0.40f;
-//        holder->Pitch.PID.ShellPID->Ki = 0.005f;
-//        holder->Pitch.PID.ShellPID->Kd = -0.2f;
-//        holder->Pitch.PID.CorePID->Kp = 0.37f;
-//        holder->Pitch.PID.CorePID->Ki = 0;
-//        holder->Pitch.PID.CorePID->Kd = 2;
-//    }
-//    else
-//    {
-//        holder->Pitch.PID.ShellPID->Kp = 0.45f;
-//        holder->Pitch.PID.ShellPID->Ki = 0.005f;
-//        holder->Pitch.PID.ShellPID->Kd = -0.005f;
-//        holder->Pitch.PID.CorePID->Kp = 0.55;
-//        holder->Pitch.PID.CorePID->Ki = 0;
-//        holder->Pitch.PID.CorePID->Kd = 3;
-//    }
+    if (holder->Pitch.GYRO_Angle > 20)
+    {
+        holder->Pitch.PID.ShellPID->Kp = x;
+        holder->Pitch.PID.ShellPID->Ki = y;
+        holder->Pitch.PID.ShellPID->Kd = z;
+        holder->Pitch.PID.CorePID->Kp = 0.45f;//0.45
+        holder->Pitch.PID.CorePID->Ki = 0;
+        holder->Pitch.PID.CorePID->Kd = 5;//5
+    }
+    else
+    {
+        holder->Pitch.PID.ShellPID->Kp = 0.50f;
+        holder->Pitch.PID.ShellPID->Ki = 0.005f;
+        holder->Pitch.PID.ShellPID->Kd = -0.005f;
+        holder->Pitch.PID.CorePID->Kp = 0.55;//0.55
+        holder->Pitch.PID.CorePID->Ki = 0;
+        holder->Pitch.PID.CorePID->Kd = 3;//3
+    }
 
 #if DEBUG_HOLDER == 0
     if (rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)

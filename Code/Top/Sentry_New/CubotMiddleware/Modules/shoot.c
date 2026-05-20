@@ -50,21 +50,32 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
         if (Top.Referee.cooling_heat >= (Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin - 70))
             ammo_booster->Shoot_Plate.Fire_Divider = 125; // 125
         else
-            ammo_booster->Shoot_Plate.Fire_Divider = 50; // 50
-		if(Brain.Autoaim.Mode == Outpost)
+		{
+			if(Top.Referee.posture == 3)
+				ammo_booster->Shoot_Plate.Fire_Divider = 100;
+			if(Top.Referee.posture == 1)
+				ammo_booster->Shoot_Plate.Fire_Divider = 25;
+		}
+		if(Brain.Autoaim.Mode == Small_Buff || Brain.Autoaim.Mode == Big_Buff)
 			ammo_booster->Shoot_Plate.Fire_Divider = 500;
+		
 		if(Top.Referee.game_prograss != 4)
-			ammo_booster->Shoot_Plate.Fire_Divider = 500;
+			ammo_booster->Shoot_Plate.Fire_Divider = 50;
 		
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;
         if (ammo_booster->Shoot_Plate.Shoot_Cut % ammo_booster->Shoot_Plate.Fire_Divider == 0)
             ammo_booster->Shoot_Plate.Shoot_rest_flag = 0;
 		
-        if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 && Top.Referee.shoot_num >= 0)
+        if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1 && Brain.Autoaim.IsFire_Autaim == 1)) && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 && Top.Referee.shoot_num >= 0)
         {
-            if(Brain.Autoaim.Mode == Outpost)
-				ammo_booster->Shoot_Plate.Target_Angle += 22.5;
+            if(Brain.Autoaim.Mode == Small_Buff || Brain.Autoaim.Mode == Big_Buff)
+			{
+				if(Holder.Pitch.GYRO_Angle > 20.0f)
+					ammo_booster->Shoot_Plate.Target_Angle += 45;
+				else
+					ammo_booster->Shoot_Plate.Target_Angle += 22.5;
+			}	
 			else
 				ammo_booster->Shoot_Plate.Target_Angle += 45;
             ammo_booster->Shoot_Plate.ShootNum++;

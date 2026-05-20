@@ -64,46 +64,42 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 			}
 			else
 			{
-				if (rec->Lidar.Movemode == 1)
-				{
-					chassis->Movement.Vx_Tar = 0;
-					chassis->Movement.Vy_Tar = 0;
-					chassis->Movement.Posture = 1;	//进攻姿态
-				}
-				else if (rec->Lidar.Movemode == 0)
-				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
-					chassis->Movement.Posture = 3;	//移动姿态
-				}
-				else if (rec->Lidar.Movemode == 2)
-				{
-					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
-					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
-					chassis->Movement.Posture = 3;
-				}
-				
-				chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
-				chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
 				if(referee2022.robot_hurt.hurt_type == 1 && referee2022.robot_hurt.armor_id != 0)
 				{
 					chassis->Movement.Omega = Calculate_Variable_Omega(2000,6000,2.0f,0.001f);
 					if(referee2022.game_robot_status.remain_HP < 400)
 						super_cap.cap_state.Supercap_Mode = 1;
-				}else if(referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.game_progress == 4)
+				}else if(referee2022.game_status.stage_remain_time > 400 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
 					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-				}else if(Base.Lidar.Movemode == 2)
-				{
-					super_cap.cap_state.Supercap_Mode = 1;
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
-				}
-				else
+				}else
 				{
 					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
 					super_cap.cap_state.Supercap_Mode = 0;
 				}
+				if (rec->Lidar.Movemode == 1)	//到达
+				{
+					chassis->Movement.Vx_Tar = 0;
+					chassis->Movement.Vy_Tar = 0;
+					chassis->Movement.Posture = 1;	//进攻姿态
+				}
+				else if (rec->Lidar.Movemode == 0)	//移动中
+				{
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Posture = 3;	//移动姿态
+				}
+				else if (rec->Lidar.Movemode == 2)	//回补给区
+				{
+					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
+					chassis->Movement.Posture = 3;
+					super_cap.cap_state.Supercap_Mode = 1;
+				}
+				
+				chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
+				chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
 				
 				if (fabs(chassis->Movement.Vx_Move) <= 5 && fabs(chassis->Movement.Vy_Move) <= 5 && chassis->Movement.Omega == 0 && (rec->Lidar.Movemode == 0 || rec->Lidar.Movemode == 2))
 				{

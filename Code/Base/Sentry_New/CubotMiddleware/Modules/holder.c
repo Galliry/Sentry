@@ -8,9 +8,10 @@
 #include <stdint.h>
 
 Holder_t Holder;
-
+uint16_t AllSenseDelayCount;
+uint8_t Follow_Flag = 0;
+uint16_t Follow_Flag_cnt = 0;
 #define DEBUG_YAW 0
-volatile float Debug_tar = 0;
 
 /**
  * @brief 云台初始化
@@ -22,30 +23,6 @@ void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
     holder->Yaw_M.Sensitivity = 0.00085f; // 0.003f 0.0015
     holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle;
 }
-
-//float AngleMinus(float a, float b)
-//{
-//    float r = a - b;
-//    if (r > 180)
-//        r -= 360;
-//    if (r < -180)
-//        r += 360;
-//    return r;
-//}
-
-//void AngleLim(float *a)
-//{
-//    if (*a > 360)
-//    {
-//        *a -= 360;
-//    }
-//    if (*a < 0)
-//    {
-//        *a += 360;
-//    }
-//}
-
-uint16_t AllSenseDelayCount = 0;
 
 /**
  * @brief  下板云台控制
@@ -62,38 +39,41 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 #if DEBUG_YAW == 0
     if (rec->Rc.rc_Ctrl_s2 != 1)
     {
-        holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity) + Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
+        holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
     }
-//    if (AllSenseDelayCount == 0)
-//    {
-//        if (rec->Autoaim.All_Sense == 1)
-//        {
-//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 60;
-//        }
-//        if (rec->Autoaim.All_Sense == 2)
-//        {
-//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 120;
-//        }
-//        if (rec->Autoaim.All_Sense == 3)
-//        {
-//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle - 180;
-//        }
-//        if (rec->Autoaim.All_Sense == 4)
-//        {
-//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 120;
-//        }
-//        if (rec->Autoaim.All_Sense == 5)
-//        {
-//            holder->Yaw_M.Target_Angle = holder->Yaw_M.GYRO_Angle + 60;
-//        }
-//        AllSenseDelayCount = 125;
-//    }
-//    else
-//    {
-//        AllSenseDelayCount--;
-//    }
-
-//    AngleLim(&holder->Yaw_M.Target_Angle);
+	if(rec->Rc.rc_Ctrl_s2 == 2)
+	{
+	
+		if (AllSenseDelayCount == 0)
+		{
+			holder->Yaw_M.Target_Angle += Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
+			AllSenseDelayCount = 2000;
+		}
+		else
+		{
+			AllSenseDelayCount--;
+		}
+	}
+	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
+	{
+		if(Base.Autoaim.is_Follow == 1)
+		{
+			holder->Yaw_M.Target_Angle -= 60;
+			Follow_Flag = 0;
+		}
+		else if(Base.Autoaim.is_Follow == 2)
+		{
+			holder->Yaw_M.Target_Angle += 60;
+			Follow_Flag = 0;
+		}
+	}
+	if(Follow_Flag == 0)
+		Follow_Flag_cnt++;
+	if(Follow_Flag_cnt > 500)
+	{
+		Follow_Flag_cnt = 0;
+		Follow_Flag = 1;
+	}
 #else
     holder->Yaw_M.Target_Angle = Debug_tar;
 #endif

@@ -5,10 +5,11 @@
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
-
+uint16_t ignore_outpost_cnt = 0;
+uint16_t ignore_outpost = 0;
 #define HOLDER_MODE 1
 
-#define AUTOAIM_Q_SELECT 1
+#define AUTOAIM_Q_SELECT 3
 
 uint8_t Brain_Autoaim_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -31,7 +32,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 		brain->Autoaim.Brain_Data.FrameType = recBuffer[1];
 		brain->Autoaim.Brain_Data.FrameCoreID = recBuffer[2];
 
-		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[11] == 0xDD ) //< 解算偏转角
+		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[12] == 0xDD) //< 解算偏转角
 		{
 			brain->Autoaim.mode_cnt = 0;
 			brain->Autoaim.mode = Lock;
@@ -39,8 +40,8 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			brain->Autoaim.Yaw_add = ((recBuffer[3] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[3] & 0x3f) * 100 + recBuffer[4]) / 100);
 			brain->Autoaim.Pitch_add = ((recBuffer[5] >> 6) == 0 ? 1 : -1) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100);
 			brain->Autoaim.Distance = (float)(recBuffer[7]) / 10;
-			brain->Autoaim.All_Sense = recBuffer[8];
-			brain->Autoaim.All_Sense_id = recBuffer[9];
+			brain->Autoaim.IsFire_Autaim = recBuffer[8];
+			brain->Autoaim.All_Sense = recBuffer[9];
 			
 			if(rc_Ctrl_et.rc.s2 == 2)
 			{
@@ -54,24 +55,40 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add;
 				#endif
 			}
-			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.2f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.2f && brain->Autoaim.Mode == EKF)
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.3f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.3f && brain->Autoaim.Mode == EKF)
 				brain->Autoaim.IsFire = 1;
 			else if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.4f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.4f && (brain->Autoaim.Mode == Small_Buff || brain->Autoaim.Mode == Big_Buff))
 				brain->Autoaim.IsFire = 1;
 			else brain->Autoaim.IsFire = 0;
+			if(brain->Autoaim.Mode == Outpost)
+			{
+				ignore_outpost_cnt = 0;
+			}
 		}
 		else
 		{
+			brain->Autoaim.All_Sense = recBuffer[6];
 			if (brain->Autoaim.mode_cnt >= 4)
 			{
 				brain->Autoaim.mode = Cruise;
 				brain->Autoaim.IsFire = 0;
 			}else 
 			{
-				brain->Autoaim.mode_cnt ++;
+				brain->Autoaim.mode_cnt++;
 			}
+			if(Top.Referee.game_time <= 390)
+			{
+				if(brain->Autoaim.Mode == Outpost)
+				{
+					ignore_outpost_cnt++;
+				}
+				if(ignore_outpost_cnt > 10000)
+					ignore_outpost = 1;
+				else
+					ignore_outpost = 0;
+			}
+			
 		}
-
 	}
 }
 
@@ -95,6 +112,7 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 {
 	int16_t tmp0, tmp1, tmp2, tmp3;
+	
 
 #if AUTOAIM_Q_SELECT == 1
 	tmp0 = (int16_t)(INS_attitude->q[0] * 30000);
@@ -104,7 +122,7 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 #endif
 #if AUTOAIM_Q_SELECT == 2
 	float q[4];
-	EularAngleToQuaternion(mpu6050.Yaw,mpu6050.Pitch, mpu6050.Roll,q);
+	EularAngleToQuaternion(INS_attitude->yaw, -INS_attitude->roll, INS_attitude->pitch,q);
 	float len = Sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
     q[0] /= len;
     q[1] /= len;
@@ -115,6 +133,12 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	tmp1 = -(int16_t)(q[1] * 30000);
 	tmp2 = -(int16_t)(q[2] * 30000);
 	tmp3 = (int16_t)(q[3] * 30000);
+#endif
+#if AUTOAIM_Q_SELECT == 3
+	tmp0 = (int16_t)((INS_attitude->q[0] - INS_attitude->q[3]) / sqrt(2) * 30000);
+	tmp1 = (int16_t)((INS_attitude->q[1] + INS_attitude->q[2]) / sqrt(2) * 30000);
+	tmp2 = (int16_t)((INS_attitude->q[2] - INS_attitude->q[1]) / sqrt(2) * 30000);
+	tmp3 = (int16_t)((INS_attitude->q[3] + INS_attitude->q[0]) / sqrt(2) * 30000);
 #endif
 
 	RobotToBrainTimeBuffer[0] = 0xAA;
@@ -169,16 +193,17 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
 	RobotToBrainChassisTimeBuffer[5] = Brain->Lidar.Outpost_Flag;	//开符标志位
-	RobotToBrainChassisTimeBuffer[6] = Top.Referee.lidar_target_pos; //保护英雄标志位 确认为1
+//	RobotToBrainChassisTimeBuffer[6] = Top.Referee.lidar_target_pos; //保护英雄标志位 确认为1
+	RobotToBrainChassisTimeBuffer[6] = referee2022.game_robot_status.robot_id<10?
+		referee2022.game_robot_hp.red_base_HP < 5000 ? 1 : 0 :
+		referee2022.game_robot_hp.blue_base_HP < 5000 ? 1 : 0;
 	if(Top.Referee.shoot_num <= 20) //发弹量标志位
 		RobotToBrainChassisTimeBuffer[7] = 0x01;
 	else
 		RobotToBrainChassisTimeBuffer[7] = 0x00;
-//	RobotToBrainChassisTimeBuffer[9] = Top.Referee.lidar_target_pos;
-//	memcpy(&RobotToBrainChassisTimeBuffer[9],&Top.Referee.lidar_pos_x,4);
-//	memcpy(&RobotToBrainChassisTimeBuffer[13],&Top.Referee.lidar_pos_y,4);
-	RobotToBrainChassisTimeBuffer[8] = 0xDD;
-	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,9);
+	RobotToBrainChassisTimeBuffer[8] = Top.Referee.base_flag;
+	RobotToBrainChassisTimeBuffer[9] = 0xDD;
+	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,10);
 
 }
 
@@ -189,6 +214,5 @@ void RobotToBrain(Brain_t *brain)
 	{
 		RobotToBrain_Lidar(brain);	
 	}
-
 }
 

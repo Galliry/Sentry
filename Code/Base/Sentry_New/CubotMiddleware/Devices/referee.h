@@ -244,9 +244,26 @@ typedef struct
 		uint8_t data_cmd_id[2];
 		uint8_t sender_ID[2];
 		uint8_t receiver_ID[2];
-		uint8_t data[4];
+		uint8_t data[32];
 		uint8_t CRC16[2];
 	}robot_interactive_data;
+	
+	struct
+	{
+		struct
+		{
+			uint8_t SOF;	//0xA5
+			uint8_t data_length[2];	//定义成uint16_t会莫名其妙多一个位，神奇BUG
+			uint8_t seq;	
+			uint8_t CRC8;
+		}header;
+		uint8_t cmd_id[2];
+		uint8_t data_cmd_id[2];
+		uint8_t sender_ID[2];
+		uint8_t receiver_ID[2];
+		uint8_t data[4];
+		uint8_t CRC16[2];
+	}sentry_2_referee_data;
 
 	 struct //0x0301 客户端内容id 0xd180
 	{

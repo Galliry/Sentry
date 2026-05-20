@@ -21,9 +21,8 @@ typedef struct
 		uint8_t lidar_target_pos;
 		uint8_t small_buff;
 		uint8_t big_buff;
-//		uint8_t lidar_rob_id;
-//		float lidar_pos_x;
-//		float lidar_pos_y;
+		uint8_t posture;
+		uint8_t base_flag;
 	}Referee;
 
 }Top_t;

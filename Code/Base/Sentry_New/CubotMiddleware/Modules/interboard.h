@@ -33,8 +33,13 @@ typedef struct
 	struct
 	{
 		uint8_t All_Sense_cnt;
-		uint16_t All_Sense_Angle[6];
+		int16_t All_Sense_Angle[6];
 	}All_sense;
+	struct
+	{
+		uint8_t Mode;
+		uint8_t is_Follow;
+	}Autoaim;
 }Base_t;
 
 extern Base_t Base;

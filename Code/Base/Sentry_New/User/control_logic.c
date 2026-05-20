@@ -21,7 +21,7 @@
 #include "referee.h"
 #include <stdint.h>
 #include <stdlib.h>
-uint8_t i = 0;
+int i = 0;
 int flag = 0;
 extern Motor a1308;
 uint8_t ff = 0;
@@ -57,11 +57,9 @@ void TIM14_Task(void)
 		flag++;
 		if(flag > 1000)
 		{
-			if(referee2022.game_robot_status.mains_power_gimbal_output == 0) i=0;
-			else i++;
-			if(i <= 10) DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
+			i++;
+			if(i % 10 == 0) DMiao_Enable(can1,&Holder.Motors.Yaw_M); 
 			else HolderControl_Base(&Holder,&Base);
-			if(i > 100) i = 100;
 			SwerveChassis_Control(&swervechassis,&Base);
 		}
 	}
