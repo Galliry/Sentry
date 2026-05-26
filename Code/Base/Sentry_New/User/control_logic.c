@@ -38,9 +38,10 @@ void TIM14_Task(void)
 	tim14.ClockTime++;
 	RobotOnlineState(&check_robot_state,&rc_Ctrl_et,&rc_Ctrl);
 	FPS_Check(&tim14_FPS);
-	Sentry_To_Referee();
+	if(tim14.ClockTime % 50 == 0)
+		Sentry_To_Referee();
 	
-	if(HAL_GetTick() - referee2022.robot_hurt.last_hurt_time > 5000)
+	if(HAL_GetTick() - referee2022.robot_hurt.last_hurt_time > 4000)
 	{
 		referee2022.robot_hurt.armor_id = 0;
 		referee2022.robot_hurt.hurt_type = 0;

@@ -71,29 +71,15 @@ void TIM14_Task(void)
 //		Brain.Autoaim.Mode = EKF;
 //	}
 
-	if(Top.Referee.game_prograss == 4 && ignore_outpost == 0)
+	if(Top.Referee.game_prograss == 4 && Top.Referee.game_time >= 340 && Top.Referee.shoot_num >= 180)
 	{
 		Brain.Lidar.Outpost_Flag = 1;
-		Brain.Autoaim.Mode = Outpost;
+		Brain.Autoaim.Mode = EKF;
 	}else
 	{
 		Brain.Lidar.Outpost_Flag = 0;
 		Brain.Autoaim.Mode = EKF;
 	}
-//	if(Top.Referee.game_prograss == 3 && state_flag == 0)
-//	{
-//		Brain.Lidar.Outpost_Flag = 1;
-//		Brain.Autoaim.Mode = Outpost;
-//		state_flag++;
-//	}else if(state_flag == 1 && ignore_outpost == 0)
-//	{
-//		Brain.Lidar.Outpost_Flag = 1;
-//		Brain.Autoaim.Mode = Outpost;
-//	}else
-//	{
-//		Brain.Lidar.Outpost_Flag = 1;
-//		Brain.Autoaim.Mode = Outpost;
-//	}
 	
 	// ET08¿ØÖÆ
     if (tim14.ClockTime > 500)

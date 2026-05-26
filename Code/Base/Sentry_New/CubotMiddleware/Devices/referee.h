@@ -244,7 +244,7 @@ typedef struct
 		uint8_t data_cmd_id[2];
 		uint8_t sender_ID[2];
 		uint8_t receiver_ID[2];
-		uint8_t data[32];
+		uint8_t data[41];
 		uint8_t CRC16[2];
 	}robot_interactive_data;
 	

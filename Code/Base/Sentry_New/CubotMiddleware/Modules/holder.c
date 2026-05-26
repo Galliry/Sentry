@@ -41,7 +41,7 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
     {
         holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
     }
-	if(rec->Rc.rc_Ctrl_s2 == 2)
+	if(rec->Rc.rc_Ctrl_s2 == 2 && referee2022.game_status.stage_remain_time <= 360)
 	{
 	
 		if (AllSenseDelayCount == 0)
@@ -58,12 +58,12 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 	{
 		if(Base.Autoaim.is_Follow == 1)
 		{
-			holder->Yaw_M.Target_Angle -= 60;
+			holder->Yaw_M.Target_Angle -= 25;
 			Follow_Flag = 0;
 		}
 		else if(Base.Autoaim.is_Follow == 2)
 		{
-			holder->Yaw_M.Target_Angle += 60;
+			holder->Yaw_M.Target_Angle += 25;
 			Follow_Flag = 0;
 		}
 	}

@@ -2,6 +2,7 @@
 #include "holder.h"
 #include "mpu6050.h"
 #include "interboard.h"
+#include "shoot.h"
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
@@ -9,7 +10,8 @@ uint16_t ignore_outpost_cnt = 0;
 uint16_t ignore_outpost = 0;
 #define HOLDER_MODE 1
 
-#define AUTOAIM_Q_SELECT 3
+#define AUTOAIM_Q_SELECT 1
+#define AUTOAIM_VERSION 1
 
 uint8_t Brain_Autoaim_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -27,6 +29,7 @@ uint8_t Brain_Lidar_Callback(uint8_t * recBuffer, uint16_t len)
 
 void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 {
+	#if AUTOAIM_VERSION == 1
 	if (recBuffer[0] == 0xAA)
 	{
 		brain->Autoaim.Brain_Data.FrameType = recBuffer[1];
@@ -55,15 +58,17 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add;
 				#endif
 			}
-			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.3f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.3f && brain->Autoaim.Mode == EKF)
+			if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.8f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.5f )
+			{
 				brain->Autoaim.IsFire = 1;
-			else if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.4f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.4f && (brain->Autoaim.Mode == Small_Buff || brain->Autoaim.Mode == Big_Buff))
+			}
+			else if(ABS(Holder.Yaw_S.Target_Angle -Holder.Yaw_S.Can_Angle) < 0.8f && ABS(Holder.Pitch.Target_Angle - Holder.Pitch.GYRO_Angle) < 0.6f && (brain->Autoaim.Mode == Small_Buff || brain->Autoaim.Mode == Big_Buff))
 				brain->Autoaim.IsFire = 1;
 			else brain->Autoaim.IsFire = 0;
-			if(brain->Autoaim.Mode == Outpost)
-			{
-				ignore_outpost_cnt = 0;
-			}
+//			if(brain->Autoaim.Mode == Outpost)
+//			{
+//				ignore_outpost_cnt = 0;
+//			}
 		}
 		else
 		{
@@ -76,20 +81,33 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			{
 				brain->Autoaim.mode_cnt++;
 			}
-			if(Top.Referee.game_time <= 390)
-			{
-				if(brain->Autoaim.Mode == Outpost)
-				{
-					ignore_outpost_cnt++;
-				}
-				if(ignore_outpost_cnt > 10000)
-					ignore_outpost = 1;
-				else
-					ignore_outpost = 0;
-			}
+//			if(Top.Referee.game_time <= 390)
+//			{
+//				if(brain->Autoaim.Mode == Outpost)
+//				{
+//					ignore_outpost_cnt++;
+//				}
+//				if(ignore_outpost_cnt > 10000)
+//					ignore_outpost = 1;
+//				else
+//					ignore_outpost = 0;
+//			}
 			
 		}
 	}
+	#endif
+	#if AUTOAIM_VERSION == 2
+	if (recBuffer[0] == 'V' && recBuffer[1] == 'G' && recBuffer[9] == 'E' && recBuffer[10] == 'N')
+	{
+		brain->Autoaim.IsFire = recBuffer[2];
+		// yaw [3]
+		// yaw vel [4] 
+		// yaw acc [5]
+		// pitch [6]
+		// pitch vel[7]
+		// pitch acc[8]
+	}
+	#endif
 }
 
 
@@ -141,6 +159,7 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	tmp3 = (int16_t)((INS_attitude->q[3] + INS_attitude->q[0]) / sqrt(2) * 30000);
 #endif
 
+#if AUTOAIM_VERSION == 1
 	RobotToBrainTimeBuffer[0] = 0xAA;
 	RobotToBrainTimeBuffer[1] = 0x07;	// Type ;  //固定为0x07
 	RobotToBrainTimeBuffer[2] = 0x01;	// coreID;  //目前固定为0x01
@@ -168,8 +187,27 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[21] = 0xDD;
 
 	RobotToBrainTimeBuffer[22] = 0xDD;
-
+	
 	HAL_UART_Transmit_DMA(&huart2, RobotToBrainTimeBuffer, 23);
+
+#endif
+#if AUTOAIM_VERSION == 2
+	RobotToBrainTimeBuffer[0] = 'G';
+	RobotToBrainTimeBuffer[1] = 'V';
+	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
+	RobotToBrainTimeBuffer[3] = INS_attitude->yaw;
+	RobotToBrainTimeBuffer[4] = INS_attitude->gyro[2];
+	RobotToBrainTimeBuffer[5] = -INS_attitude->roll;
+	RobotToBrainTimeBuffer[6] = INS_attitude->gyro[1];
+	RobotToBrainTimeBuffer[7] = INS_attitude->pitch;
+	RobotToBrainTimeBuffer[8] = 22;
+	RobotToBrainTimeBuffer[9] = AmmoBooster.Shoot_Plate.ShootNum;
+	RobotToBrainTimeBuffer[10] = 'E';
+	RobotToBrainTimeBuffer[11] = 'N';
+	
+	HAL_UART_Transmit_DMA(&huart2, RobotToBrainTimeBuffer, 12);
+
+#endif
 }
 
 void RobotToBrain_Lidar(Brain_t* Brain)
@@ -193,15 +231,12 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
 	RobotToBrainChassisTimeBuffer[5] = Brain->Lidar.Outpost_Flag;	//开符标志位
-//	RobotToBrainChassisTimeBuffer[6] = Top.Referee.lidar_target_pos; //保护英雄标志位 确认为1
-	RobotToBrainChassisTimeBuffer[6] = referee2022.game_robot_status.robot_id<10?
-		referee2022.game_robot_hp.red_base_HP < 5000 ? 1 : 0 :
-		referee2022.game_robot_hp.blue_base_HP < 5000 ? 1 : 0;
-	if(Top.Referee.shoot_num <= 20) //发弹量标志位
+	RobotToBrainChassisTimeBuffer[6] = Top.Referee.base_flag; //保护Base 确认为1
+	if(Top.Referee.shoot_num <= 50) //发弹量标志位
 		RobotToBrainChassisTimeBuffer[7] = 0x01;
 	else
 		RobotToBrainChassisTimeBuffer[7] = 0x00;
-	RobotToBrainChassisTimeBuffer[8] = Top.Referee.base_flag;
+	RobotToBrainChassisTimeBuffer[8] = 0x00;
 	RobotToBrainChassisTimeBuffer[9] = 0xDD;
 	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,10);
 

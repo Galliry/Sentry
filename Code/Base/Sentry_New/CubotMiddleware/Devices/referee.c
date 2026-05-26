@@ -468,7 +468,7 @@ void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength)
 void Sentry_Decision_Control(void)
 {
 	referee2022.sentry_decision.resurrection = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
-	if(referee2022.bullet_remaining.bullet_remaining_num <= 50 && referee2022.bullet_remaining.money >= 900 && referee2022.game_status.game_progress == 4)
+	if(referee2022.bullet_remaining.bullet_remaining_num <= 20 && referee2022.bullet_remaining.money >= 900 && referee2022.game_status.game_progress == 4)
 		referee2022.sentry_decision.shoot_num += 100;
 	if(referee2022.sentry_info_t.posture != swervechassis.Movement.Posture)
 		referee2022.sentry_decision.target_posture = swervechassis.Movement.Posture;
@@ -485,7 +485,7 @@ void Sentry_Decision_Control(void)
 }
 
 
-uint8_t Data_Pack[2][50];
+uint8_t Data_Pack[2][100];
 void sentry_send_meseage()	//上发哨兵决策信息
 {
 	uint16_t crc16_temp;
@@ -521,13 +521,13 @@ void sentry_send_meseage()	//上发哨兵决策信息
 	HAL_UART_Transmit_DMA(&huart4,Data_Pack[0],19);
 	
 }
-
+int16_t length = 0;
 void Sentry_multiMachineInteraction(void)
 {
 	uint16_t crc16_temp;
 	
 	referee2022.robot_interactive_data.header.SOF=0xA5;	
-	referee2022.robot_interactive_data.header.data_length[0]=0x0A;
+	referee2022.robot_interactive_data.header.data_length[0]=0x2F;
 	referee2022.robot_interactive_data.header.data_length[1]=0x00;
 	referee2022.robot_interactive_data.header.seq=0;//包序号?
 	referee2022.robot_interactive_data.header.CRC8=Get_CRC8_Check_Sum((unsigned char*)&referee2022.robot_interactive_data.header,4,0xFF);
@@ -552,7 +552,10 @@ void Sentry_multiMachineInteraction(void)
 		referee2022.robot_interactive_data.receiver_ID[0]=0x6d;
 		referee2022.robot_interactive_data.receiver_ID[1]=0x00;
 	}
-	
+//	referee2022.robot_interactive_data.data[0] = 0x01;
+//	referee2022.robot_interactive_data.data[1] = 0x01;
+//	referee2022.robot_interactive_data.data[2] = 0x01;
+//	referee2022.robot_interactive_data.data[3] = 0x01;
 	memcpy(&referee2022.robot_interactive_data.data[0],&referee2022.groud_robot_position_t.engineer_x,4);
 	memcpy(&referee2022.robot_interactive_data.data[4],&referee2022.groud_robot_position_t.engineer_y,4);
 	memcpy(&referee2022.robot_interactive_data.data[8],&referee2022.groud_robot_position_t.hero_x,4);
@@ -561,14 +564,16 @@ void Sentry_multiMachineInteraction(void)
 	memcpy(&referee2022.robot_interactive_data.data[20],&referee2022.groud_robot_position_t.standard_3_y,4);
 	memcpy(&referee2022.robot_interactive_data.data[24],&referee2022.groud_robot_position_t.standard_4_x,4);
 	memcpy(&referee2022.robot_interactive_data.data[28],&referee2022.groud_robot_position_t.standard_4_y,4);
-	
-	crc16_temp=Get_CRC16_Check_Sum((unsigned char*)&referee2022.robot_interactive_data,45, 0xFFFF);
+	memcpy(&referee2022.robot_interactive_data.data[32],&referee2022.game_robot_pos.x,4);
+	memcpy(&referee2022.robot_interactive_data.data[36],&referee2022.game_robot_pos.y,4);
+	referee2022.robot_interactive_data.data[40] = 0x01;
+	crc16_temp=Get_CRC16_Check_Sum((unsigned char*)&referee2022.robot_interactive_data,54, 0xFFFF);
 	referee2022.robot_interactive_data.CRC16[0]=crc16_temp&0xff;
 	referee2022.robot_interactive_data.CRC16[1]=crc16_temp>>8;
 	
-	memcpy(Data_Pack[1],(unsigned char*)&referee2022.robot_interactive_data,47);
-	
-	HAL_UART_Transmit_DMA(&huart4,Data_Pack[1],19);
+	memcpy(Data_Pack[1],(unsigned char*)&referee2022.robot_interactive_data,sizeof(referee2022.robot_interactive_data));
+	length = sizeof(referee2022.robot_interactive_data);
+	HAL_UART_Transmit_DMA(&huart4,Data_Pack[1],56);
 }
 
 void Sentry_To_Referee(void)

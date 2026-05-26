@@ -15,14 +15,14 @@
 #include "brain.h"
 
 Holder_t Holder;
-float Yaw_TD = 240;
+float Yaw_TD = 250;
 float Pitch_TD = 400;
 int k = 0;
 float fliter = 0.9;
 volatile float DEBUG_tar = 0.0f;
 
 float x = 0.45;
-float y = 0.007;
+float y = 0.012;
 float z = -0.2;
 #define DEBUG_HOLDER 0
 #if DEBUG_HOLDER == 2
@@ -103,8 +103,15 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
         {
             if (Brain.Autoaim.mode == Cruise)
             {
-                holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
-                holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
+				if(Brain.Autoaim.Mode == Outpost)
+				{
+					holder->Yaw_S.Target_Angle = 20 * sin(HAL_GetTick() / 300.0f);
+					holder->Pitch.Target_Angle = 5 * sin(HAL_GetTick() / 150.0f) + 10;//20;
+				}else
+				{
+					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
+					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
+				} 
             }
             else if (Brain.Autoaim.mode == Lock)
             {
@@ -133,21 +140,21 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 
     if (holder->Pitch.GYRO_Angle > 20)
     {
-        holder->Pitch.PID.ShellPID->Kp = x;
-        holder->Pitch.PID.ShellPID->Ki = y;
-        holder->Pitch.PID.ShellPID->Kd = z;
+        holder->Pitch.PID.ShellPID->Kp = 0.38f;//0.45
+        holder->Pitch.PID.ShellPID->Ki = 0.012f;
+        holder->Pitch.PID.ShellPID->Kd = -0.2f;
         holder->Pitch.PID.CorePID->Kp = 0.45f;//0.45
         holder->Pitch.PID.CorePID->Ki = 0;
-        holder->Pitch.PID.CorePID->Kd = 5;//5
+        holder->Pitch.PID.CorePID->Kd = -8;//5
     }
     else
     {
-        holder->Pitch.PID.ShellPID->Kp = 0.50f;
-        holder->Pitch.PID.ShellPID->Ki = 0.005f;
+        holder->Pitch.PID.ShellPID->Kp = 0.45f;//0.5
+        holder->Pitch.PID.ShellPID->Ki = 0.02f;
         holder->Pitch.PID.ShellPID->Kd = -0.005f;
         holder->Pitch.PID.CorePID->Kp = 0.55;//0.55
         holder->Pitch.PID.CorePID->Ki = 0;
-        holder->Pitch.PID.CorePID->Kd = 3;//3
+        holder->Pitch.PID.CorePID->Kd = -6;//3
     }
 
 #if DEBUG_HOLDER == 0

@@ -8,10 +8,10 @@ Top_t Top;
 uint8_t yaw_turn = 0;
 void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
 { 
-	if(Holder.Yaw_S.Target_Angle > 35)
+	if(Holder.Yaw_S.Target_Angle > 30)
 	{
 		yaw_turn = 1;
-	}else if(Holder.Yaw_S.Target_Angle < -35)
+	}else if(Holder.Yaw_S.Target_Angle < -30)
 	{
 		yaw_turn = 2;
 	}else

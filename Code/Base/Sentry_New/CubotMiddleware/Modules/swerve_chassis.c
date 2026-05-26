@@ -35,7 +35,7 @@ void SwerveChassisInit(SwerveChassis *chassis, DualPID_Object *turn_pid, SingleP
 
     BasePID_Init(&chassis->Motors6020.FollowPID, follow_pid->Kp, follow_pid->Ki, follow_pid->Kd, follow_pid->KiPartDetachment);
     chassis->Movement.Move_Sensitivity = 5;
-    chassis->Movement.Lidar_Sensitivity = 2732.852;
+    chassis->Movement.Lidar_Sensitivity = 2732.852f * 0.85f;
 	chassis->Movement.Posture = 3;
 }
 
@@ -193,7 +193,7 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
     else
         chassis->Power.super_power = 0;
 
-    chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + (referee2022.power_heat_data.chassis_power_buffer - 15) * 5 + chassis->Power.super_power;
+    chassis->Power.max_power = referee2022.game_robot_status.chassis_power_limit + (referee2022.power_heat_data.chassis_power_buffer - 20) * 5 + chassis->Power.super_power;
 
     if (chassis->Power.max_power < 0)
         chassis->Power.max_power = 0;
