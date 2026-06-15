@@ -11,7 +11,7 @@ uint16_t ignore_outpost = 0;
 #define HOLDER_MODE 1
 
 #define AUTOAIM_Q_SELECT 1
-#define AUTOAIM_VERSION 1
+#define AUTOAIM_VERSION 2
 
 uint8_t Brain_Autoaim_Callback(uint8_t * recBuffer, uint16_t len)
 {
@@ -97,15 +97,15 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 	}
 	#endif
 	#if AUTOAIM_VERSION == 2
-	if (recBuffer[0] == 'V' && recBuffer[1] == 'G' && recBuffer[9] == 'E' && recBuffer[10] == 'N')
+	if (recBuffer[0] == 'V' && recBuffer[1] == 'G' && recBuffer[24] == 'E' && recBuffer[25] == 'N')
 	{
 		brain->Autoaim.IsFire = recBuffer[2];
 		// yaw [3]
-		// yaw vel [4] 
-		// yaw acc [5]
-		// pitch [6]
-		// pitch vel[7]
-		// pitch acc[8]
+		// yaw vel [7] 
+		// yaw acc [11]
+		// pitch [15]
+		// pitch vel[19]
+		// pitch acc[23]
 	}
 	#endif
 }
@@ -195,17 +195,24 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[0] = 'G';
 	RobotToBrainTimeBuffer[1] = 'V';
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
-	RobotToBrainTimeBuffer[3] = INS_attitude->yaw;
-	RobotToBrainTimeBuffer[4] = INS_attitude->gyro[2];
-	RobotToBrainTimeBuffer[5] = -INS_attitude->roll;
-	RobotToBrainTimeBuffer[6] = INS_attitude->gyro[1];
-	RobotToBrainTimeBuffer[7] = INS_attitude->pitch;
-	RobotToBrainTimeBuffer[8] = 22;
-	RobotToBrainTimeBuffer[9] = AmmoBooster.Shoot_Plate.ShootNum;
-	RobotToBrainTimeBuffer[10] = 'E';
-	RobotToBrainTimeBuffer[11] = 'N';
+    float temp_yaw = INS_attitude->yaw / 360.0f * 2 * 3.14f;
+    float temp_yaw_gyro = INS_attitude->gyro[2] / 360.0f * 2 * 3.14f;
+    float temp_roll = -INS_attitude->roll / 360.0f * 2 * 3.14f;
+    float temp_roll_gyro = INS_attitude->gyro[1] / 360.0f * 2 * 3.14f;
+    float temp_pitch = INS_attitude->pitch / 360.0f * 2 * 3.14f;
+	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
+	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
+	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
+	memcpy(RobotToBrainTimeBuffer+15,&temp_roll_gyro,4);
+	memcpy(RobotToBrainTimeBuffer+19,&temp_pitch,4);
+    float temp_v = 22.0f;
+	memcpy(RobotToBrainTimeBuffer+23,&temp_v,4);
+//	RobotToBrainTimeBuffer[27] = AmmoBooster.Shoot_Plate.ShootNum;
+//    RobotToBrainTimeBuffer[28] = AmmoBooster.Shoot_Plate.ShootNum;
+	RobotToBrainTimeBuffer[29] = 'E';
+	RobotToBrainTimeBuffer[30] = 'N';
 	
-	HAL_UART_Transmit_DMA(&huart2, RobotToBrainTimeBuffer, 12);
+	HAL_UART_Transmit_DMA(&huart2, RobotToBrainTimeBuffer, 31);
 
 #endif
 }

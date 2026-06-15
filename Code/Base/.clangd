@@ -1,3 +1,8 @@
+# ============================================================
+# .clangd — STM32H750VBTx (Cortex-M7) / Keil MDK-ARM (ARMCC)
+# 项目: RoboMaster Sentry
+# ============================================================
+
 CompileFlags:
   CompilationDatabase: None
   Add:
@@ -89,32 +94,32 @@ CompileFlags:
     - -D__vfp_status(x,y)=0
 
     # ---- 用户 Include 路径 ----
-    - -IInc
-    - -ISrc
-    - -IUser
-    - -IMDK-ARM
-    - -IMDK-ARM/.cmsis/include
-    - -IMDK-ARM/.cmsis/device
+    - -ISentry_New/Inc
+    - -ISentry_New/Src
+    - -ISentry_New/User
+    - -ISentry_New/MDK-ARM
+    - -ISentry_New/MDK-ARM/.cmsis/include
+    - -ISentry_New/MDK-ARM/.cmsis/device
 
     # ---- CMSIS ----
-    - -IDrivers/CMSIS/Include
-    - -IDrivers/CMSIS/Device/ST/STM32H7xx/Include
+    - -ISentry_New/Drivers/CMSIS/Include
+    - -ISentry_New/Drivers/CMSIS/Device/ST/STM32H7xx/Include
 
     # ---- STM32H7 HAL ----
-    - -IDrivers/STM32H7xx_HAL_Driver/Inc
-    - -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    - -ISentry_New/Drivers/STM32H7xx_HAL_Driver/Inc
+    - -ISentry_New/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
 
     # ---- ARM DSP 库 ----
-    - -IMIddlewaves/ARM/DSP/Include
-    - -IMIddlewaves/ARM/DSP/Include/dsp
+    - -ISentry_New/MIddlewaves/ARM/DSP/Include
+    - -ISentry_New/MIddlewaves/ARM/DSP/Include/dsp
 
     # ---- CubotMiddleware ----
-    - -ICubotMiddleware
-    - -ICubotMiddleware/Algorithms
-    - -ICubotMiddleware/Devices
-    - -ICubotMiddleware/Drivers
-    - -ICubotMiddleware/Modules
-    - -ICubotMiddleware/Support
+    - -ISentry_New/CubotMiddleware
+    - -ISentry_New/CubotMiddleware/Algorithms
+    - -ISentry_New/CubotMiddleware/Devices
+    - -ISentry_New/CubotMiddleware/Drivers
+    - -ISentry_New/CubotMiddleware/Modules
+    - -ISentry_New/CubotMiddleware/Support
 
     # ---- Keil 工具链系统头文件 ----
     - -isystemC:/Keil_v5/ARM/ARMCLANG/include
@@ -132,6 +137,7 @@ CompileFlags:
 
 # ---- 诊断设置 ----
 Diagnostics:
+  # 抑制 clangd 不理解 ARMCC 参数时的噪音
   Suppress:
     - "drv_unknown_argument"
     - "drv_unsupported_opt"
