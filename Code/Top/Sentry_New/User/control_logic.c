@@ -163,10 +163,10 @@ void TIM14_Task(void)
 
 void TIM13_Task(void)
 {
-    tim14_FPS.Gyro_cnt++;
-    MPU6050_Read(&mpu6050.mpu6050_Data);
-    IMUupdate(&mpu6050.mpu6050_Data);
-    INS_attitude = INS_GetAttitude(IMU_data);
+    // tim14_FPS.Gyro_cnt++;
+    // MPU6050_Read(&mpu6050.mpu6050_Data);
+    // IMUupdate(&mpu6050.mpu6050_Data);
+    // INS_attitude = INS_GetAttitude(IMU_data);
 }
 
 /**

@@ -66,8 +66,8 @@ void HardwareConfig(void)
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//导航雷达回调函数
 	UARTx_Init(&huart7,NULL);//  Vofa+
 
-	INS_Init(&bmi088.bmi088_Data);
-	MPU6050_Init(&mpu6050.mpu6050_Data);
+	// INS_Init(&bmi088.bmi088_Data);
+	// MPU6050_Init(&mpu6050.mpu6050_Data);
 		
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
