@@ -17,22 +17,45 @@
 #include "shoot.h"
 #include "swerve_chassis.h"
 #include "usart.h"
+#include "dmimu.h"
 
 int i = 0;
 extern int error_flag;
 extern uint16_t ignore_outpost;
 uint8_t state_flag = 0;
 int state_cnt = 0;
-//< TIM14µÄ´¥·¢ÆµÂÊÔÚCubeMXÖÐ±»ÅäÖÃÎª1000Hz
+//< TIM14ï¿½Ä´ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½CubeMXï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Îª1000Hz
 void TIM14_Task(void)
 {
     tim14.ClockTime++;
+    DM_IMU_TrySendActive(&can2, &dm_imu);
+
+    // CAN2 bus-off/error monitoring (every ~100ms)
+    if (tim14.ClockTime % 100 == 0)
+    {
+        FDCAN_ProtocolStatusTypeDef protoStatus;
+        FDCAN_ErrorCountersTypeDef   errCounters;
+        HAL_FDCAN_GetProtocolStatus(&hfdcan2, &protoStatus);
+        HAL_FDCAN_GetErrorCounters(&hfdcan2, &errCounters);
+        UsartDmaPrintf("CAN2:%d,%d,%lu,%lu,%lu,%lu,%lu,%lu\r\n",
+            protoStatus.BusOff, protoStatus.ErrorPassive,
+            errCounters.TxErrorCnt, errCounters.RxErrorCnt,
+            can2_tx_fail_cnt, fdcan2_irq_cnt,
+            fdcan2_error_cb_cnt, fdcan2_rxfifo_cb_cnt);
+        if (protoStatus.BusOff)
+        {
+            HAL_FDCAN_Stop(&hfdcan2);
+            HAL_FDCAN_Start(&hfdcan2);
+            can2_tx_fail_cnt = 0;
+        }
+    }
+
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
     if (tim14.ClockTime % 4 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
-	//¾ö²ß»¹²»È«£¬¾ßÌåÊ±¼ä»¹Ã»²â Ö»ÓÐ¿ª¾Ö¿ªÐ¡·û´úÂë
+	//ï¿½ï¿½ï¿½ß»ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä»¹Ã»ï¿½ï¿½ Ö»ï¿½Ð¿ï¿½ï¿½Ö¿ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	if(Top.Referee.game_prograss == 3 && state_flag == 0)
 //	{
 //		Brain.Lidar.Outpost_Flag = 0;
@@ -81,7 +104,7 @@ void TIM14_Task(void)
 		Brain.Autoaim.Mode = EKF;
 	}
 	
-	// ET08¿ØÖÆ
+	// ET08ï¿½ï¿½ï¿½ï¿½
     if (tim14.ClockTime > 500)
         FrictionWheelControl(&AmmoBooster);
 	
@@ -118,8 +141,8 @@ void TIM14_Task(void)
     //	MotorCanOutput(can2, 0x1FE);
     //	MotorCanOutput(can2, 0x200);
 
-     UsartDmaPrintf("%f,%f,%d,%f,%f,%f,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
-		Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Yaw_S.v1,Holder.Pitch.v1);
+    //  UsartDmaPrintf("%f,%f,%d,%f,%f,%f,%f\r\n",Holder.Pitch.Target_Angle,Holder.Yaw_S.Target_Angle,Brain.Autoaim.IsFire,
+		// Holder.Yaw_S.Can_Angle,Holder.Pitch.GYRO_Angle,Holder.Yaw_S.v1,Holder.Pitch.v1);
     // UsartDmaPrintf("%d,%d,%d,%d,%d\r\n",error_flag,huart5.ErrorCode,Receive.Top.Referee.robot_HP,Receive.Top.Referee.robot_id,Receive.Top.Referee.game_prograss);
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
@@ -170,7 +193,7 @@ void TIM13_Task(void)
 }
 
 /**
- * @brief  CAN1½ÓÊÕÖÐ¶Ï»Øµ÷
+ * @brief  CAN1ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»Øµï¿½
  */
 uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
@@ -180,11 +203,12 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 }
 
 /**
- * @brief  CAN2½ÓÊÕÖÐ¶Ï»Øµ÷
+ * @brief  CAN2ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»Øµï¿½
  */
 uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
     BaseBoard_Callback(rxBuffer);
+    DM_IMU_CAN_Callback(&dm_imu, rxBuffer);
     return 0;
 }

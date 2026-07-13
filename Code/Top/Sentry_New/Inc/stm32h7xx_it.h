@@ -23,7 +23,7 @@
 #define __STM32H7xx_IT_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Private includes ----------------------------------------------------------*/
@@ -84,7 +84,8 @@ void USART6_IRQHandler(void);
 void UART7_IRQHandler(void);
 void UART8_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-
+void FDCAN1_IT1_IRQHandler(void);
+void FDCAN2_IT1_IRQHandler(void);
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

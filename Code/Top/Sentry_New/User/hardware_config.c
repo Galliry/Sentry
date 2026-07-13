@@ -15,6 +15,7 @@
 #include "DM_motor.h"
 #include "brain.h"
 #include "communication.h"
+#include "dmimu.h"
 void MPU_Init_(void);
 void MPU_Init_(void)
 {
@@ -46,7 +47,7 @@ void MPU_Init_(void)
 
 }
 /**
-  * @brief  ³õÊ¼»¯Ö¸ÁîºÏ¼¯
+  * @brief  ï¿½ï¿½Ê¼ï¿½ï¿½Ö¸ï¿½ï¿½Ï¼ï¿½
   */
 void HardwareConfig(void)
 {
@@ -62,9 +63,11 @@ void HardwareConfig(void)
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
-	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//ÊÓ¾õ×ÔÃé»Øµ÷º¯Êý
-	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//µ¼º½À×´ï»Øµ÷º¯Êý
+	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//ï¿½ï¿½ï¿½ï¿½ï¿½×´ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 	UARTx_Init(&huart7,NULL);//  Vofa+
+
+	DM_IMU_Init(&dm_imu, 0x58, 0x59);
 
 	// INS_Init(&bmi088.bmi088_Data);
 	// MPU6050_Init(&mpu6050.mpu6050_Data);
@@ -72,11 +75,12 @@ void HardwareConfig(void)
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
     CANx_Init(&hfdcan2, CAN2_rxCallBack);
-    CAN_Open (&can2 );	
+    CAN_Open (&can2 );
 
-	TIMx_Init(&htim14, TIM14_Task);//Á´½Ó¶¨Ê±Æ÷»Øµ÷
+
+	TIMx_Init(&htim14, TIM14_Task);//ï¿½ï¿½ï¿½Ó¶ï¿½Ê±ï¿½ï¿½ï¿½Øµï¿½
 	TIM_Open(&tim14);
-	TIMx_Init(&htim13, TIM13_Task);//Á´½Ó¶¨Ê±Æ÷»Øµ÷
+	TIMx_Init(&htim13, TIM13_Task);//ï¿½ï¿½ï¿½Ó¶ï¿½Ê±ï¿½ï¿½ï¿½Øµï¿½
 	TIM_Open(&tim13);
 }
 
