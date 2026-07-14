@@ -17,7 +17,7 @@
 #include "shoot.h"
 #include "swerve_chassis.h"
 #include "usart.h"
-#include "dmimu.h"
+#include "DM_imu.h"
 
 int i = 0;
 extern int error_flag;
@@ -28,34 +28,34 @@ int state_cnt = 0;
 void TIM14_Task(void)
 {
     tim14.ClockTime++;
-    DM_IMU_TrySendActive(&can2, &dm_imu);
+//    DM_IMU_TrySendActive(&can2, &dm_imu);
+//	DM_IMU_TrySendActive(&can2,&imu_s);
 
     // CAN2 bus-off/error monitoring (every ~100ms)
-    if (tim14.ClockTime % 100 == 0)
-    {
-        FDCAN_ProtocolStatusTypeDef protoStatus;
-        FDCAN_ErrorCountersTypeDef   errCounters;
-        HAL_FDCAN_GetProtocolStatus(&hfdcan2, &protoStatus);
-        HAL_FDCAN_GetErrorCounters(&hfdcan2, &errCounters);
-        UsartDmaPrintf("CAN2:%d,%d,%lu,%lu,%lu,%lu,%lu,%lu\r\n",
-            protoStatus.BusOff, protoStatus.ErrorPassive,
-            errCounters.TxErrorCnt, errCounters.RxErrorCnt,
-            can2_tx_fail_cnt, fdcan2_irq_cnt,
-            fdcan2_error_cb_cnt, fdcan2_rxfifo_cb_cnt);
-        if (protoStatus.BusOff)
-        {
-            HAL_FDCAN_Stop(&hfdcan2);
-            HAL_FDCAN_Start(&hfdcan2);
-            can2_tx_fail_cnt = 0;
-        }
-    }
+//    if (tim14.ClockTime % 100 == 0)
+//    {
+//        FDCAN_ProtocolStatusTypeDef protoStatus;
+//        FDCAN_ErrorCountersTypeDef   errCounters;
+//        HAL_FDCAN_GetProtocolStatus(&hfdcan2, &protoStatus);
+//        HAL_FDCAN_GetErrorCounters(&hfdcan2, &errCounters);
+//        UsartDmaPrintf("CAN2:%d,%d,%lu,%lu,%lu,%lu,%lu,%lu\r\n",
+//            protoStatus.BusOff, protoStatus.ErrorPassive,
+//            errCounters.TxErrorCnt, errCounters.RxErrorCnt,
+//            can2_tx_fail_cnt, fdcan2_irq_cnt,
+//            fdcan2_error_cb_cnt, fdcan2_rxfifo_cb_cnt);
+//        if (protoStatus.BusOff)
+//        {
+//            HAL_FDCAN_Stop(&hfdcan2);
+//            HAL_FDCAN_Start(&hfdcan2);
+//            can2_tx_fail_cnt = 0;
+//        }
+//    }
 
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
     if (tim14.ClockTime % 4 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
-	//���߻���ȫ������ʱ�仹û�� ֻ�п��ֿ�С������
 //	if(Top.Referee.game_prograss == 3 && state_flag == 0)
 //	{
 //		Brain.Lidar.Outpost_Flag = 0;
@@ -199,6 +199,7 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can1, rxBuffer);
     DMiao_CanUpdata(&Holder.Motors.Pitch, (*rxBuffer));
+	IMU_UpdateData(&IMU_M,rxBuffer);
     return 0;
 }
 
@@ -209,6 +210,7 @@ uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
     BaseBoard_Callback(rxBuffer);
-    DM_IMU_CAN_Callback(&dm_imu, rxBuffer);
+	IMU_UpdateData(&IMU_S,rxBuffer);
+	
     return 0;
 }

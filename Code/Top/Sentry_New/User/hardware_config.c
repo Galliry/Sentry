@@ -15,7 +15,7 @@
 #include "DM_motor.h"
 #include "brain.h"
 #include "communication.h"
-#include "dmimu.h"
+#include "DM_imu.h"
 void MPU_Init_(void);
 void MPU_Init_(void)
 {
@@ -66,9 +66,10 @@ void HardwareConfig(void)
 	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����
 	UARTx_Init(&huart7,NULL);//  Vofa+
-
-	DM_IMU_Init(&dm_imu, 0x58, 0x59);
-
+	
+	DM_IMU_Init(&IMU_S,0x60,0x61,can2);
+//	DM_IMU_Init(&IMU_M,0x58,0x59,can2);
+	
 	// INS_Init(&bmi088.bmi088_Data);
 	// MPU6050_Init(&mpu6050.mpu6050_Data);
 		
@@ -80,7 +81,11 @@ void HardwareConfig(void)
 
 	TIMx_Init(&htim14, TIM14_Task);//���Ӷ�ʱ���ص�
 	TIM_Open(&tim14);
-	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
-	TIM_Open(&tim13);
+//	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
+	DM_IMU_Init(&IMU_S,0x60,0x61,can2);
+	DM_IMU_Run(&IMU_S);
+	DM_IMU_Init(&IMU_M,0x58,0x59,can1);
+	DM_IMU_Run(&IMU_M);
+//	TIM_Open(&tim13);
 }
 
