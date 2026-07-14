@@ -24,9 +24,6 @@
 int i = 0;
 int flag = 0;
 extern Motor a1308;
-uint8_t ff = 0;
-int ccur = 0;
-uint8_t motor_flag = 0;
 
 uint8_t beHit = 0;
 uint32_t lastBeHitTick = 0;

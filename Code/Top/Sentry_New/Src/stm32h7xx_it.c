@@ -345,7 +345,8 @@ void FDCAN1_IT0_IRQHandler(void)
 void FDCAN2_IT0_IRQHandler(void)
 {
   /* USER CODE BEGIN FDCAN2_IT0_IRQn 0 */
-
+  extern volatile uint32_t fdcan2_irq_cnt;
+  fdcan2_irq_cnt++;
   /* USER CODE END FDCAN2_IT0_IRQn 0 */
   HAL_FDCAN_IRQHandler(&hfdcan2);
   /* USER CODE BEGIN FDCAN2_IT0_IRQn 1 */
@@ -606,5 +607,21 @@ void UART8_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+/**
+  * @brief This function handles FDCAN1 interrupt 1.
+  */
+void FDCAN1_IT1_IRQHandler(void)
+{
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+}
+
+/**
+  * @brief This function handles FDCAN2 interrupt 1.
+  */
+void FDCAN2_IT1_IRQHandler(void)
+{
+  HAL_FDCAN_IRQHandler(&hfdcan2);
+}
 
 /* USER CODE END 1 */

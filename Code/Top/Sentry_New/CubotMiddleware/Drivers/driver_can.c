@@ -1,18 +1,18 @@
 /**@file     driver_can.c
-* @brief     驱动层，CAN外设配置文件
-* @details   主要包括CAN过滤器初始化，指定中断回调函数，不同CAN_ID下的数据收发函数
+* @brief     锟斤拷锟斤拷锟姐，CAN锟斤拷锟斤拷锟斤拷锟斤拷锟侥硷拷
+* @details   锟斤拷要锟斤拷锟斤拷CAN锟斤拷锟斤拷锟斤拷锟斤拷始锟斤拷锟斤拷指锟斤拷锟叫断回碉拷锟斤拷锟斤拷锟斤拷锟斤拷同CAN_ID锟铰碉拷锟斤拷锟斤拷锟秸凤拷锟斤拷锟斤拷
 * @date      2021-8-12
 * @version   V1.2
-* @copyright  Copyright (c) 2021-2121  中国矿业大学CUBOT战队
+* @copyright  Copyright (c) 2021-2121  锟叫癸拷锟斤拷业锟斤拷学CUBOT战锟斤拷
 **********************************************************************************
 * @attention
-* 硬件平台: STM32H750VBT \n
-* SDK版本：-++++
-* @par 修改日志:
+* 硬锟斤拷平台: STM32H750VBT \n
+* SDK锟芥本锟斤拷-++++
+* @par 锟睫革拷锟斤拷志:
 * <table>
 * <tr><th>Date       <th>Version  <th>Author    <th>Description
-* <tr><td>2021-8-12  <td>1.0      <td>RyanJiao  <td>创建初始版本
-* <tr><td>2021-10-9  <td>1.0      <td>RyanJiao  <td>规范变量名，确定了CAN_TxBuffer结构
+* <tr><td>2021-8-12  <td>1.0      <td>RyanJiao  <td>锟斤拷锟斤拷锟斤拷始锟芥本
+* <tr><td>2021-10-9  <td>1.0      <td>RyanJiao  <td>锟芥范锟斤拷锟斤拷锟斤拷锟斤拷确锟斤拷锟斤拷CAN_TxBuffer锟结构
 * </table>
 *
 **********************************************************************************
@@ -20,77 +20,82 @@
                           How to use this driver  
  ==============================================================================
 
-	添加driver_can.h
+	锟斤拷锟斤拷driver_can.h
 	
-	1. 创建 (*CAN_RxCpltCallback)(CAN_RxBuffer* rxBuffer) 类型的用户回调
+	1. 锟斤拷锟斤拷 (*CAN_RxCpltCallback)(CAN_RxBuffer* rxBuffer) 锟斤拷锟酵碉拷锟矫伙拷锟截碉拷
 	
-	1. 调用CANx_Init() 将 句柄 和 用户定义的接收回调函数 拷贝至CAN结构体  （回调函数中对接收到的数据进行 ID识别 和 合并解算）
+	1. 锟斤拷锟斤拷CANx_Init() 锟斤拷 锟斤拷锟?锟斤拷 锟矫伙拷锟斤拷锟斤拷慕锟斤拷栈氐锟斤拷锟斤拷锟?锟斤拷锟斤拷锟斤拷CAN锟结构锟斤拷  锟斤拷锟截碉拷锟斤拷锟斤拷锟叫对斤拷锟秸碉拷锟斤拷锟斤拷锟捷斤拷锟斤拷 ID识锟斤拷 锟斤拷 锟较诧拷锟斤拷锟姐）
 
-	2. 调用CAN_Open() 传入实例化的结构体，开启can设备 
+	2. 锟斤拷锟斤拷CAN_Open() 锟斤拷锟斤拷实锟斤拷锟斤拷锟侥结构锟藉，锟斤拷锟斤拷can锟借备 
 	
-	3. 应用层编写 CAN_TxBuffer （发送缓存区结构体），填入待发送的字节数据和目标ID
+	3. 应锟矫诧拷锟斤拷?CAN_TxBuffer 锟斤拷锟斤拷锟酵伙拷锟斤拷锟斤拷锟结构锟藉）锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷偷锟斤拷纸锟斤拷锟斤拷莺锟侥匡拷锟絀D
 	
-	4. 调用CAN_Send传入 can设备结构体 和 TxBuffer结构体，将数据发送出去
+	4. 锟斤拷锟斤拷CAN_Send锟斤拷锟斤拷 can锟借备锟结构锟斤拷 锟斤拷 TxBuffer锟结构锟藉，锟斤拷锟斤拷锟捷凤拷锟酵筹拷去
 
   ********************************************************************************
 	* @attention
-	* 硬件平台: STM32H750VBT \n
-	* SDK版本：-++++
+	* 硬锟斤拷平台: STM32H750VBT \n
+	* SDK锟芥本锟斤拷-++++
   * if you had modified this file, please make sure your code does not have many 
   * bugs, update the version NO., write dowm your name and the date, the most
   * important is make sure the users will have clear and definite understanding 
   * through your new brief.
   ********************************************************************************			
-  CAN设备讲解 
+  CAN锟借备锟斤拷锟斤拷 
 		
-		1.过滤器:
+		1.锟斤拷锟斤拷锟斤拷:
 
-		2.FIFO队列: （参考资料：https://blog.csdn.net/flydream0/article/details/8155942 ）
+		2.FIFO锟斤拷锟斤拷: 锟斤拷锟轿匡拷锟斤拷锟较ｏ拷https://blog.csdn.net/flydream0/article/details/8155942 锟斤拷
 		
-		  当bxCAN接收到报文，经过过滤器过滤后，会将报文存储到FIFO中。每个过滤器组都会关联一个FIFO，--》 FIFO0和FIFO1
-			这个FIFO为3级邮箱深度（每个FIFO由三个邮箱组成），且完全由硬件来管理，节约CPU资源，简化了  FIFO0——》 3 x mailbox
-			软件并保证了数据的一致性。应用程序只能通过读取FIFO输出邮箱，来读取FIFO中最先收到的报文。
+		  锟斤拷bxCAN锟斤拷锟秸碉拷锟斤拷锟侥ｏ拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟剿后，会将锟斤拷锟侥存储锟斤拷FIFO锟叫★拷每锟斤拷锟斤拷锟斤拷锟斤拷锟介都锟斤拷锟斤拷锟揭伙拷锟紽IFO锟斤拷--锟斤拷 FIFO0锟斤拷FIFO1
+			锟斤拷锟紽IFO为3锟斤拷锟斤拷锟斤拷锟斤拷龋锟矫匡拷锟紽IFO锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷桑锟斤拷锟斤拷锟斤拷锟饺拷锟接诧拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟皆糃PU锟斤拷源锟斤拷锟斤拷锟斤拷  FIFO0锟斤拷锟斤拷锟斤拷 3 x mailbox
+			锟斤拷锟斤拷锟斤拷锟斤拷证锟斤拷锟斤拷锟捷碉拷一锟斤拷锟皆★拷应锟矫筹拷锟斤拷只锟斤拷通锟斤拷锟斤拷取FIFO锟斤拷锟斤拷锟斤拷洌拷锟斤拷锟饺IFO锟斤拷锟斤拷锟斤拷锟秸碉拷锟侥憋拷锟侥★拷
 			  
-			 FIFO共有五个状态：空状态，挂号1状态，挂号2状态，挂号3状态，溢出状态
+			 FIFO锟斤拷锟斤拷锟斤拷锟阶刺拷锟斤拷锟阶刺拷锟斤拷液锟?状态锟斤拷锟揭猴拷2状态锟斤拷锟揭猴拷3状态锟斤拷锟斤拷锟阶达拷?
 				
-			在初始化状态时，FIFO是处于空状态的，当接收到一个报文时，这个报文存储到FIFO内部
-			的邮箱中，此时，FIFO的状态变成挂号1状态，如果应用程序取走这个消息，则FIFO恢复空状态。
-      现在假设FIFO处于挂号1状态，即已接收到一个报文，且应用程序不没来得及取走接收到的报文，
-			此时若再次接收到一个报文，那么FIFO将变成挂号2状态，以此类推，由于FIFO共有3个邮箱，只能缓存3个报文
-			，因此，当接收到3个报文（假设期间应用程序从未取走任何报文）时，此时FIFO已满，若再来一个报文时，
-			已无法再存储，此时FIFO将变成溢出状态。
+			锟节筹拷始锟斤拷状态时锟斤拷FIFO锟角达拷锟节匡拷状态锟侥ｏ拷锟斤拷锟斤拷锟秸碉拷一锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷拇娲拷锟紽IFO锟节诧拷
+			锟斤拷锟斤拷锟斤拷锟叫ｏ拷锟斤拷时锟斤拷FIFO锟斤拷状态锟斤拷晒液锟?状态锟斤拷锟斤拷锟接︼拷贸锟斤拷锟饺★拷锟斤拷锟斤拷锟斤拷息锟斤拷锟斤拷FIFO锟街革拷锟斤拷状态锟斤拷
+      锟斤拷锟节硷拷锟斤拷FIFO锟斤拷锟节挂猴拷1状态锟斤拷锟斤拷锟窖斤拷锟秸碉拷一锟斤拷锟斤拷锟侥ｏ拷锟斤拷应锟矫筹拷锟斤拷没锟斤拷锟矫硷拷取锟竭斤拷锟秸碉拷锟侥憋拷锟侥ｏ拷
+			锟斤拷时锟斤拷锟劫次斤拷锟秸碉拷一锟斤拷锟斤拷锟侥ｏ拷锟斤拷么FIFO锟斤拷锟斤拷晒液锟?状态锟斤拷锟皆达拷锟斤拷锟狡ｏ拷锟斤拷锟斤拷FIFO锟斤拷锟斤拷3锟斤拷锟斤拷锟戒，只锟杰伙拷锟斤拷3锟斤拷锟斤拷锟斤拷
+			锟斤拷锟斤拷耍锟斤拷锟斤拷锟斤拷盏锟?锟斤拷锟斤拷锟侥ｏ拷锟斤拷锟斤拷锟节硷拷应锟矫筹拷锟斤拷锟轿慈★拷锟斤拷魏伪锟斤拷模锟绞憋拷锟斤拷锟绞盕IFO锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷时锟斤拷
+			锟斤拷锟睫凤拷锟劫存储锟斤拷锟斤拷时FIFO锟斤拷锟斤拷锟斤拷锟斤拷状态锟斤拷
 				
-		  STM32中与CAN接收相关的中断有三个：
-			接收中断：每当bxCAN接收到一个报文时产生一个中断。
-			FIFO满中断：当FIFO满时，即存储了3个报文时产生的中断。
-			FIFO溢出中断：当FIFO溢出时产生此中断。
+		  STM32锟斤拷锟斤拷CAN锟斤拷锟斤拷锟斤拷氐锟斤拷卸锟斤拷锟斤拷锟斤拷锟斤拷锟?
+			锟斤拷锟斤拷锟叫断ｏ拷每锟斤拷bxCAN锟斤拷锟秸碉拷一锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷一锟斤拷锟叫断★拷
+			FIFO锟斤拷锟叫断ｏ拷锟斤拷FIFO锟斤拷时锟斤拷锟斤拷锟芥储锟斤拷3锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷锟斤拷锟叫断★拷
+			FIFO锟斤拷锟斤拷卸希锟斤拷锟紽IFO锟斤拷锟绞憋拷锟斤拷锟斤拷锟斤拷卸稀锟?
 ***********************************************************************************/
 #include "driver_can.h"
 
-//< 初始化链表头部
+//< 锟斤拷始锟斤拷锟斤拷锟斤拷头锟斤拷
 CAN_Object can1 = {
 			.DevicesList = {&(can1.DevicesList),&(can1.DevicesList)}
 };
 
 CAN_Object can2= {
 			.DevicesList = {&(can2.DevicesList),&(can2.DevicesList)}
-};		
+};
 
+volatile uint32_t can1_tx_fail_cnt = 0;
+volatile uint32_t can2_tx_fail_cnt = 0;
+volatile uint32_t fdcan2_irq_cnt = 0;
+volatile uint32_t fdcan2_rxfifo_cb_cnt = 0;
+volatile uint32_t fdcan2_error_cb_cnt = 0;
 
 
 /**
-  * @brief  CAN初始化，将句柄和接收回调拷贝至CAN设备结构体
+  * @brief  CAN锟斤拷始锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷徒锟斤拷栈氐锟斤拷锟斤拷锟斤拷锟紺AN锟借备锟结构锟斤拷
   */
 void CANx_Init(FDCAN_HandleTypeDef* handle, CAN_RxCpltCallback rxCallback)
 {
-	//< 初始化can1
+	//< 锟斤拷始锟斤拷can1
 	if (handle->Instance == FDCAN1)
 	{
 		can1.Handle = handle;
 		can1.RxCpltCallback = rxCallback;
 	}
 	
-	//< 初始化can2
+	//< 锟斤拷始锟斤拷can2
 	if (handle->Instance == FDCAN2)
 	{
 		can2.Handle = handle;
@@ -100,27 +105,32 @@ void CANx_Init(FDCAN_HandleTypeDef* handle, CAN_RxCpltCallback rxCallback)
 
 
 /**
-  * @brief CAN设备初始化，配置过滤器为空，使能fifo0接收到新信息中断 ，注册用户回调
+  * @brief CAN锟借备锟斤拷始锟斤拷锟斤拷锟斤拷锟矫癸拷锟斤拷锟斤拷为锟秸ｏ拷使锟斤拷fifo0锟斤拷锟秸碉拷锟斤拷锟斤拷息锟叫讹拷 锟斤拷注锟斤拷锟矫伙拷锟截碉拷
   */
 void CAN_Open(CAN_Object* can) 
 { 
-  FDCAN_FilterTypeDef filter;                   	//< 声明局部变量 can过滤器结构体
-	filter.IdType       = FDCAN_STANDARD_ID;       	//< id设置为标准id
-	filter.FilterIndex  = 0;                      	//< 设值筛选器的编号，标准id选择0-127
-	filter.FilterType   = FDCAN_FILTER_MASK;       	//< 设置工作模式为掩码模式
-	filter.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; 	//< 将经过过滤的数据存储到 fifo0
-	filter.FilterID1    = 0x000;                   	//< 筛选器的id
+  FDCAN_FilterTypeDef filter;                   	//< 锟斤拷锟斤拷锟街诧拷锟斤拷锟斤拷 can锟斤拷锟斤拷锟斤拷锟结构锟斤拷
+	filter.IdType       = FDCAN_STANDARD_ID;       	//< id锟斤拷锟斤拷为锟斤拷准id
+	filter.FilterIndex  = 0;                      	//< 锟斤拷值筛选锟斤拷锟侥憋拷牛锟斤拷锟阶糹d选锟斤拷0-127
+	filter.FilterType   = FDCAN_FILTER_MASK;       	//< 锟斤拷锟矫癸拷锟斤拷模式为锟斤拷锟斤拷模式
+	filter.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; 	//< 锟斤拷锟斤拷锟斤拷锟斤拷锟剿碉拷锟斤拷锟捷存储锟斤拷 fifo0
+	filter.FilterID1    = 0x000;                   	//< 筛选锟斤拷锟斤拷id
 	filter.FilterID2    = 0x000;
 	
-	HAL_FDCAN_ConfigFilter(can->Handle, &filter);   //< 配置过滤器	
-	HAL_FDCAN_ActivateNotification(can->Handle, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);  // 使能fifo0接收到新信息中断
+	HAL_FDCAN_ConfigFilter(can->Handle, &filter);
+	HAL_FDCAN_ConfigGlobalFilter(can->Handle,
+	                             FDCAN_ACCEPT_IN_RX_FIFO0,
+	                             FDCAN_ACCEPT_IN_RX_FIFO0,
+	                             FDCAN_FILTER_REMOTE,
+	                             FDCAN_FILTER_REMOTE);
+	HAL_FDCAN_ActivateNotification(can->Handle, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);  // 使锟斤拷fifo0锟斤拷锟秸碉拷锟斤拷锟斤拷息锟叫讹拷
 	
-  HAL_FDCAN_Start(can->Handle);                   //< 使能can
+  HAL_FDCAN_Start(can->Handle);                   //< 使锟斤拷can
 }
 
 
 /**
-  * @brief CAN发送函数, 将CAN_Object下的txBuffer中的data发送出去
+  * @brief CAN锟斤拷锟酵猴拷锟斤拷, 锟斤拷CAN_Object锟铰碉拷txBuffer锟叫碉拷data锟斤拷锟酵筹拷去
   */
 uint8_t CAN_Send(CAN_Object* can, CAN_TxBuffer* txBuffer)
 {
@@ -137,7 +147,11 @@ uint8_t CAN_Send(CAN_Object* can, CAN_TxBuffer* txBuffer)
 	
 	if(HAL_FDCAN_AddMessageToTxFifoQ(can->Handle, &txHeader, txBuffer->Data) != HAL_OK)
 	{
-			return 0;
+		if (can->Handle->Instance == FDCAN1)
+			can1_tx_fail_cnt++;
+		else if (can->Handle->Instance == FDCAN2)
+			can2_tx_fail_cnt++;
+		return 0;
 	}
 	else
 	{
@@ -148,7 +162,7 @@ uint8_t CAN_Send(CAN_Object* can, CAN_TxBuffer* txBuffer)
 
 
 /**
-  * @brief CAN设备弱函数回调
+  * @brief CAN锟借备锟斤拷锟斤拷锟斤拷锟截碉拷
   */
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* handle, uint32_t RxFifo0ITs)
 {
@@ -164,10 +178,20 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* handle, uint32_t RxFifo0ITs)
 	
  if(handle->Instance == FDCAN2)
 	{
+		fdcan2_rxfifo_cb_cnt++;
 		if(HAL_FDCAN_GetRxMessage(handle, FDCAN_RX_FIFO0, &rxBuffer.Header, rxBuffer.Data) != HAL_ERROR)
 		{
 			can2.RxCpltCallback(&rxBuffer);
 		}
 	}
+}
+
+/**
+  * @brief  FDCAN Error callback - override HAL weak default
+  */
+void HAL_FDCAN_ErrorCallback(FDCAN_HandleTypeDef *hfdcan)
+{
+    if (hfdcan->Instance == FDCAN2)
+        fdcan2_error_cb_cnt++;
 }
 

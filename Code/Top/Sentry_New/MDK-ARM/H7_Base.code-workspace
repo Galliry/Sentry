@@ -11,7 +11,7 @@
         ],
         "files.autoGuessEncoding": true,
         "C_Cpp.default.configurationProvider": "cl.eide",
-        "C_Cpp.errorSquiggles": "disabled",
+        "C_Cpp.intelliSenseEngine": "disabled",
         "files.associations": {
             ".eideignore": "ignore",
             "*.a51": "a51",

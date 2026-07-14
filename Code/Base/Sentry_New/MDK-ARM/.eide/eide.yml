@@ -82,10 +82,11 @@ virtualFolder:
         - name: Modules
           files:
             - path: ../CubotMiddleware/Modules/shoot.c
-            - path: ../CubotMiddleware/Modules/holder.c
             - path: ../CubotMiddleware/Modules/swerve_chassis.c
+            - path: ../CubotMiddleware/Modules/holder.c
             - path: ../CubotMiddleware/Devices/check.c
             - path: ../CubotMiddleware/Modules/communication.c
+            - path: ../CubotMiddleware/Modules/interboard.c
           folders: []
         - name: Devices
           files:
@@ -112,6 +113,10 @@ virtualFolder:
     - name: MIddlewaves
       files:
         - path: ../MIddlewaves/ARM/DSP/Source/MatrixFunctions/MatrixFunctions.c
+        - path: ../MIddlewaves/ARM/DSP/Source/FastMathFunctions/FastMathFunctions.c
+        - path: ../MIddlewaves/ARM/DSP/Source/BasicMathFunctions/BasicMathFunctions.c
+        - path: ../MIddlewaves/ARM/DSP/Source/CommonTables/CommonTables.c
+        - path: ../MIddlewaves/ARM/DSP/Source/QuaternionMathFunctions/QuaternionMathFunctions.c
       folders: []
     - name: ::CMSIS
       files: []
@@ -141,11 +146,13 @@ targets:
         - ../User
         - ../MIddlewaves/ARM/DSP/Include
         - ../MIddlewaves/ARM/DSP/Include/dsp
+        - ../MIddlewaves/ARM/DSP/Source
         - .cmsis/include
         - RTE/_H7_Base
       libList: []
     excludeList: []
-    settings: {}
+    settings:
+      debugger: cortex-debug
     toolchain: AC5
     toolchainConfigMap:
       AC5:
