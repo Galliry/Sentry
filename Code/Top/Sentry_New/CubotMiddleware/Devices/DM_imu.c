@@ -1,4 +1,6 @@
 #include "DM_imu.h"
+#include <math.h>
+#include <stdint.h>
 #include <string.h>
 #include "user_lib.h"
 DM_IMU_t IMU_M;
@@ -24,6 +26,256 @@ void DM_IMU_Run(DM_IMU_t *imu)
     imu_set_active_mode_delay(imu, 500);
 	
     imu_change_to_active(imu);
+}
+
+// 单个陀螺仪校准
+uint8_t DM_IMU_Calibration(DM_IMU_t *imu)
+{
+	imu->state.InitFlag = 0;
+	uint8_t triedCnt = 0;
+	const float stillGyro = 0.02f;
+	do 
+	{
+		// 校准前检查是否处于静止状态
+		uint32_t checkEndTick = HAL_GetTick() + 1000;
+		while ( HAL_GetTick() < checkEndTick )
+		{
+			// 如果认为不符合静止条件则不发送零飘校准指令
+			if ( fabs(imu->Attitude.gyro[0]) > stillGyro 
+				|| fabs(imu->Attitude.gyro[1]) > stillGyro 
+				|| fabs(imu->Attitude.gyro[2]) > stillGyro )
+			{
+				goto NextTurn;
+			}
+		}
+		// 发送校准指令
+		imu_gyro_calibration(imu);
+		// 校准需要数秒，需要等待其校准完成
+		float temp_gyro[3];
+		float temp_euler[3];
+		for (int i = 0; i < 3; i ++)
+		{
+			temp_gyro[i] = imu->Attitude.gyro[i];
+		}
+		temp_euler[0] = imu->Attitude.pitch;
+		temp_euler[1] = imu->Attitude.yaw;
+		temp_euler[2] = imu->Attitude.roll;
+		// 比对重启前的数据
+		// 不能够用 IMU_isOnline来判定是否已经完成校准
+		// 因为校准过程中被测量保持不变但是can仍会发送过时数据，LastTick依旧正常增加
+		while ( temp_gyro[0] == imu->Attitude.gyro[0]
+			||  temp_gyro[1] == imu->Attitude.gyro[1]
+			||  temp_gyro[2] == imu->Attitude.gyro[2]
+			||  temp_euler[0] == imu->Attitude.pitch
+			||  temp_euler[1] == imu->Attitude.yaw
+			||  temp_euler[2] == imu->Attitude.roll) HAL_Delay(10);
+
+		// 检查校准效果
+		HAL_Delay(1500);
+		float Yaw0 = imu->Attitude.yaw;
+		float YawPError = 0; // 最大正向偏差
+		float YawNError = 0; // 最大负向偏差
+		const uint32_t deltaTime = 15000;
+		float YawError = 0;
+		checkEndTick = HAL_GetTick() + deltaTime;
+		while ( HAL_GetTick() < checkEndTick )
+		{
+			YawError = imu->Attitude.yaw - Yaw0;
+			if (YawError > 180) YawError -= 360;
+			if (YawError < -180) YawError += 360;
+			
+			if( YawError > YawPError ) {
+				YawPError = YawError;
+			}
+			if( YawError < YawNError ) {
+				YawNError = YawError;
+			}
+		}
+		if ( (YawPError>-YawNError?YawPError:-YawNError) < deltaTime * ( 6.0f/7/60/1000 ) )
+		{
+			// 符合要求则跳出，完成校准
+			imu->state.InitFlag = 1;
+			return 1;
+		}
+		else {
+			// 不符合要求则再次尝试，最多尝试3次校准
+			triedCnt += 10;
+		}
+
+		NextTurn:
+		triedCnt ++;
+		HAL_Delay(10);
+	}while( triedCnt < 39);
+
+	return 0;
+}
+
+// 双陀螺仪同时校准
+uint8_t DM_IMUs_Calibration(DM_IMU_t *imu1, DM_IMU_t *imu2)
+{
+	imu1->state.InitFlag = 0;
+	imu2->state.InitFlag = 0;
+	uint8_t triedCnt1 = 0;
+	uint8_t triedCnt2 = 0;
+	const float stillGyro = 0.025f;
+	do 
+	{
+		// 校准前检查是否处于静止状态
+		uint32_t checkEndTick = HAL_GetTick() + 1000;
+		uint8_t stillFlag = 0x00;
+		while ( HAL_GetTick() < checkEndTick )
+		{
+			// 如果认为不符合静止条件则不发送零飘校准指令
+			if ( imu1->state.InitFlag == 0 && (stillFlag & 0x01) == 0)
+			{
+				if ( fabs(imu1->Attitude.gyro[0]) > stillGyro 
+					|| fabs(imu1->Attitude.gyro[1]) > stillGyro 
+					|| fabs(imu1->Attitude.gyro[2]) > stillGyro )
+				{
+					stillFlag |= 0x01;
+					triedCnt1 ++;
+				}
+			}
+			if ( imu2->state.InitFlag == 0 && (stillFlag & (0x01 << 1)) == 0)
+			{
+				if ( fabs(imu2->Attitude.gyro[0]) > stillGyro 
+					|| fabs(imu2->Attitude.gyro[1]) > stillGyro 
+					|| fabs(imu2->Attitude.gyro[2]) > stillGyro )
+				{
+					stillFlag |= (0x01<<1);
+					triedCnt2 ++;
+				}
+			}
+			if (stillFlag == 0x03 ) // 0x03 = 0x01 & (0x01<<1) 两个陀螺仪都没静止
+			{
+				goto NextTurn;
+			}
+		}
+
+		// 发送校准指令
+		if ( imu1->state.InitFlag == 0 && (stillFlag & 0x01) == 0)
+		{
+			imu_gyro_calibration(imu1);
+		}
+		if ( imu2->state.InitFlag == 0 && (stillFlag & 0x02) == 0)
+		{
+			imu_gyro_calibration(imu2);
+		}
+
+		// 校准需要数秒，需要等待其校准完成
+		float temp1_gyro[3];
+		float temp1_euler[3];
+		for (int i = 0; i < 3; i ++)
+		{
+			temp1_gyro[i] = imu1->Attitude.gyro[i];
+		}
+		temp1_euler[0] = imu1->Attitude.pitch;
+		temp1_euler[1] = imu1->Attitude.yaw;
+		temp1_euler[2] = imu1->Attitude.roll;
+
+		float temp2_gyro[3];
+		float temp2_euler[3];
+		for (int i = 0; i < 3; i ++)
+		{
+			temp2_gyro[i] = imu2->Attitude.gyro[i];
+		}
+		temp2_euler[0] = imu2->Attitude.pitch;
+		temp2_euler[1] = imu2->Attitude.yaw;
+		temp2_euler[2] = imu2->Attitude.roll;
+		// 比对重启前的数据
+		// 不能够用 IMU_isOnline来判定是否已经完成校准
+		// 因为校准过程中被测量保持不变但是can仍会发送过时数据，LastTick依旧正常增加
+		uint8_t rebootFlag = 0x00;
+		while ( rebootFlag != 0x03 ) 
+			{
+				if (imu1->state.InitFlag == 1)
+				{
+					rebootFlag |= 0x01;
+				}
+				else if (temp1_gyro[0] != imu1->Attitude.gyro[0]
+					&&   temp1_gyro[1] != imu1->Attitude.gyro[1]
+					&&   temp1_gyro[2] != imu1->Attitude.gyro[2]
+					&&   temp1_euler[0] != imu1->Attitude.pitch
+					&&   temp1_euler[1] != imu1->Attitude.yaw
+					&&   temp1_euler[2] != imu1->Attitude.roll)
+				{
+					rebootFlag |= 0x01;
+				}
+				if (imu2->state.InitFlag == 1)
+				{
+					rebootFlag |= 0x01 << 1;
+				}
+				else if (temp2_gyro[0] != imu2->Attitude.gyro[0]
+					&&   temp2_gyro[1] != imu2->Attitude.gyro[1]
+					&&   temp2_gyro[2] != imu2->Attitude.gyro[2]
+					&&   temp2_euler[0] != imu2->Attitude.pitch
+					&&   temp2_euler[1] != imu2->Attitude.yaw
+					&&   temp2_euler[2] != imu2->Attitude.roll)
+				{
+					rebootFlag |= 0x01 << 1;
+				}
+				HAL_Delay(10);
+			}
+
+		// 检查校准效果
+		HAL_Delay(1500);
+		float Yaw1 = imu1->Attitude.yaw;
+		float Yaw2 = imu2->Attitude.yaw;
+		float Yaw1PError = 0; // 最大正向偏差
+		float Yaw1NError = 0; // 最大负向偏差
+		float Yaw2PError = 0;
+		float Yaw2NError = 0;
+		const uint32_t deltaTime = 15000;
+		float Yaw1Error = 0;
+		float Yaw2Error = 0;
+		checkEndTick = HAL_GetTick() + deltaTime;
+		while ( HAL_GetTick() < checkEndTick )
+		{
+			// 即使有已经完成校准的陀螺仪依旧可以再次检查一遍
+			Yaw1Error = imu1->Attitude.yaw - Yaw1;
+			if (Yaw1Error > 180) Yaw1Error -= 360;
+			if (Yaw1Error < -180) Yaw1Error += 360;
+			Yaw2Error = imu2->Attitude.yaw - Yaw2;
+			if (Yaw2Error > 180) Yaw2Error -= 360;
+			if (Yaw2Error < -180) Yaw2Error += 360;
+			
+			if( Yaw1Error > Yaw1PError ) {
+				Yaw1PError = Yaw1Error;
+			}
+			if( Yaw1Error < Yaw1NError ) {
+				Yaw1NError = Yaw1Error;
+			}
+			if( Yaw2Error > Yaw2PError ) {
+				Yaw2PError = Yaw2Error;
+			}
+			if( Yaw2Error < Yaw2NError ) {
+				Yaw2NError = Yaw2Error;
+			}
+		}
+		if ( (Yaw1PError>-Yaw1NError?Yaw1PError:-Yaw1NError) < deltaTime * ( 10.0f/7/60/1000 ) )
+		{
+			// 符合要求则跳出，完成校准
+			imu1->state.InitFlag = 1;
+		}
+		else {
+			// 不符合要求则再次尝试，最多尝试3次校准
+			triedCnt1 += 10;
+		}
+		if ( (Yaw2PError>-Yaw2NError?Yaw2PError:-Yaw2NError) < deltaTime * ( 10.0f/7/60/1000 ) )
+		{
+			// 符合要求则跳出，完成校准
+			imu2->state.InitFlag = 1;
+		}
+		else {
+			// 不符合要求则再次尝试，最多尝试3次校准
+			triedCnt2 += 10;
+		}
+
+		NextTurn:
+		HAL_Delay(10);
+	}while( !(imu1->state.InitFlag && imu2->state.InitFlag) && (triedCnt1 < 39 || triedCnt2 < 39) );
+
+	return (imu1->state.InitFlag && imu2->state.InitFlag);
 }
 
 /*
@@ -230,6 +482,8 @@ void IMU_UpdateAccel(DM_IMU_t *imu, uint8_t* pData)
 	imu->Attitude.accel[0] = uint_to_float(accel[0], ACCEL_CAN_MIN, ACCEL_CAN_MAX, 16);
 	imu->Attitude.accel[1] = uint_to_float(accel[1], ACCEL_CAN_MIN, ACCEL_CAN_MAX, 16);
 	imu->Attitude.accel[2] = uint_to_float(accel[2], ACCEL_CAN_MIN, ACCEL_CAN_MAX, 16);
+
+	imu->state.LastTick = HAL_GetTick();
 }
 
 void IMU_UpdateGyro(DM_IMU_t *imu, uint8_t* pData)
@@ -244,6 +498,8 @@ void IMU_UpdateGyro(DM_IMU_t *imu, uint8_t* pData)
 	imu->Attitude.gyro[0] = uint_to_float(gyro[0], GYRO_CAN_MIN, GYRO_CAN_MAX, 16);
 	imu->Attitude.gyro[1] = uint_to_float(gyro[1], GYRO_CAN_MIN, GYRO_CAN_MAX, 16);
 	imu->Attitude.gyro[2] = uint_to_float(gyro[2], GYRO_CAN_MIN, GYRO_CAN_MAX, 16);
+
+	imu->state.LastTick = HAL_GetTick();
 }
 
 void IMU_UpdateEuler(DM_IMU_t *imu, uint8_t* pData)
@@ -258,6 +514,8 @@ void IMU_UpdateEuler(DM_IMU_t *imu, uint8_t* pData)
 	imu->Attitude.pitch = uint_to_float(euler[0], PITCH_CAN_MIN, PITCH_CAN_MAX, 16);
 	imu->Attitude.yaw   = uint_to_float(euler[1], YAW_CAN_MIN, YAW_CAN_MAX, 16);
 	imu->Attitude.roll  = uint_to_float(euler[2], ROLL_CAN_MIN, ROLL_CAN_MAX, 16);
+
+	imu->state.LastTick = HAL_GetTick();
 }
 
 void IMU_UpdateQuaternion(DM_IMU_t *imu, uint8_t* pData)
@@ -273,6 +531,8 @@ void IMU_UpdateQuaternion(DM_IMU_t *imu, uint8_t* pData)
 	imu->Attitude.q[1] = uint_to_float(x, Quaternion_MIN, Quaternion_MAX, 14);
 	imu->Attitude.q[2] = uint_to_float(y, Quaternion_MIN, Quaternion_MAX, 14);
 	imu->Attitude.q[3] = uint_to_float(z, Quaternion_MIN, Quaternion_MAX, 14);
+
+	imu->state.LastTick = HAL_GetTick();
 }
 
 void IMU_UpdateData(DM_IMU_t *imu, CAN_RxBuffer *rxBuffer)
@@ -300,4 +560,15 @@ void IMU_UpdateData(DM_IMU_t *imu, CAN_RxBuffer *rxBuffer)
 				break;
 		}
 	}
+}
+
+uint8_t IMU_isOnline(DM_IMU_t *imu)
+{
+	if (HAL_GetTick() - imu->state.LastTick > 20 ) return 0;
+	return 1;
+}
+
+uint8_t IMU_isInit(DM_IMU_t *imu)
+{
+	if (imu->state.InitFlag) return 1;
 }

@@ -47,7 +47,7 @@ void MPU_Init_(void)
 
 }
 /**
-  * @brief  ��ʼ��ָ��ϼ�
+  * @brief  ��ʼ��ָ��ϼ�?
   */
 void HardwareConfig(void)
 {
@@ -63,8 +63,8 @@ void HardwareConfig(void)
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
-	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����
-	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����
+	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����?
+	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����?
 	UARTx_Init(&huart7,NULL);//  Vofa+
 	
 	DM_IMU_Init(&IMU_S,0x60,0x61,can2);
@@ -81,11 +81,13 @@ void HardwareConfig(void)
 
 	TIMx_Init(&htim14, TIM14_Task);//���Ӷ�ʱ���ص�
 	TIM_Open(&tim14);
-//	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
+	// TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
 	DM_IMU_Init(&IMU_S,0x60,0x61,can2);
 	DM_IMU_Run(&IMU_S);
+	// DM_IMU_Calibration(&IMU_S);
 	DM_IMU_Init(&IMU_M,0x58,0x59,can1);
 	DM_IMU_Run(&IMU_M);
-//	TIM_Open(&tim13);
+	DM_IMUs_Calibration(&IMU_S, &IMU_M);
+	// TIM_Open(&tim13);
 }
 

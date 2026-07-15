@@ -50,7 +50,17 @@ void TIM14_Task(void)
 //            can2_tx_fail_cnt = 0;
 //        }
 //    }
+    UsartDmaPrintf("%f, %f\r\n", IMU_S.Attitude.yaw, IMU_M.Attitude.yaw);
 
+    // 离线尝试重启
+    if ( IMU_isOnline(&IMU_S) == 0 ) 
+    {
+        DM_IMU_Run(&IMU_S);
+    }
+    if ( IMU_isOnline(&IMU_M) == 0 )
+    {
+        DM_IMU_Run(&IMU_M);
+    }
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);

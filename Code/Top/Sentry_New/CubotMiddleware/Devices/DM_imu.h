@@ -2,6 +2,8 @@
 #define __DM_IMU_H
 
 #include "driver_can.h" 
+#include <stdint.h>
+#include <time.h>
 
 #define ACCEL_CAN_MAX 	(235.2f)
 #define ACCEL_CAN_MIN	(-235.2f)
@@ -85,6 +87,12 @@ typedef struct
 		float q[4];             // 四元数
 		float cur_temp;         // 当前温度
 	}Attitude;
+
+	struct 
+	{
+		uint32_t LastTick;
+		uint8_t InitFlag;
+	}state;
 	
 } DM_IMU_t;
 
@@ -92,6 +100,8 @@ typedef struct
 // --- 初始化接口 ---
 void DM_IMU_Init(DM_IMU_t *imu, uint8_t can_id, uint8_t mst_id, CAN_Object can_obj);
 void DM_IMU_Run(DM_IMU_t *imu);
+uint8_t DM_IMU_Calibration(DM_IMU_t *imu);
+uint8_t DM_IMUs_Calibration(DM_IMU_t *imu1, DM_IMU_t *imu2);
 // --- 指令控制接口 ---
 void imu_write_reg(DM_IMU_t *imu, uint8_t reg_id, uint32_t data);
 void imu_read_reg(DM_IMU_t *imu, uint8_t reg_id);
@@ -118,6 +128,11 @@ void IMU_UpdateGyro(DM_IMU_t *imu, uint8_t* pData);
 void IMU_UpdateEuler(DM_IMU_t *imu, uint8_t* pData);
 void IMU_UpdateQuaternion(DM_IMU_t *imu, uint8_t* pData);
 void IMU_UpdateData(DM_IMU_t *imu, CAN_RxBuffer *rxBuffer);
+
+// --- 反馈接口 ---
+uint8_t IMU_isOnline(DM_IMU_t *imu);
+uint8_t IMU_isInit(DM_IMU_t *imu);
+
 extern DM_IMU_t IMU_M;
 extern DM_IMU_t IMU_S;
 #endif
