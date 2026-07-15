@@ -13,6 +13,7 @@
 #include "check.h"
 #include "interboard.h"
 #include "brain.h"
+#include "DM_imu.h"
 
 Holder_t Holder;
 float Yaw_TD = 250;
@@ -124,13 +125,13 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 
     holder->Yaw_S.Can_Angle = holder->Motors.Yaw_S.Data.Angle;
     holder->Yaw_S.Can_AngleSpeed = holder->Motors.Yaw_S.Data.AngleSpeed;
-    holder->Yaw_S.GYRO_Angle = INS_attitude->yaw;
-    holder->Yaw_S.GYRO_AngleSpeed = INS_attitude->gyro[2] - mpu6050.mpu6050_Data.gyro[2];
+    holder->Yaw_S.GYRO_Angle = IMU_S.Attitude.yaw;
+    holder->Yaw_S.GYRO_AngleSpeed = IMU_S.Attitude.gyro[2] - IMU_M.Attitude.gyro[2];
 
     holder->Pitch.Can_Angle = holder->Motors.Pitch.angle;
     holder->Pitch.Can_AngleSpeed = holder->Motors.Pitch.speed_rpm;
-    holder->Pitch.GYRO_Angle = -INS_attitude->roll;
-    holder->Pitch.GYRO_AngleSpeed = -INS_attitude->gyro[1];
+    holder->Pitch.GYRO_Angle = -IMU_S.Attitude.roll;
+    holder->Pitch.GYRO_AngleSpeed = -IMU_S.Attitude.gyro[0];
 
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -38, 38);
     holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 30);

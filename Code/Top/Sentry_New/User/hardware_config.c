@@ -83,10 +83,10 @@ void HardwareConfig(void)
 	TIM_Open(&tim14);
 	// TIMx_Init(&htim13, TIM13_Task);//ï¿½ï¿½ï¿½Ó¶ï¿½Ê±ï¿½ï¿½ï¿½Øµï¿½
 	DM_IMU_Init(&IMU_S,0x60,0x61,can2);
-	DM_IMU_Run(&IMU_S);
+	DM_IMU_Run(&IMU_S);// ÔÆÌ¨
 	// DM_IMU_Calibration(&IMU_S);
 	DM_IMU_Init(&IMU_M,0x58,0x59,can1);
-	DM_IMU_Run(&IMU_M);
+	DM_IMU_Run(&IMU_M);// °åÔØ
 	DM_IMUs_Calibration(&IMU_S, &IMU_M);
 	// TIM_Open(&tim13);
 }

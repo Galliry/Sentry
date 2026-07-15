@@ -1,8 +1,8 @@
 #include "brain.h"
 #include "holder.h"
-#include "mpu6050.h"
 #include "interboard.h"
 #include "shoot.h"
+#include "DM_imu.h"
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
@@ -133,14 +133,14 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	
 
 #if AUTOAIM_Q_SELECT == 1
-	tmp0 = (int16_t)(INS_attitude->q[0] * 30000);
-	tmp1 = -(int16_t)(INS_attitude->q[1] * 30000);
-	tmp2 = -(int16_t)(INS_attitude->q[2] * 30000);
-	tmp3 = (int16_t)(INS_attitude->q[3] * 30000);
+	tmp0 = (int16_t)(IMU_S.Attitude.q[0] * 30000);
+	tmp1 = -(int16_t)(IMU_S.Attitude.q[1] * 30000);
+	tmp2 = -(int16_t)(IMU_S.Attitude.q[2] * 30000);
+	tmp3 = (int16_t)(IMU_S.Attitude.q[3] * 30000);
 #endif
 #if AUTOAIM_Q_SELECT == 2
 	float q[4];
-	EularAngleToQuaternion(INS_attitude->yaw, -INS_attitude->roll, INS_attitude->pitch,q);
+	EularAngleToQuaternion(IMU_S.Attitude.yaw, -IMU_S.Attitude.roll, IMU_S.Attitude.pitch,q);
 	float len = Sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
     q[0] /= len;
     q[1] /= len;
@@ -153,10 +153,10 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	tmp3 = (int16_t)(q[3] * 30000);
 #endif
 #if AUTOAIM_Q_SELECT == 3
-	tmp0 = (int16_t)((INS_attitude->q[0] - INS_attitude->q[3]) / sqrt(2) * 30000);
-	tmp1 = (int16_t)((INS_attitude->q[1] + INS_attitude->q[2]) / sqrt(2) * 30000);
-	tmp2 = (int16_t)((INS_attitude->q[2] - INS_attitude->q[1]) / sqrt(2) * 30000);
-	tmp3 = (int16_t)((INS_attitude->q[3] + INS_attitude->q[0]) / sqrt(2) * 30000);
+	tmp0 = (int16_t)((IMU_S.Attitude.q[0] - IMU_S.Attitude.q[3]) / sqrt(2) * 30000);
+	tmp1 = (int16_t)((IMU_S.Attitude.q[1] + IMU_S.Attitude.q[2]) / sqrt(2) * 30000);
+	tmp2 = (int16_t)((IMU_S.Attitude.q[2] - IMU_S.Attitude.q[1]) / sqrt(2) * 30000);
+	tmp3 = (int16_t)((IMU_S.Attitude.q[3] + IMU_S.Attitude.q[0]) / sqrt(2) * 30000);
 #endif
 
 #if AUTOAIM_VERSION == 1
@@ -195,11 +195,11 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[0] = 'G';
 	RobotToBrainTimeBuffer[1] = 'V';
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
-    float temp_yaw = INS_attitude->yaw / 360.0f * 2 * 3.14f;
-    float temp_yaw_gyro = INS_attitude->gyro[2] / 360.0f * 2 * 3.14f;
-    float temp_roll = -INS_attitude->roll / 360.0f * 2 * 3.14f;
-    float temp_roll_gyro = INS_attitude->gyro[1] / 360.0f * 2 * 3.14f;
-    float temp_pitch = INS_attitude->pitch / 360.0f * 2 * 3.14f;
+    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
+    float temp_yaw_gyro = IMU_S.Attitude.gyro[2];
+    float temp_roll = -IMU_S.Attitude.roll / 360.0f * 2 * 3.14f;
+    float temp_roll_gyro = IMU_S.Attitude.gyro[0];
+    float temp_pitch = IMU_S.Attitude.pitch / 360.0f * 2 * 3.14f;
 	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
 	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
 	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
