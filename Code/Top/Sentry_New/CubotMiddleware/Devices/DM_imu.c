@@ -515,6 +515,11 @@ void IMU_UpdateEuler(DM_IMU_t *imu, uint8_t* pData)
 	imu->Attitude.yaw   = uint_to_float(euler[1], YAW_CAN_MIN, YAW_CAN_MAX, 16);
 	imu->Attitude.roll  = uint_to_float(euler[2], ROLL_CAN_MIN, ROLL_CAN_MAX, 16);
 
+	if (imu->Attitude.yaw - imu->Temp.last_yaw > 180) imu->Temp.round --;
+	if (imu->Attitude.yaw - imu->Temp.last_yaw < -180) imu->Temp.round ++;
+	imu->Temp.last_yaw = imu->Attitude.yaw;
+	imu->Attitude.yaw_total_angle = 360 * imu->Temp.round + imu->Attitude.yaw;
+
 	imu->state.LastTick = HAL_GetTick();
 }
 

@@ -88,6 +88,11 @@ typedef struct
 		float cur_temp;         // µ±Ç°ÎÂ¶È
 	}Attitude;
 
+	struct {
+		float last_yaw;
+		float round;
+	}Temp;
+
 	struct 
 	{
 		uint32_t LastTick;
