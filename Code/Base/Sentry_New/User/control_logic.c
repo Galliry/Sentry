@@ -75,12 +75,12 @@ void TIM14_Task(void)
 	}
 	if (tim14.ClockTime % 2 == 0 && tim14.ClockTime % 10 != 0)
 	{
-		MotorCanOutput(can1, 0x1FE);
-		MotorCanOutput(can1, 0x200);
+		// MotorCanOutput(can1, 0x1FE);
+		// MotorCanOutput(can1, 0x200);
 		DMiao_CanOutput(can1,&Holder.Motors.Yaw_M);
 	}	
-	MotorCanOutput(can2, 0x1FE);		//电流信号是FE
-	MotorCanOutput(can2, 0x200);
+	// MotorCanOutput(can2, 0x1FE);		//电流信号是FE
+	// MotorCanOutput(can2, 0x200);
 	
 //	UsartDmaPrintf("%d,%d,%f,%f\r\n",referee2022.power_heat_data.chassis_power_buffer,referee2022.game_robot_status.chassis_power_limit,Receive.Base.Lidar.Vx,Receive.Base.Lidar.Vy);
 //	UsartDmaPrintf("%.2f, %.2f, %d\r\n",swervechassis.Movement.Vx_Move,swervechassis.Movement.Vy_Move,Receive.Base.Lidar.Movemode);
@@ -116,7 +116,7 @@ void TIM13_Task(void)
   */
 uint8_t CAN1_rxCallBack(CAN_RxBuffer* rxBuffer)
 {
-	MotorRxCallback(&can1, rxBuffer);
+	// MotorRxCallback(&can1, rxBuffer);
 	DMiao_CanUpdata(&Holder.Motors.Yaw_M,*rxBuffer);
 	TopBoard_Callback(rxBuffer);
 	Supercap_rxCallBack((*rxBuffer),&super_cap);
