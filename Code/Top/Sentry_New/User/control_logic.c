@@ -18,7 +18,7 @@
 #include "swerve_chassis.h"
 #include "usart.h"
 #include "DM_imu.h"
-
+#include "dm_imu_rs485.h"
 int i = 0;
 extern int error_flag;
 extern uint16_t ignore_outpost;
@@ -28,39 +28,13 @@ int state_cnt = 0;
 void TIM14_Task(void)
 {
     tim14.ClockTime++;
-//    DM_IMU_TrySendActive(&can2, &dm_imu);
-//	DM_IMU_TrySendActive(&can2,&imu_s);
-
-    // CAN2 bus-off/error monitoring (every ~100ms)
-//    if (tim14.ClockTime % 100 == 0)
-//    {
-//        FDCAN_ProtocolStatusTypeDef protoStatus;
-//        FDCAN_ErrorCountersTypeDef   errCounters;
-//        HAL_FDCAN_GetProtocolStatus(&hfdcan2, &protoStatus);
-//        HAL_FDCAN_GetErrorCounters(&hfdcan2, &errCounters);
-//        UsartDmaPrintf("CAN2:%d,%d,%lu,%lu,%lu,%lu,%lu,%lu\r\n",
-//            protoStatus.BusOff, protoStatus.ErrorPassive,
-//            errCounters.TxErrorCnt, errCounters.RxErrorCnt,
-//            can2_tx_fail_cnt, fdcan2_irq_cnt,
-//            fdcan2_error_cb_cnt, fdcan2_rxfifo_cb_cnt);
-//        if (protoStatus.BusOff)
-//        {
-//            HAL_FDCAN_Stop(&hfdcan2);
-//            HAL_FDCAN_Start(&hfdcan2);
-//            can2_tx_fail_cnt = 0;
-//        }
-//    }
-    UsartDmaPrintf("%f, %f\r\n", IMU_S.Attitude.yaw, IMU_M.Attitude.yaw);
+	
 
     // 离线尝试重启
-    if ( IMU_isOnline(&IMU_S) == 0 ) 
-    {
-        DM_IMU_Run(&IMU_S);
-    }
-    if ( IMU_isOnline(&IMU_M) == 0 )
-    {
-        DM_IMU_Run(&IMU_M);
-    }
+//    if ( IMU_isOnline(&IMU_S) == 0 ) 
+//    {
+//        DM_IMU_Run(&IMU_S);
+//    }
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
@@ -103,7 +77,6 @@ void TIM14_Task(void)
 //	{
 //		Brain.Autoaim.Mode = EKF;
 //	}
-
 	if(Top.Referee.game_prograss == 4 && Top.Referee.game_time >= 340 && Top.Referee.shoot_num >= 180)
 	{
 		Brain.Lidar.Outpost_Flag = 1;
@@ -114,7 +87,7 @@ void TIM14_Task(void)
 		Brain.Autoaim.Mode = EKF;
 	}
 	
-	// ET08����
+	// ET08 Contorl
     if (tim14.ClockTime > 500)
         FrictionWheelControl(&AmmoBooster);
 	
@@ -142,7 +115,6 @@ void TIM14_Task(void)
         MotorFillData(&AmmoBooster.Shoot_Plate.motor2006, 0);
         DMiao_Disable(can1, &Holder.Motors.Pitch);
     }
-
     MotorCanOutput(can1, 0x1FF);
     MotorCanOutput(can1, 0x200);
     DMiao_CanOutput(can1, &Holder.Motors.Pitch);
@@ -196,25 +168,24 @@ void TIM14_Task(void)
 
 void TIM13_Task(void)
 {
-    // tim14_FPS.Gyro_cnt++;
-    // MPU6050_Read(&mpu6050.mpu6050_Data);
-    // IMUupdate(&mpu6050.mpu6050_Data);
+    tim14_FPS.Gyro_cnt++;
+    MPU6050_Read(&mpu6050.mpu6050_Data);
+    IMUupdate(&mpu6050.mpu6050_Data);
     // INS_attitude = INS_GetAttitude(IMU_data);
 }
 
 /**
- * @brief  CAN1�����жϻص�
+ * @brief  CAN1 CallBack
  */
 uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can1, rxBuffer);
     DMiao_CanUpdata(&Holder.Motors.Pitch, (*rxBuffer));
-	IMU_UpdateData(&IMU_M,rxBuffer);
     return 0;
 }
 
 /**
- * @brief  CAN2�����жϻص�
+ * @brief  CAN2 CallBack
  */
 uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {

@@ -126,18 +126,15 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     holder->Yaw_S.Can_Angle = holder->Motors.Yaw_S.Data.Angle;
     holder->Yaw_S.Can_AngleSpeed = holder->Motors.Yaw_S.Data.AngleSpeed;
     holder->Yaw_S.GYRO_Angle = IMU_S.Attitude.yaw;
-    holder->Yaw_S.GYRO_AngleSpeed = IMU_S.Attitude.gyro[2] - IMU_M.Attitude.gyro[2];
+    holder->Yaw_S.GYRO_AngleSpeed = IMU_S.Attitude.gyro[2] - mpu6050.mpu6050_Data.gyro[2];
 
     holder->Pitch.Can_Angle = holder->Motors.Pitch.angle;
     holder->Pitch.Can_AngleSpeed = holder->Motors.Pitch.speed_rpm;
-    holder->Pitch.GYRO_Angle = -IMU_S.Attitude.roll;
-    holder->Pitch.GYRO_AngleSpeed = -IMU_S.Attitude.gyro[0];
+    holder->Pitch.GYRO_Angle = IMU_S.Attitude.roll;
+    holder->Pitch.GYRO_AngleSpeed = IMU_S.Attitude.gyro[0];
 
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -38, 38);
     holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 30);
-
-//    holder->Yaw_S.Target_Angle = LPFilter(holder->Yaw_S.Target_Angle, &LPF_yaw_mpu);
-//    holder->Pitch.Target_Angle = LPFilter(holder->Pitch.Target_Angle, &LPF_pitch_mpu);
 
     if (holder->Pitch.GYRO_Angle > 20)
     {
@@ -176,9 +173,9 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     {
         holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
                                                                 BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,
-                                                                                     holder->Yaw_S.Target_Angle,
-                                                                                     holder->Yaw_S.Can_Angle),
-                                                                holder->Yaw_S.GYRO_AngleSpeed);
+                                                                                    holder->Yaw_S.Target_Angle,
+                                                                                    holder->Yaw_S.Can_Angle),
+                                                               holder->Yaw_S.GYRO_AngleSpeed);
         holder->Motors.Pitch.motor_output =  PitchFF_Gravity(holder->Pitch.GYRO_Angle) + BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                  BasePID_AngleControl(holder->Pitch.PID.ShellPID,
                                                                                       holder->Pitch.Target_Angle,
@@ -186,9 +183,10 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
                                                                  holder->Pitch.GYRO_AngleSpeed);
     }
 
-    holder->Motors.Pitch.motor_output = float_constrain(holder->Motors.Pitch.motor_output, -10, 10);
+    holder->Motors.Pitch.motor_output = 0;//float_constrain(holder->Motors.Pitch.motor_output, -10, 10);
     DMiaoMitControl(&holder->Motors.Pitch, 0, 0, 0, 0, holder->Motors.Pitch.motor_output);
     MotorFillData(&holder->Motors.Yaw_S, holder->Motors.Yaw_S.Data.Output);
+//	 MotorFillData(&holder->Motors.Yaw_S, 0);
 
 #endif
 #if DEBUG_HOLDER == 1

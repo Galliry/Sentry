@@ -85,9 +85,9 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
     }
 
     if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle > 5)
-        ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, ammo_booster->Shoot_Plate.Fire_Rate, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
+        ammo_booster->Shoot_Plate.Plate_Out = 0;//BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, ammo_booster->Shoot_Plate.Fire_Rate, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
     else
-        ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, 0, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
+        ammo_booster->Shoot_Plate.Plate_Out = 0;//BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, 0, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
 
     if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle > 5 && ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM < 400)
     {

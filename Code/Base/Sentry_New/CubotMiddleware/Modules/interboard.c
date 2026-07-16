@@ -66,7 +66,7 @@ void RefereeDataTrans(Referee2022* referee)
 
 void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 {
-	if(rxBuffer->Header.Identifier == 0x101)
+	if(rxBuffer->Header.Identifier == 0x61)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		Base.Rc.rc_Ctrl_ch0 = rxBuffer->Data[0] | (rxBuffer->Data[1] << 8);
@@ -86,13 +86,13 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Autoaim.Mode = ((rxBuffer->Data[6] >> 7) & 0x01);
 		Base.Autoaim.is_Follow = (rxBuffer->Data[7] & 0x03);
 	}
-	if(rxBuffer->Header.Identifier == 0x102)
+	if(rxBuffer->Header.Identifier == 0x62)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Gyro.Gyro_Angle,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Gyro.Gyro_Data,&rxBuffer->Data[4],sizeof(float));
 	}
-	if(rxBuffer->Header.Identifier == 0x103)
+	if(rxBuffer->Header.Identifier == 0x63)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Lidar.Vx,&rxBuffer->Data[0],sizeof(float));

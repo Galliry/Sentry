@@ -2,9 +2,9 @@
 #include "check.h"
 #include "brain.h"
 #include "DM_imu.h"
-CAN_TxBuffer RemoteData = {.Identifier = 0x101};
-CAN_TxBuffer GyroData = {.Identifier = 0x102};
-CAN_TxBuffer LidarData = {.Identifier = 0x103};
+CAN_TxBuffer RemoteData = {.Identifier = 0x61};
+CAN_TxBuffer GyroData = {.Identifier = 0x62};
+CAN_TxBuffer LidarData = {.Identifier = 0x63};
 Top_t Top;
 uint8_t yaw_turn = 0;
 void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
@@ -32,8 +32,8 @@ void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
 
 void GyroDataTrans(void)
 {
-	memcpy(&GyroData.Data[0],&IMU_M.Attitude.yaw_total_angle,sizeof(float));
-	memcpy(&GyroData.Data[4],&IMU_M.Attitude.gyro[2],sizeof(float));
+	memcpy(&GyroData.Data[0],&mpu6050.Yaw_total_angle,sizeof(float));
+	memcpy(&GyroData.Data[4],&mpu6050.mpu6050_Data.gyro[2],sizeof(float));
 	
 	CAN_Send(&can2,&GyroData);
 }

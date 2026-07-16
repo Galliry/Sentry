@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "user_lib.h"
-DM_IMU_t IMU_M;
 DM_IMU_t IMU_S;
 // ==========================================
 // 初始化设备
@@ -23,7 +22,7 @@ void DM_IMU_Run(DM_IMU_t *imu)
    
     imu_set_baud(imu, CAN_BAUD_1M);
 	
-    imu_set_active_mode_delay(imu, 500);
+    imu_set_active_mode_delay(imu, 250);
 	
     imu_change_to_active(imu);
 }
@@ -117,7 +116,7 @@ uint8_t DM_IMUs_Calibration(DM_IMU_t *imu1, DM_IMU_t *imu2)
 	imu2->state.InitFlag = 0;
 	uint8_t triedCnt1 = 0;
 	uint8_t triedCnt2 = 0;
-	const float stillGyro = 0.025f;
+	const float stillGyro = 1.0f;
 	do 
 	{
 		// 校准前检查是否处于静止状态
@@ -225,7 +224,7 @@ uint8_t DM_IMUs_Calibration(DM_IMU_t *imu1, DM_IMU_t *imu2)
 		float Yaw1NError = 0; // 最大负向偏差
 		float Yaw2PError = 0;
 		float Yaw2NError = 0;
-		const uint32_t deltaTime = 15000;
+		const uint32_t deltaTime = 5000;
 		float Yaw1Error = 0;
 		float Yaw2Error = 0;
 		checkEndTick = HAL_GetTick() + deltaTime;

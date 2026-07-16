@@ -83,7 +83,7 @@ void ET08_online_protection()
 
 
 
-void ET08_DataUnpack(RC_Ctrl_ET* rc_ctrl, uint8_t * recBuffer, uint16_t len )
+void ET08_DataUnpack(RC_Ctrl_ET* rc_ctrl, uint8_t * recBuffer, uint16_t len)
 { 
 	uint8_t SA,SB,SC,SD;
 	if(recBuffer[0]==0x0f)																																												//< 数据完整性验证 

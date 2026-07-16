@@ -116,7 +116,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
         chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Move_Sensitivity;
 		chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
         chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
-		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+		chassis->Movement.Omega = 0;//BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
         super_cap.cap_state.Supercap_Mode = 0;
         SwerveChassisSetSpeed(chassis);
     }
