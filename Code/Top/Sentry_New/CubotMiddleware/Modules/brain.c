@@ -200,11 +200,15 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
     float temp_roll = -IMU_S.Attitude.roll / 360.0f * 2 * 3.14f;
     float temp_roll_gyro = IMU_S.Attitude.gyro[0];
     float temp_pitch = IMU_S.Attitude.pitch / 360.0f * 2 * 3.14f;
+    float temp_pitch_gyro = IMU_S.Attitude.gyro[1] / 360.0f * 2 * 3.14f;
 	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
 	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
-	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
-	memcpy(RobotToBrainTimeBuffer+15,&temp_roll_gyro,4);
-	memcpy(RobotToBrainTimeBuffer+19,&temp_pitch,4);
+//	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
+//	memcpy(RobotToBrainTimeBuffer+15,&temp_roll_gyro,4);
+//	memcpy(RobotToBrainTimeBuffer+19,&temp_pitch,4);
+	memcpy(RobotToBrainTimeBuffer+11,&temp_pitch,4);
+	memcpy(RobotToBrainTimeBuffer+15,&temp_pitch_gyro,4);
+	memcpy(RobotToBrainTimeBuffer+19,&temp_roll,4);
     float temp_v = 22.0f;
 	memcpy(RobotToBrainTimeBuffer+23,&temp_v,4);
 //	RobotToBrainTimeBuffer[27] = AmmoBooster.Shoot_Plate.ShootNum;

@@ -22,7 +22,7 @@ void DM_IMU_Run(DM_IMU_t *imu)
    
     imu_set_baud(imu, CAN_BAUD_1M);
 	
-    imu_set_active_mode_delay(imu, 250);
+    imu_set_active_mode_delay(imu, 1);
 	
     imu_change_to_active(imu);
 }
