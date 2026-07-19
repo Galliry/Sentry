@@ -195,7 +195,8 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给自瞄
 	RobotToBrainTimeBuffer[0] = 'G';
 	RobotToBrainTimeBuffer[1] = 'V';
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
-    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
+//    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
+    float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
     float temp_yaw_gyro = IMU_S.Attitude.gyro[2];
     float temp_roll = -IMU_S.Attitude.roll / 360.0f * 2 * 3.14f;
     float temp_roll_gyro = IMU_S.Attitude.gyro[0];

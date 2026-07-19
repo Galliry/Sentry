@@ -88,8 +88,8 @@ void TIM14_Task(void)
 	}
 	
 	// ET08 Contorl
-    if (tim14.ClockTime > 500)
-        FrictionWheelControl(&AmmoBooster);
+//    if (tim14.ClockTime > 500)
+//        FrictionWheelControl(&AmmoBooster);
 	
     if (rc_Ctrl_et.isOnline == 1)
     {
