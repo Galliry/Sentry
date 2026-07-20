@@ -99,4 +99,10 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		memcpy(&Base.Lidar.Vy,&rxBuffer->Data[4],sizeof(float));
 		
 	}
+	if (rxBuffer->Header.Identifier == 0x64)
+	{
+		check_robot_state.Check_Usart.Check_board_cnt = 0;
+		memcpy(&Base.Autoaim.Target_Yaw, &rxBuffer->Data[0], sizeof(float));
+		memcpy(&Base.Autoaim.Yaw_S_Angle, &rxBuffer->Data[4], sizeof(float));
+	}
 }

@@ -2,9 +2,11 @@
 #include "check.h"
 #include "brain.h"
 #include "DM_imu.h"
+#include "holder.h"
 CAN_TxBuffer RemoteData = {.Identifier = 0x61};
 CAN_TxBuffer GyroData = {.Identifier = 0x62};
 CAN_TxBuffer LidarData = {.Identifier = 0x63};
+CAN_TxBuffer AutoaimData = {.Identifier = 0x64};
 Top_t Top;
 uint8_t yaw_turn = 0;
 void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
@@ -48,12 +50,21 @@ void LidarDataTrans(void)
 	CAN_Send(&can2,&LidarData);
 }
 
+void AutoaimDataTrans(void)
+{
+	memcpy(&AutoaimData.Data[0],&Brain.Autoaim.Yaw,sizeof(float));
+	memcpy(&AutoaimData.Data[4],&Holder.Motors.Yaw_S.Data.Angle, sizeof(float));
+
+	CAN_Send(&can2,&AutoaimData);
+}
+
 void TopBoardDataTrans(RC_Ctrl_ET* rc_ctrl)
 {
 	static uint8_t i = 0;
 	if(i == 0){RemoteDataTrans(rc_ctrl); i++;}
 	else if(i == 1){GyroDataTrans(); i++;}
-	else if(i == 2){LidarDataTrans(); i = 0;}
+	else if(i == 2){LidarDataTrans(); i++;}
+	else if(i == 3){AutoaimDataTrans(); i = 0;}
 
 }
 void BaseBoard_Callback(CAN_RxBuffer* rxBuffer)
