@@ -16,10 +16,10 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster, SinglePID_t *friction_pid0, Sin
     MotorInit(&ammo_booster->Friction_Wheel.motor3508[1], 0, Motor3508, CAN1, 0x202);
     MotorInit(&ammo_booster->Shoot_Plate.motor2006, 0, Motor2006, CAN1, 0x203);
 
-    BasePID_Init(&ammo_booster->Shoot_Plate.RunPID_angle, load_pid_angle->Kp, load_pid_angle->Ki, load_pid_angle->Kd, load_pid_angle->KiPartDetachment);
-    BasePID_Init(&ammo_booster->Shoot_Plate.RunPID_speed, load_pid_speed->Kp, load_pid_speed->Ki, load_pid_speed->Kd, load_pid_speed->KiPartDetachment);
-    BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[0], friction_pid0->Kp, friction_pid0->Ki, friction_pid0->Kd, friction_pid0->KiPartDetachment);
-    BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[1], friction_pid1->Kp, friction_pid1->Ki, friction_pid1->Kd, friction_pid1->KiPartDetachment);
+    BasePID_Init(&ammo_booster->Shoot_Plate.RunPID_angle, load_pid_angle->Kp, load_pid_angle->Ki, load_pid_angle->Kd, load_pid_angle->KiPartDetachment, 30.0f);
+    BasePID_Init(&ammo_booster->Shoot_Plate.RunPID_speed, load_pid_speed->Kp, load_pid_speed->Ki, load_pid_speed->Kd, load_pid_speed->KiPartDetachment, 30.0f);
+    BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[0], friction_pid0->Kp, friction_pid0->Ki, friction_pid0->Kd, friction_pid0->KiPartDetachment, 30.0f);
+    BasePID_Init(&ammo_booster->Friction_Wheel.Friction_PID[1], friction_pid1->Kp, friction_pid1->Ki, friction_pid1->Kd, friction_pid1->KiPartDetachment, 30.0f);
 
     ammo_booster->Shoot_Plate.Fire_Rate = 8000; // 5250//8000
     ammo_booster->Shoot_Plate.Fire_Margin = 60;
