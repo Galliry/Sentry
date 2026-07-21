@@ -18,10 +18,10 @@ void SwerveChassisInit(SwerveChassis* chassis,DualPID_Object* turn_pid,SinglePID
     {
         DualPID_Init(&chassis->Motors6020.TurnPID[i],turn_pid[i].ShellPID,turn_pid[i].CorePID);
     }
-	BasePID_Init(&chassis->Motors3508.RunPID[0],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[1],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[2],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);
-	BasePID_Init(&chassis->Motors3508.RunPID[3],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment);;
+	BasePID_Init(&chassis->Motors3508.RunPID[0],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment, 30.0f);
+	BasePID_Init(&chassis->Motors3508.RunPID[1],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment, 30.0f);
+	BasePID_Init(&chassis->Motors3508.RunPID[2],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment, 30.0f);
+	BasePID_Init(&chassis->Motors3508.RunPID[3],run_pid->Kp,run_pid->Kd,run_pid->Kd,run_pid->KiPartDetachment, 30.0f);;
 	chassis->Movement.Vx_Sensitivity = 5;
 	chassis->Movement.Vy_Sensitivity = 5;
 }

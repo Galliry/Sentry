@@ -60,7 +60,7 @@ void HardwareConfig(void)
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load_angle, &pid_load_speed);
-//	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
+	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
@@ -69,7 +69,7 @@ void HardwareConfig(void)
 	UARTx_Init(&huart7,NULL);//  Vofa+
 	
 	// INS_Init(&bmi088.bmi088_Data);
-//	MPU6050_Init(&mpu6050.mpu6050_Data);
+	MPU6050_Init(&mpu6050.mpu6050_Data);
 	
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
     CAN_Open (&can1);
@@ -79,8 +79,8 @@ void HardwareConfig(void)
 
 	TIMx_Init(&htim14, TIM14_Task);//���Ӷ�ʱ���ص�
 	TIM_Open(&tim14);
-//	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
-//	TIM_Open(&tim13);
+	TIMx_Init(&htim13, TIM13_Task);//���Ӷ�ʱ���ص�
+	TIM_Open(&tim13);
 	
 	DM_IMU_Init(&IMU_S,0x98,0x99,can2);
 	DM_IMU_Run(&IMU_S);// ��̨

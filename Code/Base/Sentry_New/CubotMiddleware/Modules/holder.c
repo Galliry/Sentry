@@ -3,9 +3,11 @@
 #include "driver_timer.h"
 #include "et08.h"
 #include "ins.h"
+#include "interboard.h"
 #include "mpu6050.h"
 #include "user_lib.h"
 #include <stdint.h>
+#include "filter.h"
 
 Holder_t Holder;
 uint16_t AllSenseDelayCount;
@@ -14,7 +16,7 @@ uint16_t Follow_Flag_cnt = 0;
 #define DEBUG_YAW 0
 
 /**
- * @brief 云台初始化
+ * @brief 云台初�?�化
  */
 void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 {
@@ -43,15 +45,21 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
     }
 	if(rec->Rc.rc_Ctrl_s2 == 2 && referee2022.game_status.stage_remain_time <= 360)
 	{
-	
-		if (AllSenseDelayCount == 0)
+		if (Base.All_sense.All_Sense_cnt != 0)
 		{
-			holder->Yaw_M.Target_Angle += Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
-			AllSenseDelayCount = 2000;
+			if (AllSenseDelayCount == 0)
+			{
+				holder->Yaw_M.Target_Angle += Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
+				AllSenseDelayCount = 2000;
+			}
+			else
+			{
+				AllSenseDelayCount--;
+			}
 		}
 		else
 		{
-			AllSenseDelayCount--;
+			holder->Yaw_M.Target_Angle = LPFilter(Base.Autoaim.Target_Yaw, &LPF_Yaw_M);
 		}
 	}
 	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)

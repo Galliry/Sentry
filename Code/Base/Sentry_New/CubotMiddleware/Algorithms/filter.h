@@ -21,4 +21,5 @@ extern struct LowPassFilter_Info LPF_pitch_mpu;
 extern struct LowPassFilter_Info LPF_yaw_mpu;
 extern struct LowPassFilter_Info LPF_3508;
 extern struct LowPassFilter_Info LPF_ADRC_OUT;
+extern struct LowPassFilter_Info LPF_Yaw_M;
 #endif

@@ -43,6 +43,11 @@ struct LowPassFilter_Info LPF_ADRC_OUT={
 	.last_output=0,
 };
 
+struct LowPassFilter_Info LPF_Yaw_M={
+	.filter_coefficient = 0.9f,
+	.last_output = 0,
+};
+
 float LPFilter(float sampling ,struct LowPassFilter_Info *LPF){
 	//Ò»½×µÍÍ¨ÂË²¨Æ÷£ºp(n) = c¡¤q(n) + (1 - c)¡¤p(n - 1) 
 	(*LPF).sampling =sampling;

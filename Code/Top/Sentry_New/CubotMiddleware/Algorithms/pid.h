@@ -1,6 +1,7 @@
 #ifndef __PID_H_
 #define __PID_H_
 #include "stm32h7xx_hal.h"
+#include "filter.h"
 //#include "referee.h"
 
 /**
@@ -10,13 +11,22 @@ typedef struct
 {	
 	float Kp, Ki, Kd;
 	float Error;
+  float dt;
 	float iError;//累积误差
 	float KpPart, KiPart, KdPart;
+  float KdPart_raw;
+
+  float Target_Dot;
 	
 	float KiPartDetachment;
 	float LastError;
+  float Last_Measure;
+  float anti_windup;
 
 	float Out;
+  float Out_Raw;
+
+  struct LowPassFilter_Info LPF_Dpart;
 }SinglePID_t;
 
 
@@ -33,7 +43,7 @@ typedef struct
 /**
   * @brief 单环PID初始化
   */
-void BasePID_Init(SinglePID_t* base_pid, float kp, float ki, float kd, float detach);
+void BasePID_Init(SinglePID_t *base_pid, float kp, float ki, float kd, float detach, float LPF_frequency);
 
 
 /**

@@ -60,7 +60,7 @@ void HardwareConfig(void)
 //	ET08Init(&rc_Ctrl_et);
 	
 	PID_Init(); 	
-	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
+//	SwerveChassisInit(&swervechassis,pid_turn,&pid_run,&pid_follow);
 	HolderInit_Base(&Holder,&pid_yaw_m);
 	InterboardData_Init(&Base);
 	

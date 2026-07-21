@@ -39,6 +39,8 @@ typedef struct
 	{
 		uint8_t Mode;
 		uint8_t is_Follow;
+		float Target_Yaw;
+		float Yaw_S_Angle;
 	}Autoaim;
 }Base_t;
 
