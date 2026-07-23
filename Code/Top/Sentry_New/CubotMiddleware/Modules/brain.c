@@ -102,7 +102,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 	#if AUTOAIM_VERSION == 2
 	if (recBuffer[0] == 'V' && recBuffer[1] == 'G' && recBuffer[27] == 'E' && recBuffer[28] == 'N')
 	{
-		brain->Autoaim.IsFire = recBuffer[2] == 2 ? 1 : 0;
+		brain->Autoaim.IsFire = recBuffer[2] == 2 && ( Holder.Yaw_S.PID.CorePID->Error < 0.5 && Holder.Pitch.PID.CorePID->Error < 0.4 )? 1 : 0;
 		brain->Autoaim.mode = recBuffer[2] == 0 ? Cruise : Lock;
 		memcpy(&brain->Autoaim.Yaw, recBuffer+3, 4);
 		brain->Autoaim.Yaw *= 180 / 3.1415f;
@@ -211,11 +211,11 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//å‘ç»™è‡?çž?
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
 //    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
     float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
-    float temp_yaw_gyro = IMU_S.Attitude.gyro[2];
-    float temp_roll = IMU_S.Attitude.roll / 360.0f * 2 * 3.14f;
-    float temp_roll_gyro = IMU_S.Attitude.gyro[0];
-    float temp_pitch = IMU_S.Attitude.pitch / 360.0f * 2 * 3.14f;
-    float temp_pitch_gyro = IMU_S.Attitude.gyro[1] / 360.0f * 2 * 3.14f;
+    float temp_yaw_gyro = IMU_S.Attitude.gyro[2] / 180 * 3.14f;
+    float temp_roll = IMU_S.Attitude.roll / 180 * 3.14f;
+    float temp_roll_gyro = IMU_S.Attitude.gyro[0] / 180 * 3.14f;
+    float temp_pitch = IMU_S.Attitude.pitch / 180 * 3.14f;
+    float temp_pitch_gyro = IMU_S.Attitude.gyro[1] / 180 * 3.14f;
 	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
 	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
 //	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);

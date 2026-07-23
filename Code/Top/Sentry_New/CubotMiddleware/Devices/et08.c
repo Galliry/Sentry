@@ -66,7 +66,7 @@ void ET08Init(RC_Ctrl_ET* RC_Ctl)
 uint8_t ET08_callback(uint8_t * recBuffer, uint16_t len)
 {
 	
-	ET08_DataUnpack(&rc_Ctrl_et, recBuffer, len);  //< callback函数由格式限制
+//	ET08_DataUnpack(&rc_Ctrl_et, recBuffer, len);  //< callback函数由格式限制
 
 	return 0;
 }
