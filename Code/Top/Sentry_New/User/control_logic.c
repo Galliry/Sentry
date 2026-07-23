@@ -88,8 +88,8 @@ void TIM14_Task(void)
 	}
 	
 	// ET08 Contorl
-//    if (tim14.ClockTime > 500)
-//        FrictionWheelControl(&AmmoBooster);
+    if (tim14.ClockTime > 500)
+        FrictionWheelControl(&AmmoBooster);
 	
     if (rc_Ctrl_et.isOnline == 1)
     {
@@ -190,7 +190,7 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
-    BaseBoard_Callback(rxBuffer);
+//    BaseBoard_Callback(rxBuffer);
 	IMU_UpdateData(&IMU_S,rxBuffer);
 	
     return 0;

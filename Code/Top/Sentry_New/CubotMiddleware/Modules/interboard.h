@@ -33,5 +33,6 @@ void GyroDataTrans(void);
 void LidarDataTrans(void);
 void TopBoardDataTrans(RC_Ctrl_ET* rc_ctrl);
 void BaseBoard_Callback(CAN_RxBuffer* rxBuffer);
+uint8_t BaseBoard_CallbackU(uint8_t * recBuffer, uint16_t len);
 #endif
 

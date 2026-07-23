@@ -172,7 +172,7 @@ void DMiao_CanUpdata(DMiao_t *damiao,CAN_RxBuffer rxBuffer)
 				damiao->speed_rpm   = uint_to_float(i_speed, -45.0f, 45.0f, 12);// (-45.0,45.0)
 				damiao->torque      = uint_to_float(i_torque, -18.0f, 18.0f, 12); // (-18.0,18.0)
 				damiao->angle = damiao->angle_raw * 57.2957f;
-				damiao->angle_offest = (damiao->angle - 103.28f);
+				damiao->angle_offest = (damiao->angle + 154.76f);
 			}
 			break;
 		}

@@ -27,7 +27,7 @@ void RefereeDataTrans(Referee2022* referee)
 	static uint8_t i = 0;
 	if(i == 0)
 	{
-		RefereeData.Identifier = 0x104;
+		RefereeData.Identifier = 0x105;
 		RefereeData.Data[0] = referee->game_status.game_progress;
 		RefereeData.Data[1] = (uint8_t)(referee->game_robot_status.shooter_id1_17mm_cooling_limit & 0xff);
 		RefereeData.Data[2] = (uint8_t)((referee->game_robot_status.shooter_id1_17mm_cooling_limit >> 8) & 0xff);
@@ -44,7 +44,7 @@ void RefereeDataTrans(Referee2022* referee)
 			base_flag = 1;
 		else
 			base_flag = 0;
-		RefereeData.Identifier = 0x105;
+		RefereeData.Identifier = 0x106;
 		RefereeData.Data[0] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 		RefereeData.Data[1] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
 		RefereeData.Data[2] = referee->game_robot_status.mains_power_gimbal_output;
@@ -66,7 +66,7 @@ void RefereeDataTrans(Referee2022* referee)
 
 void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 {
-	if(rxBuffer->Header.Identifier == 0x61)
+	if(rxBuffer->Header.Identifier == 0x101)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		Base.Rc.rc_Ctrl_ch0 = rxBuffer->Data[0] | (rxBuffer->Data[1] << 8);
@@ -86,20 +86,20 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.Autoaim.Mode = ((rxBuffer->Data[6] >> 7) & 0x01);
 		Base.Autoaim.is_Follow = (rxBuffer->Data[7] & 0x03);
 	}
-	if(rxBuffer->Header.Identifier == 0x62)
+	if(rxBuffer->Header.Identifier == 0x102)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Gyro.Gyro_Angle,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Gyro.Gyro_Data,&rxBuffer->Data[4],sizeof(float));
 	}
-	if(rxBuffer->Header.Identifier == 0x63)
+	if(rxBuffer->Header.Identifier == 0x103)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Lidar.Vx,&rxBuffer->Data[0],sizeof(float));
 		memcpy(&Base.Lidar.Vy,&rxBuffer->Data[4],sizeof(float));
 		
 	}
-	if (rxBuffer->Header.Identifier == 0x64)
+	if (rxBuffer->Header.Identifier == 0x104)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
 		memcpy(&Base.Autoaim.Target_Yaw, &rxBuffer->Data[0], sizeof(float));
