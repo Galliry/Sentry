@@ -35,7 +35,7 @@ void TIM14_Task(void)
     {
         DM_IMU_Run(&IMU_S);
     }
-    RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
+//    RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
     if (tim14.ClockTime % 4 == 0)
@@ -88,8 +88,8 @@ void TIM14_Task(void)
 	}
 	
 	// ET08 Contorl
-//    if (tim14.ClockTime > 500)
-//        FrictionWheelControl(&AmmoBooster);
+    if (tim14.ClockTime > 500)
+        FrictionWheelControl(&AmmoBooster);
 	
     if (rc_Ctrl_et.isOnline == 1)
     {
@@ -131,7 +131,7 @@ void TIM14_Task(void)
     // Gravity FeedForward Test
     // UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", Holder.Motors.Pitch.torque, IMU_S.Attitude.roll, Holder.Pitch.PID.ShellPID->Out);
     // Pitch
-    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 
     // Yaw
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.Can_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);
@@ -153,12 +153,12 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%.2f\r\n", INS_attitude->pitch);
 
     // Autoaim
-    // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %d\r\n",
-    //                 Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
-    //                 Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
-    //                 Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle,
-    //                 Brain.Autoaim.Pitch_add, Brain.Autoaim.Yaw_add,
-    //                 Brain.Autoaim.IsFire);
+    UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %d\r\n",
+                    Holder.Pitch.PID.ShellPID->Error, Holder.Yaw_S.PID.ShellPID->Error,
+                    Holder.Pitch.Target_Angle, Holder.Yaw_S.Target_Angle,
+                    Holder.Pitch.GYRO_Angle, Holder.Yaw_S.Can_Angle,
+                    Brain.Autoaim.Pitch, Brain.Autoaim.Yaw,
+                    Brain.Autoaim.IsFire);
 
     // ShootPlate
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %d\r\n",

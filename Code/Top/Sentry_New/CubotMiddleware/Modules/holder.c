@@ -21,8 +21,8 @@ float Pitch_TD = 400;
 int k = 0;
 float fliter = 0.9;
 // volatile float DEBUG_tar = 0.0f;
-const float Yaw_FFk = 18.0f;
-const float Pitch_FFk = 12.0f;
+const float Yaw_FFk = 28.0f;
+const float Pitch_FFk = 20.0f;
 
 float x = 0.45;
 float y = 0.012;
@@ -39,14 +39,14 @@ float yaw_speed = 1.2f;
 //#define arm_cos_f32(AngleSpeed) cosf(AngleSpeed)
 //#endif
 
-float PitchFF_Gravity(float target) // ÖØÁ¦²¹³¥Ç°À¡
+float PitchFF_Gravity(float target) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½
 {
-    // ²âÊÔÔ´Êý¾Ýhttps://www.desmos.com/calculator/ikerwae6cv
+    // ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½https://www.desmos.com/calculator/ikerwae6cv
 //    float ff1, ff2;
     target = -target;
 
-//    const float A = 0.94273f;   // Ë®Æ½Ê±ÖØÁ¦Á¦¾Ø
-//    const float B = -0.063365f; // ÖØÐÄÆ«½Ç (rad)
+//    const float A = 0.94273f;   // Ë®Æ½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    const float B = -0.063365f; // ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ (rad)
     const float pi = 3.1415926f;
     const float w = pi/180.0f;
 //    const float a = 0.670588f;
@@ -85,7 +85,9 @@ float YawFF_Speed(float target)
     }
     targets[0] = target;
 
-    return Yaw_FFk * ( targets[0] + targets[1] + targets[2] - targets[3] -targets[4] - targets[5] ) / (6-1) / (6/2);
+    float dTarget = ( targets[0] + targets[1] + targets[2] - targets[3] -targets[4] - targets[5] ) / (6-1) / (6/2);
+
+    return Yaw_FFk * dTarget;
 }
 
 float PitchFF_Speed(float target)
@@ -97,11 +99,13 @@ float PitchFF_Speed(float target)
     }
     targets[0] = target;
 
-    return Pitch_FFk * ( targets[0] + targets[1] + targets[2] - targets[3] -targets[4] - targets[5] ) / (6-1) / (6/2);
+    float dTarget = ( targets[0] + targets[1] + targets[2] - targets[3] -targets[4] - targets[5] ) / (6-1) / (6/2);
+
+    return Pitch_FFk * dTarget;
 }
 
 /**
- * @brief ÔÆÌ¨³õÊ¼»¯ÉÏ°å
+ * @brief ï¿½ï¿½Ì¨ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ï°ï¿½
  */
 void HolderInit_Top(Holder_t *holder, DualPID_Object *pitch, DualPID_Object *yaw_s)
 {
@@ -113,7 +117,7 @@ void HolderInit_Top(Holder_t *holder, DualPID_Object *pitch, DualPID_Object *yaw
     holder->Yaw_S.Sensitivity = 0.00085f;
 }
 /**
- * @brief ÔÆÌ¨¿ØÖÆ
+ * @brief ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½
  */
 uint8_t yawFlag = 0;
 void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
@@ -135,12 +139,12 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
             {
 				if(Brain.Autoaim.Mode == Outpost)
 				{
-					holder->Yaw_S.Target_Angle = 20 * sin(HAL_GetTick() / 300.0f);
-					holder->Pitch.Target_Angle = 5 * sin(HAL_GetTick() / 150.0f) + 10;//20;
+					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick() / 800.0f);
+					holder->Pitch.Target_Angle = 2 * sin(HAL_GetTick() / 400.0f) + 10;//20;
 				}else
 				{
-					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 200.0f);
-					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 100.0f);
+					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 500.0f);
+					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 250.0f);
 				} 
             }
             else if (Brain.Autoaim.mode == Lock)
@@ -165,38 +169,35 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -35, 35);
     holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 25.5f);
 
-    // if (holder->Pitch.GYRO_Angle > 20)
-    // {
-    //     holder->Pitch.PID.ShellPID->Kp = 0.1f;//0.45
-    //     holder->Pitch.PID.ShellPID->Ki = 0.006f;
-    //     holder->Pitch.PID.ShellPID->Kd = -0.2f;
-    //     holder->Pitch.PID.CorePID->Kp = 0.25f;//0.45
-    //     holder->Pitch.PID.CorePID->Ki = 0;
-    //     holder->Pitch.PID.CorePID->Kd = -3;//5
-    // }
-    // else
-    // {
-    //     holder->Pitch.PID.ShellPID->Kp = 0.4f;//0.5
-    //     holder->Pitch.PID.ShellPID->Ki = 0.02f;
-    //     holder->Pitch.PID.ShellPID->Kd = -0.005f;
-    //     holder->Pitch.PID.CorePID->Kp = 0.45;//0.55
-    //     holder->Pitch.PID.CorePID->Ki = 0;
-    //     holder->Pitch.PID.CorePID->Kd = -6;//3
-    // }
+    holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_pitch_vision);
+    holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle , &LPF_yaw_vision);
 
 #if DEBUG_HOLDER == 0
     if ( 0 && rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)
     {
-        holder->Motors.Yaw_S.Data.Output = k * holder->Yaw_S.v2 + BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
-                                                                                       BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,
-                                                                                                            holder->Yaw_S.v1,
-                                                                                                            holder->Yaw_S.Can_Angle),
-                                                                                       holder->Yaw_S.GYRO_AngleSpeed);
-        holder->Motors.Pitch.motor_output =PitchFF_Gravity(holder->Pitch.GYRO_Angle); + 
+        // holder->Motors.Yaw_S.Data.Output = k * holder->Yaw_S.v2 + BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
+        //                                                                                BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,
+        //                                                                                                     holder->Yaw_S.v1,
+        //                                                                                                     holder->Yaw_S.Can_Angle),
+        //                                                                                holder->Yaw_S.GYRO_AngleSpeed);
+        // holder->Motors.Pitch.motor_output =PitchFF_Gravity(holder->Pitch.GYRO_Angle); + 
+        //                                     BasePID_SpeedControl(holder->Pitch.PID.CorePID,
+        //                                                         BasePID_AngleControl(holder->Pitch.PID.ShellPID,
+        //                                                                             holder->Pitch.v1,
+        //                                                                             holder->Pitch.GYRO_Angle),
+        //                                                         holder->Pitch.GYRO_AngleSpeed);
+        holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,
+                                                                BasePID_AngleControl(holder->Yaw_S.PID.ShellPID,
+                                                                                    holder->Yaw_S.Target_Angle,
+                                                                                    holder->Yaw_S.Can_Angle)
+                                                                + YawFF_Speed(Brain.Autoaim.Yaw_vel),
+                                                                holder->Yaw_S.GYRO_AngleSpeed);
+        holder->Motors.Pitch.motor_output =  PitchFF_Gravity(holder->Pitch.GYRO_Angle) +
                                             BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID,
-                                                                                    holder->Pitch.v1,
-                                                                                    holder->Pitch.GYRO_Angle),
+                                                                                    holder->Pitch.Target_Angle,
+                                                                                    holder->Pitch.GYRO_Angle)
+                                                                + PitchFF_Speed(Brain.Autoaim.Pitch_vel),
                                                                 holder->Pitch.GYRO_AngleSpeed);
     }
     else

@@ -11,12 +11,12 @@ struct LowPassFilter_Info LPF_yaw_speed={
 };
 
 struct LowPassFilter_Info LPF_pitch_vision={
-  .filter_coefficient=1.0f,
+  .filter_coefficient= 0.35,//0.001f /( (1.0f/2.0f*3.1415f* 10 ) + 0.001f ),
 	.last_output=0,
 };
 
 struct LowPassFilter_Info LPF_yaw_vision={
-  .filter_coefficient=1.0f,
+  .filter_coefficient= 0.4,//0.001f /( (1.0f/2.0f*3.1415f* 10 ) + 0.001f ),
 	.last_output=0,
 };
 
