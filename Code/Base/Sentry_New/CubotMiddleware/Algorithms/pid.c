@@ -114,7 +114,7 @@ void PID_Init(void)
     BasePID_Init(&pid_yaw_m_angle, -0.150, 0, 0, 0); 
     BasePID_Init(&pid_yaw_m_speed, 2.4, 0, -8, 0);
     BasePID_Init(&pid_run, 18, 0, 0, 0);       // ╣велтк╤╞ 10
-    BasePID_Init(&pid_follow, 50, 0.01, 0, 0); // ╣вел╦ЗкФ
+    BasePID_Init(&pid_follow, 100, 0.1, 0, 0); // ╣вел╦ЗкФ
     // BasePID_Init(&pid_run, 0, 0, 0, 0);       // ╣велтк╤╞ disable
     // BasePID_Init(&pid_follow, 0, 0, 0, 0); // ╣вел╦ЗкФ disable
     for (int i = 0; i < 4; i++)
