@@ -16,7 +16,7 @@ uint16_t Follow_Flag_cnt = 0;
 #define DEBUG_YAW 0
 
 /**
- * @brief 云台初�?�化
+ * @brief 云台初�?�化
  */
 void HolderInit_Base(Holder_t *holder, DualPID_Object *yaw_m)
 {
@@ -59,7 +59,10 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 		}
 		else
 		{
-			holder->Yaw_M.Target_Angle = LPFilter(Base.Autoaim.Target_Yaw, &LPF_Yaw_M);
+			if (Base.Autoaim.Target_Yaw != 0.0f)
+			{
+				holder->Yaw_M.Target_Angle = LPFilter(Base.Autoaim.Target_Yaw, &LPF_Yaw_M);
+			}
 		}
 	}
 	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
@@ -92,7 +95,7 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
                                                                                   holder->Yaw_M.Target_Angle,
                                                                                   holder->Yaw_M.GYRO_Angle),
                                                              holder->Yaw_M.GYRO_AngleSpeed);
-    holder->Motors.Yaw_M.motor_output = float_constrain(holder->Motors.Yaw_M.motor_output, -10, 10);
+    holder->Motors.Yaw_M.motor_output = float_constrain(holder->Motors.Yaw_M.motor_output, -8, 8);
     DMiaoMitControl(&holder->Motors.Yaw_M, 0, 0, 0, 0, holder->Motors.Yaw_M.motor_output);
 
 #else
