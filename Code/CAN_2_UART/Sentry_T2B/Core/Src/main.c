@@ -105,6 +105,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    UART2CAN_TryTransmit();
+    CAN2UART_TryTransmit();
   }
   /* USER CODE END 3 */
 }
