@@ -513,11 +513,6 @@
           <GroupName>User</GroupName>
           <Files>
             <File>
-              <FileName>fifo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\CUBOT\fifo.c</FilePath>
-            </File>
-            <File>
               <FileName>user_can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CUBOT\user_can.c</FilePath>
@@ -526,6 +521,11 @@
               <FileName>user_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\CUBOT\user_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\CUBOT\fifo.c</FilePath>
             </File>
           </Files>
         </Group>

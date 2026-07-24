@@ -127,3 +127,98 @@ AXI SRAM: 0x24000000 (512 KB) — 额外 RW/ZI 数据，通过 MPU 配置为可�
 - `et08` = ET08 遥控器，`dr16` = DR16 遥控器 ——互斥使用
 - 舵轮底盘几何模型将平移速度（`Vx, Vy, Omega`）分解为 4 个独立转向模块的目标角度和转速
 - 前馈 + PID 常见：`PitchFF_Gravity()` 补偿重力力矩，超级电容功率限制采用功率预算缩放
+
+## CAN_2_UART 子项目
+
+`Code/CAN_2_UART/Sentry_T2B/` 是一个**独立的 Keil MDK 工程**（非主固件的一部分），实现 CAN↔UART 双向协议转换桥接。
+
+### 概述
+
+- **MCU**: STM32F103C8T6 (Cortex-M3, 64MHz, 64KB Flash, 20KB SRAM)
+- **编译器**: ARMCC V5.06 (ARM Compiler 5)，**非** ARMCLANG
+- **CubeMX**: 6.18.0, Firmware Package STM32Cube FW_F1 V1.8.7
+- **功能**: 将 CAN 总线帧与 UART 串口帧双向透明转发，用于哨兵机器人板间通信适配
+
+### 硬件与外设
+
+| 外设 | 引脚 | 用途 |
+|------|------|------|
+| CAN1 | PA11(RX), PA12(TX) | CAN 总线，1 Mbps，ABOM 自恢复使能 |
+| USART3 | PB10(TX), PB11(RX) | UART，500,000 bps 8N1，DMA 收发 |
+| DMA1_CH2 | — | USART3 TX（Memory→Peripheral, Normal 模式） |
+| DMA1_CH3 | — | USART3 RX（Peripheral→Memory, Normal 模式） |
+
+NVIC 优先级：DMA1_CH2/CH3(0) > USART3(1) > CAN1_RX0(2) > SysTick(15)
+
+### 通信协议
+
+固定 **9 字节帧**，双向对称：
+
+```
+Byte 0:      通道 ID
+Bytes 1-8:   8 字节 payload
+```
+
+**通道映射**（全双工，收发通道不重叠）：
+
+| 方向 | UART 通道 ID | CAN StdID |
+|------|-------------|-----------|
+| UART → CAN | 1 | 0x101 |
+| UART → CAN | 2 | 0x102 |
+| UART → CAN | 3 | 0x103 |
+| UART → CAN | 4 | 0x104 |
+| CAN → UART | 5 | 0x105 |
+| CAN → UART | 6 | 0x106 |
+
+CAN 硬件过滤器：16 位 ID 列表模式，仅接收 0x105、0x106（CAN→UART 方向）。UART→CAN 方向由 UART 侧按通道 ID 1~4 发起。
+
+### 架构
+
+```
+CUBOT/
+├── fifo.c/h           ← 消息 FIFO 循环缓冲区（临界区保护，离线检测）
+├── user_can.c/h       ← CAN 初始化、CAN→UART 转发（DMA 链式发送）
+└── user_usart.c/h     ← UART 初始化、UART→CAN 转发（重试 + bus-off 恢复）
+
+Core/
+├── Src/main.c         ← 入口，while(1) 中调用两个 TryTransmit 重试函数
+├── Src/can.c          ← CubeMX 生成：CAN1 初始化
+├── Src/usart.c        ← CubeMX 生成：USART3 DMA 初始化
+├── Src/dma.c          ← CubeMX 生成：DMA 控制器初始化
+└── Src/stm32f1xx_it.c ← 中断向量：CAN_RX0、USART3、DMA1_CH2/CH3
+```
+
+### 执行模型
+
+裸机运行，所有工作由中断驱动 + main 循环兜底：
+
+- **CAN RX FIFO0 中断** → `HAL_CAN_RxFifo0MsgPendingCallback` → 消息 Push 到 `fifo_can2uart` → 尝试 UART DMA 发送
+- **UART 空闲中断** → `HAL_UARTEx_RxEventCallback` → 消息 Push 到 `fifo_uart2can` → 尝试 CAN mailbox 发送
+- **DMA TX 完成中断** → `HAL_UART_TxCpltCallback` → Pop 下一条消息，链式 DMA 发送直到 FIFO 空
+- **main `while(1)`** → 持续调用 `UART2CAN_TryTransmit()` 和 `CAN2UART_TryTransmit()` 作为失败重试兜底
+
+### FIFO 缓冲与离线重发
+
+为应对对端离线或瞬时负载峰值，两个方向各有一个 16 条 × 9 字节的 `MsgFIFO_t` 循环缓冲区：
+
+**CAN→UART 方向**（`user_can.c`）：
+- CAN 消息到达后 Push 到 `fifo_can2uart`
+- `CAN2UART_TryTransmit()` 检查 DMA 空闲后 Pop 并启动传输
+- DMA 完成回调链式触发下一条，无需 main 参与（main 调用仅作安全网）
+
+**UART→CAN 方向**（`user_usart.c`）：
+- UART 帧到达后 Push 到 `fifo_uart2can`
+- `UART2CAN_TryTransmit()` 检查 mailbox 空闲后逐条发送
+- 检测 CAN bus-off（读 `CAN_ESR_BOFF`），恢复后自动排空积压数据
+- 连续发送失败 ≥8 次 → 标记离线 → 100ms 后自动重试
+- FIFO 满时丢弃最旧消息，通过 UART 发送 `0xFF 0xEE...` 错误通知
+
+**DMA 协调**：`uart_tx_dma_busy` 标志跨模块共享（`user_can.h` 声明 extern），UART→CAN 方向的错误通知仅在 DMA 空闲时发送，避免与 CAN→UART 数据流竞争 UART TX DMA。
+
+### 构建
+
+1. 打开 `Code/CAN_2_UART/Sentry_T2B/MDK-ARM/Sentry_T2B.uvprojx`
+2. Keil μVision 中 Rebuild（F7）
+3. 通过 SWD（PA13/PA14）烧录到 STM32F103C8T6
+
+**注意**：主项目的 `.clangd` 配置针对 STM32H750 + ARMCLANG，与 CAN_2_UART 子项目（STM32F103 + ARMCC）不兼容。在 CAN_2_UART 目录下编辑时 clangd 可能报错，以 Keil MDK 编译结果为准。
