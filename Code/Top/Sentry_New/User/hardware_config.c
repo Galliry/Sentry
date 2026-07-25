@@ -60,7 +60,7 @@ void HardwareConfig(void)
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load_angle, &pid_load_speed);
-//	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
+	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
@@ -69,7 +69,9 @@ void HardwareConfig(void)
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//ï¿½ï¿½ï¿½ï¿½ï¿½×´ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿?
 	UARTx_Init(&huart7,NULL);//  Vofa+
 	
+	#if DMIMU_ENABLE == 0
 	INS_Init(&bmi088.bmi088_Data);
+	#endif
 	MPU6050_Init(&mpu6050.mpu6050_Data);
 	
 	CANx_Init(&hfdcan1, CAN1_rxCallBack);
@@ -83,8 +85,10 @@ void HardwareConfig(void)
 	TIMx_Init(&htim13, TIM13_Task);//ï¿½ï¿½ï¿½Ó¶ï¿½Ê±ï¿½ï¿½ï¿½Øµï¿½
 	TIM_Open(&tim13);
 	
+	#if DMIMU_ENABLE
 	DM_IMU_Init(&IMU_S,0x98,0x99,can2);
-//	DM_IMU_Run(&IMU_S);// ÔÆÌ¨
+	DM_IMU_Run(&IMU_S);// ÔÆÌ¨
+	#endif
 //	DM_IMU_Calibration(&IMU_S);
 }
 

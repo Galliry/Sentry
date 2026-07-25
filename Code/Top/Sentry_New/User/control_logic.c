@@ -24,17 +24,17 @@ extern int error_flag;
 extern uint16_t ignore_outpost;
 uint8_t state_flag = 0;
 int state_cnt = 0;
-//< TIM14�Ĵ���Ƶ����CubeMX�б�����Ϊ1000Hz
+//< TIM14锟侥达拷锟斤拷频锟斤拷锟斤拷CubeMX锟叫憋拷锟斤拷锟斤拷为1000Hz
 void TIM14_Task(void)
 {
     tim14.ClockTime++;
 	
 
-    // 离线尝试重启
-//    if ( IMU_isOnline(&IMU_S) == 0  && tim14.ClockTime % 100 == 0) 
-//    {
-//        DM_IMU_Run(&IMU_S);
-//    }
+    // 绂荤嚎灏濊瘯閲嶅惎
+    if ( IMU_isOnline(&IMU_S) == 0 && tim14.ClockTime % 100 == 0) 
+    {
+        DM_IMU_Run(&IMU_S);
+    }
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
@@ -88,8 +88,8 @@ void TIM14_Task(void)
 	}
 	
 	// ET08 Contorl
-    if (tim14.ClockTime > 500)
-        FrictionWheelControl(&AmmoBooster);
+    // if (tim14.ClockTime > 500)
+    //     FrictionWheelControl(&AmmoBooster);
 	
     if (rc_Ctrl_et.isOnline == 1)
     {
@@ -129,9 +129,10 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
     // Gravity FeedForward Test
-    UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", IMU_S.Attitude.roll, Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
+    // UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", LPFilter(IMU_S.Attitude.roll, &LPF_Pitch_Print), Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
+    // AutoDataCollect();
     // Pitch
-//    UsartDmaPrintf("Pitch:%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+    UsartDmaPrintf("Pitch:%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 
     // Yaw
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.Can_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);
@@ -171,7 +172,7 @@ void TIM13_Task(void)
     tim14_FPS.Gyro_cnt++;
     MPU6050_Read(&mpu6050.mpu6050_Data);
     IMUupdate(&mpu6050.mpu6050_Data);
-    INS_attitude = INS_GetAttitude(IMU_data);
+    // INS_attitude = INS_GetAttitude(IMU_data);
 }
 
 /**
@@ -191,7 +192,7 @@ uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
 //    BaseBoard_Callback(rxBuffer);
-//	IMU_UpdateData(&IMU_S,rxBuffer);
+	IMU_UpdateData(&IMU_S,rxBuffer);
 	
     return 0;
 }

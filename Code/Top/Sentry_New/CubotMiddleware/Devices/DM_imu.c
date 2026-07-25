@@ -1,4 +1,5 @@
 #include "DM_imu.h"
+#if DMIMU_ENABLE
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
@@ -627,3 +628,4 @@ uint8_t IMU_isInit(DM_IMU_t *imu)
 {
 	if (imu->state.InitFlag) return 1;
 }
+#endif 

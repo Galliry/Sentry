@@ -22,7 +22,9 @@ int k = 0;
 float fliter = 0.9;
 // volatile float DEBUG_tar = 0.0f;
 const float Yaw_FFk = 28.0f;
-const float Pitch_FFk = 20.0f;
+volatile float Pitch_FFk = 11.5f;
+
+
 
 float x = 0.45;
 float y = 0.012;
@@ -54,6 +56,10 @@ float PitchFF_Gravity(float target) // ��������ǰ��
 //    ff1 = A * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + B); // R^2 = 0.9921
 //    ff2 = a * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + b); // R^2 = 0.9836
 
+    const float a=0.95f;
+    const float b=-0.07f;
+    const float c=-0.027f;
+
     // float ff3;
     // const float a3 = 0.865;
     // const float b3 = -0.222;
@@ -73,7 +79,8 @@ float PitchFF_Gravity(float target) // ��������ǰ��
     // target < 0 ? float_constrain((0.738015f - 0.540642f) / 18.0f * target + 0.738015f, 0.54, 0.74) :
     // float_constrain((ff1 + 2 * ff2) / 3, 0.66, 0.76);
 
-    return -0.83f * arm_cos_f32(float_constrain(target,-37,37) * w - 3.04811f) - 0.045f;
+    // return -0.83f * arm_cos_f32(float_constrain(target,-37,37) * w - 3.04811f) - 0.045f;
+    return a * arm_cos_f32(float_constrain(target,-37,30) * w + b) + c;
 }
 
 float YawFF_Speed(float target)
@@ -143,8 +150,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 					holder->Pitch.Target_Angle = 2 * sin(HAL_GetTick() / 400.0f) + 10;//20;
 				}else
 				{
-					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 500.0f) ;
-					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 250.0f);
+					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 400.0f) ;
+					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 20.0f);
 				} 
             }
             else if (Brain.Autoaim.mode == Lock)
@@ -158,16 +165,26 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 
     holder->Yaw_S.Can_Angle = holder->Motors.Yaw_S.Data.Angle;
     holder->Yaw_S.Can_AngleSpeed = holder->Motors.Yaw_S.Data.AngleSpeed;
+    #if DMIMU_ENABLE
     holder->Yaw_S.GYRO_Angle = IMU_S.Attitude.yaw;
     holder->Yaw_S.GYRO_AngleSpeed = IMU_S.Attitude.gyro[2] - mpu6050.mpu6050_Data.gyro[2];
+    #else
+    holder->Yaw_S.GYRO_Angle = INS_attitude->yaw;
+    holder->Yaw_S.GYRO_AngleSpeed = INS_attitude->gyro[2] - mpu6050.mpu6050_Data.gyro[2];
+    #endif
 
     holder->Pitch.Can_Angle = holder->Motors.Pitch.angle;
     holder->Pitch.Can_AngleSpeed = holder->Motors.Pitch.speed_rpm;
+    #if DMIMU_ENABLE
     holder->Pitch.GYRO_Angle = IMU_S.Attitude.roll;
     holder->Pitch.GYRO_AngleSpeed = IMU_S.Attitude.gyro[0];
+    #else
+    holder->Pitch.GYRO_Angle = -INS_attitude->roll;
+    holder->Pitch.GYRO_AngleSpeed = -INS_attitude->gyro[1];
+    #endif
 
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -35, 35);
-    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 25.5f);
+    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 25);
 
     holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_pitch_vision);
     holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle , &LPF_yaw_vision);
@@ -322,4 +339,73 @@ float Holder_TD(struct Holder_Motor_Info *holder_info, float Expect, float r, fl
     holder_info->v1 += holder_info->v2 * h;
     holder_info->v2 += fh * h;
     return holder_info->v1;
+}
+
+typedef enum {
+    AUTO_COLLECT_INIT = 0,
+    AUTO_COLLECT_WAIT_STABLE,
+    AUTO_COLLECT_COLLECT,
+    AUTO_COLLECT_DONE,
+} AutoCollectState_t;
+
+void AutoDataCollect(void)
+{
+    static AutoCollectState_t state = AUTO_COLLECT_INIT;
+    static uint32_t stableTimeFlag;
+    static uint8_t cnt;
+    static float pitchSum;
+    static float outSum;
+
+    switch (state)
+    {
+    case AUTO_COLLECT_INIT:
+        Holder.Pitch.Target_Angle = -30.0f;
+        stableTimeFlag = HAL_GetTick() + 5000;
+        cnt = 0;
+        pitchSum = 0;
+        outSum = 0;
+        state = AUTO_COLLECT_WAIT_STABLE;
+        break;
+
+    case AUTO_COLLECT_WAIT_STABLE:
+        if (HAL_GetTick() >= stableTimeFlag)
+        {
+            cnt = 0;
+            pitchSum = 0;
+            outSum = 0;
+            state = AUTO_COLLECT_COLLECT;
+        }
+        break;
+
+    case AUTO_COLLECT_COLLECT:
+        cnt++;
+        pitchSum += IMU_S.Attitude.roll;
+        outSum += Holder.Motors.Pitch.motor_output;
+        if (cnt >= 50)
+        {
+            if (cnt > 0)
+            {
+                pitchSum /= (float)cnt;
+                outSum /= (float)cnt;
+            }
+            UsartDmaPrintf("%.3f, %.3f\r\n", pitchSum, outSum);
+
+            Holder.Pitch.Target_Angle += 2.0f;
+            if (Holder.Pitch.Target_Angle > 30.0f)
+            {
+                state = AUTO_COLLECT_DONE;
+                UsartDmaPrintf("AutoDataCollect Done\r\n");
+            }
+            else
+            {
+                stableTimeFlag = HAL_GetTick() + 5000;
+                state = AUTO_COLLECT_WAIT_STABLE;
+            }
+        }
+        break;
+
+    case AUTO_COLLECT_DONE:
+    default:
+        break;
+    }
 }

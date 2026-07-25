@@ -1,6 +1,7 @@
 #include "interboard.h"
 #include "holder.h"
 #include "check.h"
+#include "filter.h"
 #include <cstdint>
 
 CAN_TxBuffer RefereeData;
@@ -107,7 +108,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		float tempyaw;
 		memcpy(&tempyaw, &rxBuffer->Data[0], sizeof(float));
 		if (tempyaw != 0) 
-			Base.Autoaim.Target_Yaw = tempyaw;
+			Base.Autoaim.Target_Yaw = LPFilter(tempyaw, &LPF_Yaw_M);
 		memcpy(&Base.Autoaim.Yaw_S_Angle, &rxBuffer->Data[4], sizeof(float));
 	}
 }

@@ -57,12 +57,9 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 				AllSenseDelayCount--;
 			}
 		}
-		else
+		else if ( Base.Autoaim.Mode == 1 )
 		{
-			if (Base.Autoaim.Target_Yaw != 0.0f)
-			{
-				holder->Yaw_M.Target_Angle = LPFilter(Base.Autoaim.Target_Yaw, &LPF_Yaw_M);
-			}
+			holder->Yaw_M.Target_Angle = Base.Autoaim.Target_Yaw;
 		}
 	}
 	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
