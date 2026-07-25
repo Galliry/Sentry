@@ -139,11 +139,11 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
             {
 				if(Brain.Autoaim.Mode == Outpost)
 				{
-					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick() / 800.0f);
+					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick() / 800.0f) ;
 					holder->Pitch.Target_Angle = 2 * sin(HAL_GetTick() / 400.0f) + 10;//20;
 				}else
 				{
-					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 500.0f);
+					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 500.0f) ;
 					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 250.0f);
 				} 
             }

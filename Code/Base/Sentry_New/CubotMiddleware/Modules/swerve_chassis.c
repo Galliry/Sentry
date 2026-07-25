@@ -72,23 +72,23 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}else if(referee2022.game_status.stage_remain_time > 400 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
 				}else
 				{
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 103.28, Holder.Motors.Yaw_M.angle);
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
 					super_cap.cap_state.Supercap_Mode = 0;
 				}
 				if (rec->Lidar.Movemode == 1)	//到达
 				{
 					chassis->Movement.Vx_Tar = 0;
 					chassis->Movement.Vy_Tar = 0;
-					chassis->Movement.Posture = 1;	//进攻姿态
+					chassis->Movement.Posture = 1;	//进攻姿�?
 				}
-				else if (rec->Lidar.Movemode == 0)	//移动中
+				else if (rec->Lidar.Movemode == 0)	//移动�?
 				{
 					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
 					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
-					chassis->Movement.Posture = 3;	//移动姿态
+					chassis->Movement.Posture = 3;	//移动姿�?
 				}
 				else if (rec->Lidar.Movemode == 2)	//回补给区
 				{
@@ -116,7 +116,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
         chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Move_Sensitivity;
 		chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
         chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
-		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -154.76f, Holder.Motors.Yaw_M.angle);
+		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
         super_cap.cap_state.Supercap_Mode = 0;
         SwerveChassisSetSpeed(chassis);
     }
@@ -125,7 +125,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 void SwerveChassisSetSpeed(SwerveChassis *chassis)
 {
     float error;
-    float angle = (Holder.Motors.Yaw_M.angle_raw + 2.716) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // 前馈
+    float angle = (Holder.Motors.Yaw_M.angle_raw - 86.29f /180.0f * 3.1415f) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // 前�??
     chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
     chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
@@ -272,9 +272,9 @@ static void SwerveChassisPowerCtrl(SwerveChassis *chassis)
         chassis->Motors3508.motor[j].Data.Output = float_constrain(chassis->Motors3508.motor[j].Data.Output, -16000, 16000);
         MotorFillData(&chassis->Motors6020.motor[j], chassis->Motors6020.motor[j].Data.Output);
         MotorFillData(&chassis->Motors3508.motor[j], chassis->Motors3508.motor[j].Data.Output);
-    } // 最后上一层保险
+    } // 最后上一层保�?
 }
-// 防止急停翘头
+// 防�?�急停翘头
 float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step) 
 {
     if (target == current) return current;
@@ -297,20 +297,20 @@ float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, f
     return current;
 }
 /**
- * @brief  生成正弦波动的角速度 (或任意随时间正弦变化的变量)
- * @param  amplitude: 波动振幅 
- * @param  offset:    中心偏置 
- * @param  period_s:  完成一次完整波动的时间，单位：秒
- * @param  dt_s:      该函数被调用的周期，单位：秒
- * @retval 当前时刻应该输出的目标值
+ * @brief  生成正弦波动的�?�速度 (或任意随时间正弦变化的变�?)
+ * @param  amplitude: 波动�?�? 
+ * @param  offset:    �?心偏�? 
+ * @param  period_s:  完成一次完整波动的时间，单位：�?
+ * @param  dt_s:      该函数�??调用的周期，单位：�??
+ * @retval 当前时刻应�?�输出的�?标�?
  */
 float Calculate_Variable_Omega(float amplitude, float offset, float period_s, float dt_s)
 {
-    static float phase_angle = 0.0f;	//相位角
+    static float phase_angle = 0.0f;	//相位�?
     if (period_s <= 0.0f){return offset;}
 
     float angle_step = (2.0f * PI) * (dt_s / period_s);	//步长
-    phase_angle += angle_step;	// 累加相位
+    phase_angle += angle_step;	// �?加相�?
     if (phase_angle >= 2.0f * PI)
     {
         phase_angle -= 2.0f * PI;

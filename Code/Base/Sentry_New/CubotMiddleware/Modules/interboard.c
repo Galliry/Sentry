@@ -1,5 +1,7 @@
 #include "interboard.h"
+#include "holder.h"
 #include "check.h"
+#include <cstdint>
 
 CAN_TxBuffer RefereeData;
 Base_t Base;
@@ -102,7 +104,10 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 	if (rxBuffer->Header.Identifier == 0x104)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
-		memcpy(&Base.Autoaim.Target_Yaw, &rxBuffer->Data[0], sizeof(float));
+		float tempyaw;
+		memcpy(&tempyaw, &rxBuffer->Data[0], sizeof(float));
+		if (tempyaw != 0) 
+			Base.Autoaim.Target_Yaw = tempyaw;
 		memcpy(&Base.Autoaim.Yaw_S_Angle, &rxBuffer->Data[4], sizeof(float));
 	}
 }
