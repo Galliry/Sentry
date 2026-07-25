@@ -38,7 +38,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 		brain->Autoaim.Brain_Data.FrameType = recBuffer[1];
 		brain->Autoaim.Brain_Data.FrameCoreID = recBuffer[2];
 
-		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[12] == 0xDD) //< 解算偏转�?
+		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[12] == 0xDD) //< 解算偏转�?
 		{
 			brain->Autoaim.mode_cnt = 0;
 			brain->Autoaim.mode = Lock;
@@ -56,7 +56,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.0f + Holder.Pitch.GYRO_Angle;
 				#endif
 				#if HOLDER_MODE == 2
-				// 此时和自瞄的通信协�??为：原先表示增量的数�?变为位置的数�?
+				// 此时和自瞄的通信协�??为：原先表示增量的数�?变为位置的数�?
 				Holder.Yaw_S.Target_Angle = Brain.Autoaim.Yaw_add;
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add;
 				#endif
@@ -133,7 +133,7 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 
 		brain->Lidar.movemode = recBuffer[2];
 
-		if (brain->Lidar.Brain_Data.FrameType == BRAIN_TO_ROBOT_CMD) //< 解算偏转�?
+		if (brain->Lidar.Brain_Data.FrameType == BRAIN_TO_ROBOT_CMD) //< 解算偏转�?
 		{
 			brain->Lidar.vx = (((recBuffer[3] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((recBuffer[3] & 0x3F) * 100 + recBuffer[4]) / 100.0f)) ;
 			brain->Lidar.vy = ((recBuffer[5] & 0x40) ? -1.0f : 1.0f) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100.0f) ;
@@ -141,16 +141,23 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 	}
 }
 
-void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给�?�?
+void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给�?�?
 {
 	int16_t tmp0, tmp1, tmp2, tmp3;
 	
 
 #if AUTOAIM_Q_SELECT == 1
+#if DMIMU_ENABLE
 	tmp0 = (int16_t)(IMU_S.Attitude.q[0] * 30000);
 	tmp1 = -(int16_t)(IMU_S.Attitude.q[1] * 30000);
 	tmp2 = -(int16_t)(IMU_S.Attitude.q[2] * 30000);
 	tmp3 = (int16_t)(IMU_S.Attitude.q[3] * 30000);
+#else  
+	tmp0 = (int16_t)(INS_attitude->q[0] * 30000);
+	tmp1 = -(int16_t)(INS_attitude->q[1] * 30000);
+	tmp2 = -(int16_t)(INS_attitude->q[2] * 30000);
+	tmp3 = (int16_t)(INS_attitude->q[3] * 30000);
+#endif
 #endif
 #if AUTOAIM_Q_SELECT == 2
 	float q[4];
@@ -175,22 +182,22 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给�?�?
 
 #if AUTOAIM_VERSION == 1
 	RobotToBrainTimeBuffer[0] = 0xAA;
-	RobotToBrainTimeBuffer[1] = 0x07;	// Type ;  //固定�?0x07
-	RobotToBrainTimeBuffer[2] = 0x01;	// coreID;  //�?前固定为0x01
-	RobotToBrainTimeBuffer[3] = 0x01;	// 索引，int16_t�?
+	RobotToBrainTimeBuffer[1] = 0x07;	// Type ;  //固定�?0x07
+	RobotToBrainTimeBuffer[2] = 0x01;	// coreID;  //�?前固定为0x01
+	RobotToBrainTimeBuffer[3] = 0x01;	// 索引，int16_t�?
 	RobotToBrainTimeBuffer[4] = 0x01;
 
-	RobotToBrainTimeBuffer[5] = (tim14.ClockTime >> 24);	// 定时器时间，int32_t�?
+	RobotToBrainTimeBuffer[5] = (tim14.ClockTime >> 24);	// 定时器时间，int32_t�?
 	RobotToBrainTimeBuffer[6] = ((tim14.ClockTime >> 16) & 0xff);
 	RobotToBrainTimeBuffer[7] = ((tim14.ClockTime >> 8) & 0xff);
 	RobotToBrainTimeBuffer[8] = ((tim14.ClockTime & 0xff));
 
 	RobotToBrainTimeBuffer[9] = (Top.Referee.robot_id > 10) ? 1 : 0;
-	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// 四元数q0，float�?
+	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// 四元数q0，float�?
 	RobotToBrainTimeBuffer[11] = tmp0 >> 8;
 	RobotToBrainTimeBuffer[12] = tmp1 & 0xFF;
 	RobotToBrainTimeBuffer[13] = tmp1 >> 8;
-	RobotToBrainTimeBuffer[14] = tmp2 & 0xFF;	// 四元数q1，float�?
+	RobotToBrainTimeBuffer[14] = tmp2 & 0xFF;	// 四元数q1，float�?
 	RobotToBrainTimeBuffer[15] = tmp2 >> 8;
 	RobotToBrainTimeBuffer[16] = tmp3 & 0xFF;
 	RobotToBrainTimeBuffer[17] = tmp3 >> 8;
@@ -210,12 +217,21 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给�?�?
 	RobotToBrainTimeBuffer[1] = 'V';
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
 //    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
+#if DMIMU_ENABLE
     float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
     float temp_yaw_gyro = IMU_S.Attitude.gyro[2] / 180 * 3.14f;
     float temp_roll = IMU_S.Attitude.roll / 180 * 3.14f;
     float temp_roll_gyro = IMU_S.Attitude.gyro[0] / 180 * 3.14f;
     float temp_pitch = IMU_S.Attitude.pitch / 180 * 3.14f;
     float temp_pitch_gyro = IMU_S.Attitude.gyro[1] / 180 * 3.14f;
+#else
+	float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
+    float temp_yaw_gyro = INS_attitude->gyro[2] / 180 * 3.14f;
+    float temp_roll = INS_attitude->roll / 180 * 3.14f;
+    float temp_roll_gyro = INS_attitude->gyro[1] / 180 * 3.14f;
+    float temp_pitch = INS_attitude->pitch / 180 * 3.14f;
+    float temp_pitch_gyro = INS_attitude->gyro[0] / 180 * 3.14f;
+#endif
 	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
 	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
 //	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
@@ -257,7 +273,7 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
 	RobotToBrainChassisTimeBuffer[5] = Brain->Lidar.Outpost_Flag;	//开符标志位
-	RobotToBrainChassisTimeBuffer[6] = Top.Referee.base_flag; //保护Base �?认为1
+	RobotToBrainChassisTimeBuffer[6] = Top.Referee.base_flag; //保护Base �?认为1
 	if(Top.Referee.shoot_num <= 50) //发弹量标志位
 		RobotToBrainChassisTimeBuffer[7] = 0x01;
 	else

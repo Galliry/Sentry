@@ -31,10 +31,12 @@ void TIM14_Task(void)
 	
 
     // 离线尝试重启
+    #if DMIMU_ENABLE
     if ( IMU_isOnline(&IMU_S) == 0 ) 
     {
         DM_IMU_Run(&IMU_S);
     }
+    #endif
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
@@ -88,8 +90,8 @@ void TIM14_Task(void)
 	}
 	
 	// ET08 Contorl
-    if (tim14.ClockTime > 500)
-        FrictionWheelControl(&AmmoBooster);
+    // if (tim14.ClockTime > 500)
+    //     FrictionWheelControl(&AmmoBooster);
 	
     if (rc_Ctrl_et.isOnline == 1)
     {
@@ -129,7 +131,8 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
     // Gravity FeedForward Test
-    UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", IMU_S.Attitude.roll, Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
+    UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", LPFilter(-INS_attitude->roll, &LPF_Pitch_Print), Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
+    // AutoDataCollect();
     // Pitch
 //    UsartDmaPrintf("Pitch:%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 
@@ -171,7 +174,9 @@ void TIM13_Task(void)
     tim14_FPS.Gyro_cnt++;
     MPU6050_Read(&mpu6050.mpu6050_Data);
     IMUupdate(&mpu6050.mpu6050_Data);
-    // INS_attitude = INS_GetAttitude(IMU_data);
+    #if DMIMU_ENABLE == 0
+    INS_attitude = INS_GetAttitude(IMU_data);
+    #endif
 }
 
 /**
@@ -190,8 +195,10 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
-//    BaseBoard_Callback(rxBuffer);
+    BaseBoard_Callback(rxBuffer);
+    #if DMIMU_ENABLE
 	IMU_UpdateData(&IMU_S,rxBuffer);
+    #endif
 	
     return 0;
 }

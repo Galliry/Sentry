@@ -173,8 +173,8 @@ void PID_Init(void)
     BasePID_Init(&pid_load_speed, 100,0,0,0,30.0f);// 拨弹盘速度
     BasePID_Init(&pid_friction0, 10, 1.5, 2, 0 ,30.0f); // 摩擦轮
     BasePID_Init(&pid_friction1, 10, 1.5, 2, 0 , 30.0f);
-    BasePID_Init(&pid_pitch_angle, 0.4, 3, -0.6, 3.0 , 30.0f); // 云台 0.5 0.005 -0.005 1.5
-    BasePID_Init(&pid_pitch_speed, 0.6, 0, -5, 0 , 30.0f);
+    BasePID_Init(&pid_pitch_angle, 0.2, 2, 0, 2 , 30.0f); // 云台 0.5 0.005 -0.005 1.5
+    BasePID_Init(&pid_pitch_speed, 0.5, 0, 0, 0 , 30.0f);
     BasePID_Init(&pid_yaw_s_angle, 0.4, 8, 0.3, 2 , 30.0f);//0.8 0.0045 -4 打符PID
     BasePID_Init(&pid_yaw_s_speed, 2800, 0, 1000, 2 , 30.0f); // 2200
     BasePID_Init(&pid_run, 20, 0, 0, 0, 30.0f);   // 底盘运动 20

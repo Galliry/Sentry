@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <time.h>
 
+#define DMIMU_ENABLE 0
+
+#if DMIMU_ENABLE
+
 #define ACCEL_CAN_MAX 	(235.2f)
 #define ACCEL_CAN_MIN	(-235.2f)
 #define GYRO_CAN_MAX	(34.88f)
@@ -139,4 +143,5 @@ uint8_t IMU_isOnline(DM_IMU_t *imu);
 uint8_t IMU_isInit(DM_IMU_t *imu);
 
 extern DM_IMU_t IMU_S;
+#endif
 #endif
