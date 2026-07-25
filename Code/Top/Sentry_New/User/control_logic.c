@@ -129,10 +129,10 @@ void TIM14_Task(void)
     // UsartDmaPrintf("%d,%d,%d\r\n",Brain.Lidar.movemode,Brain.Autoaim.mode,Brain.Autoaim.IsFire);
 
     // Gravity FeedForward Test
-    UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", LPFilter(-INS_attitude->roll, &LPF_Pitch_Print), Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
+    // UsartDmaPrintf("%.3f, %.3f, %.3f\r\n", LPFilter(IMU_S.Attitude.roll, &LPF_Pitch_Print), Holder.Motors.Pitch.torque, Holder.Motors.Pitch.motor_output);
     // AutoDataCollect();
     // Pitch
-//    UsartDmaPrintf("Pitch:%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
+    UsartDmaPrintf("Pitch:%.2f, %.2f, %.2f, %.2f\r\n", Holder.Pitch.Target_Angle, Holder.Pitch.GYRO_Angle, Holder.Pitch.PID.ShellPID->Out, Holder.Pitch.GYRO_AngleSpeed);
 
     // Yaw
     // UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f\r\n", Holder.Yaw_S.Target_Angle, Holder.Yaw_S.Can_Angle, Holder.Yaw_S.PID.ShellPID->Out, Holder.Yaw_S.GYRO_AngleSpeed);

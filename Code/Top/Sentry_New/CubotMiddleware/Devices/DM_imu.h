@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#define DMIMU_ENABLE 0
+#define DMIMU_ENABLE 1
 
 #if DMIMU_ENABLE
 

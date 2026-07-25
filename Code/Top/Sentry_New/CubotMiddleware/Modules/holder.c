@@ -22,7 +22,9 @@ int k = 0;
 float fliter = 0.9;
 // volatile float DEBUG_tar = 0.0f;
 const float Yaw_FFk = 28.0f;
-const float Pitch_FFk = 20.0f;
+volatile float Pitch_FFk = 11.5f;
+
+
 
 float x = 0.45;
 float y = 0.012;
@@ -54,6 +56,10 @@ float PitchFF_Gravity(float target) // ��������ǰ��
 //    ff1 = A * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + B); // R^2 = 0.9921
 //    ff2 = a * arm_cos_f32(float_constrain(target, -40, 36) * 2 * pi / 360 + b); // R^2 = 0.9836
 
+    const float a=0.95f;
+    const float b=-0.07f;
+    const float c=-0.027f;
+
     // float ff3;
     // const float a3 = 0.865;
     // const float b3 = -0.222;
@@ -74,7 +80,7 @@ float PitchFF_Gravity(float target) // ��������ǰ��
     // float_constrain((ff1 + 2 * ff2) / 3, 0.66, 0.76);
 
     // return -0.83f * arm_cos_f32(float_constrain(target,-37,37) * w - 3.04811f) - 0.045f;
-    return 1.156f * arm_cos_f32(float_constrain(target,-37,37) * w - 0.1034f);
+    return a * arm_cos_f32(float_constrain(target,-37,30) * w + b) + c;
 }
 
 float YawFF_Speed(float target)
@@ -178,7 +184,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     #endif
 
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -35, 35);
-    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 35);
+    holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 25);
 
     holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_pitch_vision);
     holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle , &LPF_yaw_vision);
@@ -203,7 +209,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
                                                                                     holder->Yaw_S.Can_Angle)
                                                                 + YawFF_Speed(Brain.Autoaim.Yaw_vel),
                                                                 holder->Yaw_S.GYRO_AngleSpeed);
-        holder->Motors.Pitch.motor_output =  //PitchFF_Gravity(holder->Pitch.GYRO_Angle) +
+        holder->Motors.Pitch.motor_output =  PitchFF_Gravity(holder->Pitch.GYRO_Angle) +
                                             BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID,
                                                                                     holder->Pitch.Target_Angle,
@@ -219,7 +225,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
                                                                                     holder->Yaw_S.Can_Angle)
                                                                 + YawFF_Speed(holder->Yaw_S.Target_Angle),
                                                                 holder->Yaw_S.GYRO_AngleSpeed);
-        holder->Motors.Pitch.motor_output =  //PitchFF_Gravity(holder->Pitch.GYRO_Angle) +
+        holder->Motors.Pitch.motor_output =  PitchFF_Gravity(holder->Pitch.GYRO_Angle) +
                                             BasePID_SpeedControl(holder->Pitch.PID.CorePID,
                                                                 BasePID_AngleControl(holder->Pitch.PID.ShellPID,
                                                                                     holder->Pitch.Target_Angle,
@@ -373,7 +379,7 @@ void AutoDataCollect(void)
 
     case AUTO_COLLECT_COLLECT:
         cnt++;
-        pitchSum += -INS_attitude->roll;
+        pitchSum += IMU_S.Attitude.roll;
         outSum += Holder.Motors.Pitch.motor_output;
         if (cnt >= 50)
         {
