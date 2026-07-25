@@ -23,7 +23,7 @@ void DM_IMU_Run(DM_IMU_t *imu)
    
     imu_set_baud(imu, CAN_BAUD_1M);
 	
-    imu_set_active_mode_delay(imu, 1);
+    imu_set_active_mode_delay(imu, 1000);
 	
     imu_change_to_active(imu);
 }
@@ -565,6 +565,57 @@ void IMU_UpdateData(DM_IMU_t *imu, CAN_RxBuffer *rxBuffer)
 				break;
 		}
 	}
+}
+
+
+/**
+ * @brief  达妙 IMU 串口专用接收解析回调 (支持多包连发解析)
+ */
+uint8_t DM_IMU_UART_Callback(uint8_t * recBuffer, uint16_t len)
+{
+    // 1. 校验长度：必须有数据，且长度必须是 9 的整数倍 (9, 18, 27, 36...)
+    if (len == 0 || (len % 9) != 0)
+    {
+        return 0; // 发生错位或长度异常，直接丢弃本批次
+    }
+    
+    uint8_t success_flag = 0;
+    
+    // 2. 循环切片处理：每次往后跳 9 个字节
+    for (uint16_t i = 0; i < len; i += 9)
+    {
+        // 定位到当前这个 9 字节小包的开头
+        uint8_t *packet = &recBuffer[i];
+        
+        // 3. 校验 ID (packet[0] 对应 CAN ID)
+        if (packet[0] == IMU_S.Buffer.mst_id)
+        {
+            // 4. 指针偏移，避开 ID 字节，直达真实数据域
+            uint8_t* pData = &packet[1]; 
+            
+            // 5. 调用解析逻辑
+            switch(pData[0])
+            {
+                case 1:
+                    IMU_UpdateAccel(&IMU_S, pData);
+                    break;
+                case 2:
+                    IMU_UpdateGyro(&IMU_S, pData);
+                    break;
+                case 3:
+                    IMU_UpdateEuler(&IMU_S, pData);
+                    break;
+                case 4:
+                    IMU_UpdateQuaternion(&IMU_S, pData);
+                    break;
+                default:
+                    break;
+            }
+            success_flag = 1; // 标记至少成功解析了一包
+        }
+    }
+    
+    return success_flag;
 }
 
 uint8_t IMU_isOnline(DM_IMU_t *imu)

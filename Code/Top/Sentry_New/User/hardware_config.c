@@ -60,12 +60,12 @@ void HardwareConfig(void)
 	
 	PID_Init(); 	
 	AmmoBoosterInit(&AmmoBooster,&pid_friction0,&pid_friction1,&pid_load_angle, &pid_load_speed);
-	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
+//	HolderInit_Top(&Holder,&pid_pitch,&pid_yaw_s);
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
 	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����?
-	UARTx_Init(&huart5,BaseBoard_CallbackU);
+	UARTx_Init(&huart5,DM_IMU_UART_Callback);
 	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����?
 	UARTx_Init(&huart7,NULL);//  Vofa+
 	

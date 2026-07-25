@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "user_usart.h"
 #include "user_can.h"
+#include "imu.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,8 +95,10 @@ int main(void)
   MX_CAN_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  User_USART3_Init();
-  User_CAN_Init();
+//  User_USART3_Init();
+//  User_CAN_Init();
+  IMU_Bridge_Init();
+  IMU_Startup_Sequence();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,8 +108,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    UART2CAN_TryTransmit();
-    CAN2UART_TryTransmit();
+//    UART2CAN_TryTransmit();
+//    CAN2UART_TryTransmit();
+	  IMU_Bridge_Process();
   }
   /* USER CODE END 3 */
 }

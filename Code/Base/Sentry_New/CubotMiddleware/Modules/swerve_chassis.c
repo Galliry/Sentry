@@ -72,10 +72,10 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}else if(referee2022.game_status.stage_remain_time > 400 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
 				}else
 				{
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
+					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
 					super_cap.cap_state.Supercap_Mode = 0;
 				}
 				if (rec->Lidar.Movemode == 1)	//到达
@@ -116,7 +116,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
         chassis->Movement.Vy_Tar = (-1) * (rec->Rc.rc_Ctrl_ch0 - 1024) * chassis->Movement.Move_Sensitivity;
 		chassis->Movement.Vx_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vx_Tar,chassis->Movement.Vx_Move,15.0f,7.0f);
         chassis->Movement.Vy_Move = Chassis_Slew_Rate_Limiter(chassis->Movement.Vy_Tar,chassis->Movement.Vy_Move,15.0f,7.0f);
-		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, -86.29f, Holder.Motors.Yaw_M.angle);
+		chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
         super_cap.cap_state.Supercap_Mode = 0;
         SwerveChassisSetSpeed(chassis);
     }
@@ -125,7 +125,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 void SwerveChassisSetSpeed(SwerveChassis *chassis)
 {
     float error;
-    float angle = (Holder.Motors.Yaw_M.angle_raw - 86.29f /180.0f * 3.1415f) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // 前�??
+    float angle = (Holder.Motors.Yaw_M.angle_raw - 1.69676) + Holder.Motors.Yaw_M.speed_rpm * 0.0026f; // 前�??
     chassis->Movement.Vx = chassis->Movement.Vx_Move * cos(angle) - chassis->Movement.Vy_Move * sin(angle);
     chassis->Movement.Vy = chassis->Movement.Vy_Move * cos(angle) + chassis->Movement.Vx_Move * sin(angle);
     chassis->Vectors.Vx[0] = chassis->Movement.Vx + chassis->Movement.Omega * COS_45_DEG;
