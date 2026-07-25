@@ -92,6 +92,8 @@ typedef struct
 		float vx;
         float vy;
 		uint8_t Outpost_Flag;
+		uint8_t stance;
+		uint8_t boost;
 	}Lidar;
 	 
 //	struct

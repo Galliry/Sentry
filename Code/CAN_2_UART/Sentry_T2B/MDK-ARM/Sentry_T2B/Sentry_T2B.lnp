@@ -24,6 +24,7 @@
 "sentry_t2b\user_can.o"
 "sentry_t2b\user_usart.o"
 "sentry_t2b\fifo.o"
+"sentry_t2b\imu.o"
 --strict --scatter "Sentry_T2B\Sentry_T2B.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

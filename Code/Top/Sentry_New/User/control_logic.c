@@ -31,10 +31,10 @@ void TIM14_Task(void)
 	
 
     // 离线尝试重启
-    if ( IMU_isOnline(&IMU_S) == 0 ) 
-    {
-        DM_IMU_Run(&IMU_S);
-    }
+//    if ( IMU_isOnline(&IMU_S) == 0  && tim14.ClockTime % 100 == 0) 
+//    {
+//        DM_IMU_Run(&IMU_S);
+//    }
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
@@ -171,7 +171,7 @@ void TIM13_Task(void)
     tim14_FPS.Gyro_cnt++;
     MPU6050_Read(&mpu6050.mpu6050_Data);
     IMUupdate(&mpu6050.mpu6050_Data);
-    // INS_attitude = INS_GetAttitude(IMU_data);
+    INS_attitude = INS_GetAttitude(IMU_data);
 }
 
 /**
@@ -191,7 +191,7 @@ uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
 //    BaseBoard_Callback(rxBuffer);
-	IMU_UpdateData(&IMU_S,rxBuffer);
+//	IMU_UpdateData(&IMU_S,rxBuffer);
 	
     return 0;
 }

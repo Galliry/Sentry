@@ -137,6 +137,6 @@ void IMU_UpdateData(DM_IMU_t *imu, CAN_RxBuffer *rxBuffer);
 // --- ·´À¡½Ó¿Ú ---
 uint8_t IMU_isOnline(DM_IMU_t *imu);
 uint8_t IMU_isInit(DM_IMU_t *imu);
-
+uint8_t DM_IMU_UART_Callback(uint8_t * recBuffer, uint16_t len);
 extern DM_IMU_t IMU_S;
 #endif
