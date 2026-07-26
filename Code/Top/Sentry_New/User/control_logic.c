@@ -31,14 +31,14 @@ void TIM14_Task(void)
 	
 
     // 绂荤嚎灏濊瘯閲嶅惎
-    if ( IMU_isOnline(&IMU_S) == 0 && tim14.ClockTime % 100 == 0) 
-    {
-        DM_IMU_Run(&IMU_S);
-    }
+//    if ( IMU_isOnline(&IMU_S) == 0 && tim14.ClockTime % 100 == 0) 
+//    {
+//        DM_IMU_Run(&IMU_S);
+//    }
     RobotOnlineState(&check_robot_state, &rc_Ctrl_et, &rc_Ctrl);
     FPS_Check(&tim14_FPS);
     RobotToBrain(&Brain);
-    if (tim14.ClockTime % 4 == 0)
+    if (tim14.ClockTime % 2 == 0)
         TopBoardDataTrans(&rc_Ctrl_et);
 //	if(Top.Referee.game_prograss == 3 && state_flag == 0)
 //	{
@@ -191,8 +191,8 @@ uint8_t CAN1_rxCallBack(CAN_RxBuffer *rxBuffer)
 uint8_t CAN2_rxCallBack(CAN_RxBuffer *rxBuffer)
 {
     MotorRxCallback(&can2, rxBuffer);
-//    BaseBoard_Callback(rxBuffer);
-	IMU_UpdateData(&IMU_S,rxBuffer);
+    BaseBoard_Callback(rxBuffer);
+//	IMU_UpdateData(&IMU_S,rxBuffer);
 	
     return 0;
 }

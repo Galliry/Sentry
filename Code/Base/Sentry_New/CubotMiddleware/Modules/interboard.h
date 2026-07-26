@@ -29,6 +29,7 @@ typedef struct
 		float Vy;
 		uint8_t isOnline;
 		uint8_t Movemode;
+		uint8_t Lidar_posture;
 	}Lidar;
 	struct
 	{
@@ -40,7 +41,6 @@ typedef struct
 		uint8_t Mode;
 		uint8_t is_Follow;
 		float Target_Yaw;
-		float Yaw_S_Angle;
 	}Autoaim;
 }Base_t;
 

@@ -18,7 +18,7 @@ typedef struct
 		uint8_t gimbal_output;
 		uint8_t robot_id;
 		uint16_t shoot_num;
-		uint8_t lidar_target_pos;
+		uint8_t lidar_target_state;
 		uint8_t small_buff;
 		uint8_t big_buff;
 		uint8_t posture;
@@ -33,6 +33,6 @@ void GyroDataTrans(void);
 void LidarDataTrans(void);
 void TopBoardDataTrans(RC_Ctrl_ET* rc_ctrl);
 void BaseBoard_Callback(CAN_RxBuffer* rxBuffer);
-uint8_t BaseBoard_CallbackU(uint8_t * recBuffer, uint16_t len);
+static void pack_float_to_2bytes(uint8_t *buffer, int index, float val);
 #endif
 

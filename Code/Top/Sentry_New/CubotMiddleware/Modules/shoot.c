@@ -77,7 +77,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
 				if(Holder.Pitch.GYRO_Angle > 20.0f)
 					ammo_booster->Shoot_Plate.Target_Angle += 45;
 				else
-					ammo_booster->Shoot_Plate.Target_Angle += 22.5;
+					ammo_booster->Shoot_Plate.Target_Angle += 22.5f;
 			}	
 			else
 				ammo_booster->Shoot_Plate.Target_Angle += 45;

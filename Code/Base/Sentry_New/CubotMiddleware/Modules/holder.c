@@ -57,7 +57,7 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 				AllSenseDelayCount--;
 			}
 		}
-		else if ( Base.Autoaim.Mode == 1 )
+		else if ( Base.Autoaim.Mode == 1 && Base.Autoaim.Target_Yaw != 0)
 		{
 			holder->Yaw_M.Target_Angle = Base.Autoaim.Target_Yaw;
 		}

@@ -46,11 +46,11 @@ void _Data_Diapcak(uint8_t *pdata)
 		BYTE0(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 10);
 		BYTE1(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 11);
 
-		BYTE0(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 12);
-		BYTE1(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 13);
+		BYTE0(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 16);
+		BYTE1(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 17);
 
-		BYTE0(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 14);
-		BYTE1(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 15);			
+		BYTE0(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 18);
+		BYTE1(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 19);			
 	}	
 		
 	if(cmd_id==0x0101)
@@ -80,9 +80,9 @@ void _Data_Diapcak(uint8_t *pdata)
 		BYTE0(referee2022.game_robot_status.chassis_power_limit) = *(pdata+data_addr + 10);
 		BYTE1(referee2022.game_robot_status.chassis_power_limit) = *(pdata+data_addr + 11);
 		
-		referee2022.game_robot_status.mains_power_gimbal_output = (*(pdata + data_addr + 12)) & 0x01 ;
-		referee2022.game_robot_status.mains_power_chassis_output = (*(pdata + data_addr + 12)) >> 1; //& 0x02 ;
-		referee2022.game_robot_status.mains_power_shooter_output = (*(pdata + data_addr + 12)) >> 2; //& 0x04 ;
+		referee2022.game_robot_status.mains_power_gimbal_output = (*(pdata + data_addr + 16)) & 0x01 ;
+		referee2022.game_robot_status.mains_power_chassis_output = (*(pdata + data_addr + 16)) >> 1; //& 0x02 ;
+		referee2022.game_robot_status.mains_power_shooter_output = (*(pdata + data_addr + 16)) >> 2; //& 0x04 ;
 	}
 	
 	if(cmd_id==0x202)
@@ -215,6 +215,15 @@ void _Data_Diapcak(uint8_t *pdata)
 		BYTE0(referee2022.sentry_info_t.sentry_info_2)=*(pdata+data_addr + 4);
 		BYTE1(referee2022.sentry_info_t.sentry_info_2)=*(pdata+data_addr + 5);
 		
+		BYTE0(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 6);
+		BYTE1(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 7);
+		BYTE2(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 8);
+		BYTE3(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 9);
+		BYTE4(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 10);
+		BYTE5(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 11);
+		BYTE6(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 12);
+		BYTE7(referee2022.sentry_info_t.sentry_info_3)=*(pdata+data_addr + 13);
+		
 		referee2022.sentry_info_t.exchange_bullet = referee2022.sentry_info_t.sentry_info & 0x07FF;		//成功兑换的允许发弹量
 		referee2022.sentry_info_t.remote_bullet = (referee2022.sentry_info_t.sentry_info >> 11) & 0xF;		//远程兑换弹丸的次数
 		referee2022.sentry_info_t.remote_HP = (referee2022.sentry_info_t.sentry_info >> 15) & 0xF;		//远程兑换血量的次数
@@ -239,7 +248,7 @@ void _Data_Diapcak(uint8_t *pdata)
 		
 		referee2022.ext_student_interactive_header_data.data[0] = *(pdata+data_addr + 6);
 		
-		referee2022.ext_student_interactive_header_data.target_pos = referee2022.ext_student_interactive_header_data.data[0];
+		referee2022.ext_student_interactive_header_data.target_state = referee2022.ext_student_interactive_header_data.data[0];
 //		referee2022.ext_student_interactive_header_data.data[1] = *(pdata+data_addr + 7);
 //		referee2022.ext_student_interactive_header_data.data[2] = *(pdata+data_addr + 8);
 //		referee2022.ext_student_interactive_header_data.data[3] = *(pdata+data_addr + 9);
@@ -472,9 +481,6 @@ void Sentry_Decision_Control(void)
 		referee2022.sentry_decision.shoot_num += 100;
 	if(referee2022.sentry_info_t.posture != swervechassis.Movement.Posture)
 		referee2022.sentry_decision.target_posture = swervechassis.Movement.Posture;
-//	if(Base.Lidar.Movemode == 1 && referee2022.game_status.stage_remain_time > 390 && referee2022.game_status.stage_remain_time < 420 && referee2022.sentry_info_t.energy_device == 1)
-//		referee2022.sentry_decision.open_energy_device = 1;
-//	else
 	referee2022.sentry_decision.open_energy_device = 0;
 	
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~1U) | (referee2022.sentry_decision.resurrection & 1U);
@@ -552,10 +558,6 @@ void Sentry_multiMachineInteraction(void)
 		referee2022.robot_interactive_data.receiver_ID[0]=0x6d;
 		referee2022.robot_interactive_data.receiver_ID[1]=0x00;
 	}
-//	referee2022.robot_interactive_data.data[0] = 0x01;
-//	referee2022.robot_interactive_data.data[1] = 0x01;
-//	referee2022.robot_interactive_data.data[2] = 0x01;
-//	referee2022.robot_interactive_data.data[3] = 0x01;
 	memcpy(&referee2022.robot_interactive_data.data[0],&referee2022.groud_robot_position_t.engineer_x,4);
 	memcpy(&referee2022.robot_interactive_data.data[4],&referee2022.groud_robot_position_t.engineer_y,4);
 	memcpy(&referee2022.robot_interactive_data.data[8],&referee2022.groud_robot_position_t.hero_x,4);

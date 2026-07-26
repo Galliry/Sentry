@@ -9,8 +9,6 @@
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
-uint16_t ignore_outpost_cnt = 0;
-uint16_t ignore_outpost = 0;
 #define HOLDER_MODE 1
 
 #define AUTOAIM_Q_SELECT 1
@@ -257,37 +255,18 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//发给�?�?
 void RobotToBrain_Lidar(Brain_t* Brain)
 {
 	RobotToBrainChassisTimeBuffer[0] = 0xBB;
-//	RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_prograss;
-//	if (Top.Referee.game_prograss == 3)
-//	{
-//		RobotToBrainChassisTimeBuffer[1] = 4;
-//	}
-	if (Top.Referee.game_prograss == 4)
-	{
-		RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
-		RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time >> 8;
-	}
-	else
-	{
-		RobotToBrainChassisTimeBuffer[1] = 0;
-		RobotToBrainChassisTimeBuffer[2] = 0;
-	}
+	
+	RobotToBrainChassisTimeBuffer[1] = Top.Referee.game_time & 0xff; // referee2022.game_status.stage_remain_time
+	RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time >> 8;
 	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[5] = Brain->Lidar.Outpost_Flag;	//开符标志位
-	RobotToBrainChassisTimeBuffer[6] = Top.Referee.base_flag; //保护Base �?认为1
-	if(Top.Referee.shoot_num <= 50) //发弹量标志位
-		RobotToBrainChassisTimeBuffer[7] = 0x01;
-	else
-		RobotToBrainChassisTimeBuffer[7] = 0x00;
-	RobotToBrainChassisTimeBuffer[8] = 0x00;
-	RobotToBrainChassisTimeBuffer[9] = Top.Referee.posture;
-	if(Top.Referee.posture == 2)
-		RobotToBrainChassisTimeBuffer[10] = Top.Referee.posture;
-	else
-		RobotToBrainChassisTimeBuffer[10] = 0x00;
-	RobotToBrainChassisTimeBuffer[11] = 0xFF;
-	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,10);
+	RobotToBrainChassisTimeBuffer[5] = Top.Referee.base_flag; //保护Base �?认为1
+	RobotToBrainChassisTimeBuffer[6] = (Top.Referee.shoot_num <= 50) ? 0x01 : 0x00;
+	RobotToBrainChassisTimeBuffer[7] = Top.Referee.lidar_target_state;
+	
+	RobotToBrainChassisTimeBuffer[8] = 0xFF;
+	
+	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,9);
 
 }
 

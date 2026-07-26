@@ -151,7 +151,7 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
 				}else
 				{
 					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 400.0f) ;
-					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 20.0f);
+					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 200.0f);
 				} 
             }
             else if (Brain.Autoaim.mode == Lock)

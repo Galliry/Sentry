@@ -15,6 +15,10 @@
 #define BYTE1(dwTemp)       (*((char *)(&dwTemp) + 1))
 #define BYTE2(dwTemp)       (*((char *)(&dwTemp) + 2))
 #define BYTE3(dwTemp)       (*((char *)(&dwTemp) + 3))
+#define BYTE4(dwTemp)       (*((char *)(&dwTemp) + 4))
+#define BYTE5(dwTemp)       (*((char *)(&dwTemp) + 5))
+#define BYTE6(dwTemp)       (*((char *)(&dwTemp) + 6))
+#define BYTE7(dwTemp)       (*((char *)(&dwTemp) + 7))	
 	
 typedef struct
 {
@@ -192,6 +196,7 @@ typedef struct
 	{
 		uint32_t sentry_info;
 		uint16_t sentry_info_2;
+		uint64_t sentry_info_3;
 		
 		uint16_t exchange_bullet;
 		uint8_t remote_bullet;
@@ -275,7 +280,7 @@ typedef struct
 		float lidar_station_y;
 		uint8_t lidar_id;
 		uint8_t hero_flag;
-		uint8_t target_pos;
+		uint8_t target_state;
 	}ext_student_interactive_header_data;
 	//0x303 云台手小地图数据
 	struct 

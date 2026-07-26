@@ -43,10 +43,8 @@ void RefereeDataTrans(Referee2022* referee)
 		i++;
 	}else if(i == 1)
 	{
-		if(referee->game_robot_hp.base_HP < 5000)
-			base_flag = 1;
-		else
-			base_flag = 0;
+		base_flag = (referee->game_robot_hp.base_HP < 5000) ? 1 : 0;
+		
 		RefereeData.Identifier = 0x106;
 		RefereeData.Data[0] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 		RefereeData.Data[1] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
@@ -54,17 +52,11 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Data[3] = referee->game_robot_status.robot_id;
 		RefereeData.Data[4] = (uint8_t)(referee->bullet_remaining.bullet_remaining_num & 0xff);
 		RefereeData.Data[5] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
-		RefereeData.Data[6] = ((referee->ext_student_interactive_header_data.target_pos & 0x03) | ((referee2022.event_data.Small_Buff & 0x03) << 2) | ((referee2022.event_data.Big_Buff & 0x03) << 4));
+		RefereeData.Data[6] = ((referee->ext_student_interactive_header_data.target_state & 0x03) | ((referee2022.event_data.Small_Buff & 0x03) << 2) | ((referee2022.event_data.Big_Buff & 0x03) << 4));
 		RefereeData.Data[7] = ((referee->sentry_info_t.posture & 0x03) | ((base_flag & 0x01) << 2));
 		CAN_Send(&can1,&RefereeData);
 		i = 0;
 	}
-//	else if(i == 2)
-//	{
-//		RefereeData.Identifier = 0x106;
-//		memcpy(&RefereeData.Data[0],&referee->ext_student_interactive_header_data.lidar_station_x,sizeof(float));
-//		memcpy(&RefereeData.Data[4],&referee->ext_student_interactive_header_data.lidar_station_y,sizeof(float));
-//	}
 }
 
 void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
@@ -98,17 +90,12 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 	if(rxBuffer->Header.Identifier == 0x103)
 	{
 		check_robot_state.Check_Usart.Check_board_cnt = 0;
-		memcpy(&Base.Lidar.Vx,&rxBuffer->Data[0],sizeof(float));
-		memcpy(&Base.Lidar.Vy,&rxBuffer->Data[4],sizeof(float));
-		
-	}
-	if (rxBuffer->Header.Identifier == 0x104)
-	{
-		check_robot_state.Check_Usart.Check_board_cnt = 0;
+		Base.Lidar.Vx = (((rxBuffer->Data[0] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((rxBuffer->Data[0] & 0x3F) * 100 + rxBuffer->Data[1]) / 100.0f));
+		Base.Lidar.Vy = (((rxBuffer->Data[2] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((rxBuffer->Data[2] & 0x3F) * 100 + rxBuffer->Data[3]) / 100.0f));	
+
 		float tempyaw;
-		memcpy(&tempyaw, &rxBuffer->Data[0], sizeof(float));
+		memcpy(&tempyaw, &rxBuffer->Data[4], sizeof(float));
 		if (tempyaw != 0) 
 			Base.Autoaim.Target_Yaw = LPFilter(tempyaw, &LPF_Yaw_M);
-		memcpy(&Base.Autoaim.Yaw_S_Angle, &rxBuffer->Data[4], sizeof(float));
 	}
 }

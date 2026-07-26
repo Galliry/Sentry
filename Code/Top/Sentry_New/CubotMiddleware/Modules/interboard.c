@@ -62,8 +62,9 @@ void GyroDataTrans(void)
 
 void LidarDataTrans(void)
 {
-	memcpy(&LidarData.Data[0],&Brain.Lidar.vx,sizeof(float));
-	memcpy(&LidarData.Data[4],&Brain.Lidar.vy,sizeof(float));
+	pack_float_to_2bytes(GyroData.Data,0,Brain.Lidar.vx);
+	pack_float_to_2bytes(GyroData.Data,2,Brain.Lidar.vy);
+	memcpy(&AutoaimData.Data[4],&Brain.Autoaim.Yaw,sizeof(float));
 	CAN_Send(&can2,&LidarData);
 	// LidarDataU[0] = 0x03;
 	// memcpy(&LidarDataU[1],&Brain.Lidar.vx,sizeof(float));
@@ -71,69 +72,51 @@ void LidarDataTrans(void)
 	// HAL_UART_Transmit_DMA(&huart5,LidarDataU,9);
 }
 
-void AutoaimDataTrans(void)
-{
-	memcpy(&AutoaimData.Data[0],&Brain.Autoaim.Yaw,sizeof(float));
-	memcpy(&AutoaimData.Data[4],&Holder.Motors.Yaw_S.Data.Angle, sizeof(float));
-	CAN_Send(&can2,&AutoaimData);
-	// AutoaimDataU[0] = 0x04;
-	// memcpy(&AutoaimDataU[1],&Brain.Autoaim.Yaw,sizeof(float));
-	// memcpy(&AutoaimDataU[5],&Holder.Motors.Yaw_S.Data.Angle, sizeof(float));
-	// HAL_UART_Transmit_DMA(&huart5,AutoaimDataU,9);
-}
-
 void TopBoardDataTrans(RC_Ctrl_ET* rc_ctrl)
 {
 	static uint8_t i = 0;
 	if(i == 0){RemoteDataTrans(rc_ctrl); i++;}
 	else if(i == 1){GyroDataTrans(); i++;}
-	else if(i == 2){LidarDataTrans(); i++;}
-	else if(i == 3){AutoaimDataTrans(); i = 0;}
+	else if(i == 2){LidarDataTrans(); i=0;}
 
 }
 
-uint8_t BaseBoard_CallbackU(uint8_t * recBuffer, uint16_t len)
-{
-	if(recBuffer[0] == 0x05)
-	{
-		Top.Referee.game_prograss = recBuffer[1];
-		Top.Referee.cooling_limit = ((uint16_t)recBuffer[2] | (uint16_t)(recBuffer[3] << 8));
-		Top.Referee.cooling_heat = ((uint16_t)recBuffer[4] | (uint16_t)(recBuffer[5] << 8));
-		Top.Referee.shooter_output = recBuffer[6];
-		Top.Referee.robot_HP = ((uint16_t)recBuffer[7] | (uint16_t)(recBuffer[8] << 8));
-	}else if(recBuffer[0] == 0x06)
-	{
-		Top.Referee.game_time = ((uint16_t)recBuffer[1] | (uint16_t)(recBuffer[2] << 8));
-		Top.Referee.gimbal_output = recBuffer[3];
-		Top.Referee.robot_id = recBuffer[4];
-		Top.Referee.shoot_num = ((uint16_t)recBuffer[5] | (uint16_t)(recBuffer[6] << 8));
-		Top.Referee.lidar_target_pos = recBuffer[7] & 0x03;
-		Top.Referee.small_buff = (recBuffer[7] >> 2) & 0x03;
-		Top.Referee.big_buff = (recBuffer[7] >> 4) & 0x03;
-		Top.Referee.posture = (recBuffer[8] & 0x03);
-		Top.Referee.base_flag = ((recBuffer[8] >> 2) & 0x01);
-	}
-	return 0;
-}
 void BaseBoard_Callback(CAN_RxBuffer* rxBuffer)
 {
-	if(rxBuffer->Header.Identifier == 0x104)
+	if(rxBuffer->Header.Identifier == 0x105)
 	{
 		Top.Referee.game_prograss = rxBuffer->Data[0];
 		Top.Referee.cooling_limit = ((uint16_t)rxBuffer->Data[1] | (uint16_t)(rxBuffer->Data[2] << 8));
 		Top.Referee.cooling_heat = ((uint16_t)rxBuffer->Data[3] | (uint16_t)(rxBuffer->Data[4] << 8));
 		Top.Referee.shooter_output = rxBuffer->Data[5];
 		Top.Referee.robot_HP = ((uint16_t)rxBuffer->Data[6] | (uint16_t)(rxBuffer->Data[7] << 8));
-	}else if(rxBuffer->Header.Identifier == 0x105)
+	}else if(rxBuffer->Header.Identifier == 0x106)
 	{
 		Top.Referee.game_time = ((uint16_t)rxBuffer->Data[0] | (uint16_t)(rxBuffer->Data[1] << 8));
 		Top.Referee.gimbal_output = rxBuffer->Data[2];
 		Top.Referee.robot_id = rxBuffer->Data[3];
 		Top.Referee.shoot_num = ((uint16_t)rxBuffer->Data[4] | (uint16_t)(rxBuffer->Data[5] << 8));
-		Top.Referee.lidar_target_pos = rxBuffer->Data[6] & 0x03;
+		Top.Referee.lidar_target_state = rxBuffer->Data[6] & 0x03;
 		Top.Referee.small_buff = (rxBuffer->Data[6] >> 2) & 0x03;
 		Top.Referee.big_buff = (rxBuffer->Data[6] >> 4) & 0x03;
 		Top.Referee.posture = (rxBuffer->Data[7] & 0x03);
 		Top.Referee.base_flag = ((rxBuffer->Data[7] >> 2) & 0x01);
 	}
+}
+
+static void pack_float_to_2bytes(uint8_t *buffer, int index, float val) 
+{
+    int scaled = (int)roundf(val * 100.0f);
+    if (scaled > 6555)  scaled = 6555;
+    if (scaled < -6555) scaled = -6555;
+    uint8_t sign_bit = (scaled < 0) ? 0x40 : 0x00;
+    int abs_scaled = abs(scaled);
+    int high = abs_scaled / 100;
+    int low  = abs_scaled % 100;
+    if (high > 63) {
+        low += (high - 63) * 100;
+        high = 63;
+    }
+    buffer[index]     = (uint8_t)((high & 0x3F) | sign_bit);
+    buffer[index + 1] = (uint8_t)(low & 0xFF);
 }
