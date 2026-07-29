@@ -134,19 +134,8 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 
         if ( (rc_Ctrl_et.rc.s2 == 2 || Top.Referee.game_prograss == 4) && brain->Autoaim.mode != Cruise )
 		{
-			// Holder.Yaw_S.Target_Angle = brain->Autoaim.Yaw + mpu6050.Yaw;
-			// float YawDelta = brain->Autoaim.Yaw - IMU_S.Attitude.yaw;
-			// if (YawDelta >  180) YawDelta -= 360;
-				// brain->Autoaim.Yaw 是上位机返回的 IMU_S 坐标系下的绝对目标 yaw (度)
-				// 计算从当前云台 yaw 到目标的最短路径角度差
-				float YawDelta = brain->Autoaim.Yaw - Holder.Yaw_S.GYRO_Angle;
-				if (YawDelta >  180.0f) YawDelta -= 360.0f;
-				if (YawDelta < -180.0f) YawDelta += 360.0f;
-				// 叠加到当前电机角度，得到电机端 (Can_Angle) 的目标值
-				Holder.Yaw_S.Target_Angle = Holder.Yaw_S.Can_Angle + YawDelta;
-				Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;
-
-				UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f\r\n", brain->Autoaim.Yaw, Holder.Yaw_S.GYRO_Angle, YawDelta, Holder.Yaw_S.Can_Angle, Holder.Yaw_S.Target_Angle);
+			Holder.Yaw_S.Target_Angle = brain->Autoaim.Yaw;
+			Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;
 		}
 	}
 	#endif
