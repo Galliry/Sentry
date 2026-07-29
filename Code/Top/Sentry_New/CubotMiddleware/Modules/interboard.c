@@ -44,7 +44,7 @@ void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
 	RemoteData.Data[4] = (rc_ctrl->rc.ch2 >> 10) | ((rc_ctrl->rc.ch3 & 0x7F) << 1);  
 	RemoteData.Data[5] = (rc_ctrl->rc.ch3 >> 7) | ((rc_ctrl->rc.s1 & 0x03) << 4) | ((rc_ctrl->rc.s2 & 0x03) << 6);
 	RemoteData.Data[6] = ((rc_ctrl->isOnline & 0x01) | ((check_robot_state.Check_Usart.Check_lidar & 0x01) << 1) | ((Brain.Lidar.movemode & 0x03) << 2) | ((Brain.Autoaim.All_Sense & 0x07) << 4) | ((Brain.Autoaim.mode & 0x01) << 7));
-	RemoteData.Data[7] = ((yaw_turn & 0x03));
+	RemoteData.Data[7] = ((yaw_turn & 0x03) | ((Brain.Lidar.stance & 0x07) << 2)); 
 	CAN_Send(&can2,&RemoteData);
 }
 
@@ -101,6 +101,7 @@ void BaseBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Top.Referee.big_buff = (rxBuffer->Data[6] >> 4) & 0x03;
 		Top.Referee.posture = (rxBuffer->Data[7] & 0x03);
 		Top.Referee.base_flag = ((rxBuffer->Data[7] >> 2) & 0x01);
+		Top.Referee.outpost_flag = ((rxBuffer->Data[7] >> 3) & 0x01);
 	}
 }
 

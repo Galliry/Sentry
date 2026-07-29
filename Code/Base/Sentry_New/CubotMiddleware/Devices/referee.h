@@ -52,8 +52,10 @@ typedef struct
 	 struct
 	{
 		uint16_t robot_HP[8];
-		uint16_t outpost_HP;
-		uint16_t base_HP;	
+		uint16_t own_outpost_HP;
+		uint16_t own_base_HP;
+		uint16_t enemy_outpost_HP;
+		uint16_t enemy_base_HP;
 	}game_robot_hp;
 	
 	/*4. 飞镖发射状态：0x0004。发送频率：飞镖发射后发送，发送范围：所有机器人*/
@@ -206,6 +208,12 @@ typedef struct
 		uint16_t remain_bullet;
 		uint8_t posture;
 		uint8_t energy_device;
+		uint8_t attack_weak;      // bit 0-7
+		uint8_t defense_weak;     // bit 8-15
+		uint8_t move_weak;        // bit 16-23
+		uint8_t attack_enhance;   // bit 32-39
+		uint8_t defense_enhance;  // bit 40-47
+		uint8_t move_enhance;     // bit 48-55
 	}sentry_info_t;
 
 	//19. 飞镖机器人客户端指令数据：0x020A。发送频率：10Hz，发送范围：单一机器人。

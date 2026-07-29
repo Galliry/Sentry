@@ -7,6 +7,7 @@
 CAN_TxBuffer RefereeData;
 Base_t Base;
 uint8_t base_flag = 0;
+uint8_t outpost_flag = 0;
 void InterboardData_Init(Base_t* base)
 {
 	base->All_sense.All_Sense_Angle[0] = 0;
@@ -43,8 +44,8 @@ void RefereeDataTrans(Referee2022* referee)
 		i++;
 	}else if(i == 1)
 	{
-		base_flag = (referee->game_robot_hp.base_HP < 5000) ? 1 : 0;
-		
+		base_flag = (referee->game_robot_hp.own_base_HP < 5000) ? 1 : 0;
+		outpost_flag = (referee->game_robot_hp.enemy_outpost_HP == 0) ? 1 : 0;
 		RefereeData.Identifier = 0x106;
 		RefereeData.Data[0] = (uint8_t)(referee->game_status.stage_remain_time & 0xff);
 		RefereeData.Data[1] =  (uint8_t)((referee->game_status.stage_remain_time >> 8) & 0xff);
@@ -53,7 +54,7 @@ void RefereeDataTrans(Referee2022* referee)
 		RefereeData.Data[4] = (uint8_t)(referee->bullet_remaining.bullet_remaining_num & 0xff);
 		RefereeData.Data[5] = (uint8_t)((referee->bullet_remaining.bullet_remaining_num >> 8) & 0xff);
 		RefereeData.Data[6] = ((referee->ext_student_interactive_header_data.target_state & 0x03) | ((referee2022.event_data.Small_Buff & 0x03) << 2) | ((referee2022.event_data.Big_Buff & 0x03) << 4));
-		RefereeData.Data[7] = ((referee->sentry_info_t.posture & 0x03) | ((base_flag & 0x01) << 2));
+		RefereeData.Data[7] = ((referee->sentry_info_t.posture & 0x03) | ((base_flag & 0x01) << 2) | ((outpost_flag & 0x01) << 3));  // 新值放在 bit 3
 		CAN_Send(&can1,&RefereeData);
 		i = 0;
 	}
@@ -80,6 +81,7 @@ void TopBoard_Callback(CAN_RxBuffer* rxBuffer)
 		Base.All_sense.All_Sense_cnt = ((rxBuffer->Data[6] >> 4) & 0x07);
 		Base.Autoaim.Mode = ((rxBuffer->Data[6] >> 7) & 0x01);
 		Base.Autoaim.is_Follow = (rxBuffer->Data[7] & 0x03);
+		Base.Lidar.Lidar_posture = ((rxBuffer->Data[7] >> 2) & 0x07);
 	}
 	if(rxBuffer->Header.Identifier == 0x102)
 	{
