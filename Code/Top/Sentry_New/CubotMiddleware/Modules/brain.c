@@ -7,6 +7,7 @@
 #include <cstring>
 #include <string.h>
 #include "et08.h"
+#include "usart.h"
 Brain_t Brain;
 uint8_t RobotToBrainTimeBuffer[50];
 uint8_t RobotToBrainChassisTimeBuffer[22];
@@ -142,8 +143,10 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				if (YawDelta >  180.0f) YawDelta -= 360.0f;
 				if (YawDelta < -180.0f) YawDelta += 360.0f;
 				// 叠加到当前电机角度，得到电机端 (Can_Angle) 的目标值
-				Holder.Yaw_S.Target_Angle = Holder.Yaw_S.Can_Angle + YawDelta * 0.3;
+				Holder.Yaw_S.Target_Angle = Holder.Yaw_S.Can_Angle + YawDelta;
 				Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;
+
+				UsartDmaPrintf("%.2f, %.2f, %.2f, %.2f, %.2f\r\n", brain->Autoaim.Yaw, Holder.Yaw_S.GYRO_Angle, YawDelta, Holder.Yaw_S.Can_Angle, Holder.Yaw_S.Target_Angle);
 		}
 	}
 	#endif
