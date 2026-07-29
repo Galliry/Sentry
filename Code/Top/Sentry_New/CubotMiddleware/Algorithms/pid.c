@@ -111,6 +111,8 @@ float BasePID_AngleControl(SinglePID_t *base_pid, float target, float feedback)
 {
  base_pid->dt=0.001;
  base_pid->Error = target - feedback;
+ if (base_pid->Error > 180) base_pid->Error -= 360;
+ if (base_pid->Error < -180) base_pid->Error += 360;
 
 //±ÈÀýÏî
  base_pid->KpPart = base_pid->Error * base_pid->Kp;
