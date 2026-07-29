@@ -57,24 +57,24 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
 				AllSenseDelayCount--;
 			}
 		}
-		else if ( Base.Autoaim.Mode == 1 && Base.Autoaim.Target_Yaw != 0)
-		{
-			holder->Yaw_M.Target_Angle = Base.Autoaim.Target_Yaw;
-		}
+		// else if ( Base.Autoaim.Mode == 1 && Base.Autoaim.Target_Yaw != 0)
+		// {
+		// 	holder->Yaw_M.Target_Angle = Base.Autoaim.Target_Yaw;
+		// }
 	}
-	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
-	{
-		if(Base.Autoaim.is_Follow == 1)
-		{
-			holder->Yaw_M.Target_Angle -= 25;
-			Follow_Flag = 0;
-		}
-		else if(Base.Autoaim.is_Follow == 2)
-		{
-			holder->Yaw_M.Target_Angle += 25;
-			Follow_Flag = 0;
-		}
-	}
+//	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
+//	{
+//		if(Base.Autoaim.is_Follow == 1)
+//		{
+//			holder->Yaw_M.Target_Angle -= 20;
+//			Follow_Flag = 0;
+//		}
+//		else if(Base.Autoaim.is_Follow == 2)
+//		{
+//			holder->Yaw_M.Target_Angle += 20;
+//			Follow_Flag = 0;
+//		}
+//	}
 	if(Follow_Flag == 0)
 		Follow_Flag_cnt++;
 	if(Follow_Flag_cnt > 500)
