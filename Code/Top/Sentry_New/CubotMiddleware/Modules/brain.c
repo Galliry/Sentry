@@ -166,7 +166,6 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			brain->Lidar.vx = (((recBuffer[3] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((recBuffer[3] & 0x3F) * 100 + recBuffer[4]) / 100.0f)) ;
 			brain->Lidar.vy = ((recBuffer[5] & 0x40) ? -1.0f : 1.0f) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100.0f) ;
 			brain->Lidar.stance = recBuffer[9];
-			brain->Lidar.boost = recBuffer[10];
 		}
 	}
 }
@@ -296,10 +295,10 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[5] = Top.Referee.base_flag; //保护Base �??认为1
 	RobotToBrainChassisTimeBuffer[6] = (Top.Referee.shoot_num <= 50) ? 0x01 : 0x00;
 	RobotToBrainChassisTimeBuffer[7] = Top.Referee.lidar_target_state;
+	RobotToBrainChassisTimeBuffer[8] = Top.Referee.outpost_flag;
+	RobotToBrainChassisTimeBuffer[9] = 0xFF;
 	
-	RobotToBrainChassisTimeBuffer[8] = 0xFF;
-	
-	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,9);
+	HAL_UART_Transmit_DMA(&huart4, RobotToBrainChassisTimeBuffer,10);
 
 }
 

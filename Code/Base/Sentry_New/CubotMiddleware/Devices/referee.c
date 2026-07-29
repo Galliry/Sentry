@@ -45,12 +45,19 @@ void _Data_Diapcak(uint8_t *pdata)
 
 		BYTE0(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 10);
 		BYTE1(referee2022.game_robot_hp.robot_HP[7]) = *(pdata+data_addr + 11);
+		
+		BYTE0(referee2022.game_robot_hp.own_outpost_HP) = *(pdata+data_addr + 12);
+		BYTE1(referee2022.game_robot_hp.own_outpost_HP) = *(pdata+data_addr + 13);
+		
+		BYTE0(referee2022.game_robot_hp.own_base_HP) = *(pdata+data_addr + 14);
+		BYTE1(referee2022.game_robot_hp.own_base_HP) = *(pdata+data_addr + 15);	
+		
+		//  Enemy 's
+		BYTE0(referee2022.game_robot_hp.enemy_outpost_HP) = *(pdata+data_addr + 16);
+		BYTE1(referee2022.game_robot_hp.enemy_outpost_HP) = *(pdata+data_addr + 17);
 
-		BYTE0(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 16);
-		BYTE1(referee2022.game_robot_hp.outpost_HP) = *(pdata+data_addr + 17);
-
-		BYTE0(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 18);
-		BYTE1(referee2022.game_robot_hp.base_HP) = *(pdata+data_addr + 19);			
+		BYTE0(referee2022.game_robot_hp.enemy_base_HP) = *(pdata+data_addr + 18);
+		BYTE1(referee2022.game_robot_hp.enemy_base_HP) = *(pdata+data_addr + 19);			
 	}	
 		
 	if(cmd_id==0x0101)
@@ -115,12 +122,13 @@ void _Data_Diapcak(uint8_t *pdata)
 	if(cmd_id==0x204)
 	{
 		referee2022.buff.recovery_buff = *(pdata + data_addr); //回血增益
-		referee2022.buff.cooling_buff = *(pdata + data_addr + 1); //冷却增益
-		referee2022.buff.defence_buff = *(pdata + data_addr + 2); //防御增益
-		referee2022.buff.vulnerability_buff = *(pdata + data_addr + 3); //易伤BUFF
-		BYTE0(referee2022.buff.attack_buff) = *(pdata + data_addr + 4); //攻击增益
-		BYTE1(referee2022.buff.attack_buff) = *(pdata + data_addr + 5);
-		referee2022.buff.remaining_energy = *(pdata + data_addr + 6); //剩余能量
+		BYTE0(referee2022.buff.cooling_buff) = *(pdata + data_addr + 1); //冷却增益
+		BYTE1(referee2022.buff.cooling_buff) = *(pdata + data_addr + 2);
+		referee2022.buff.defence_buff = *(pdata + data_addr + 3); //防御增益
+		referee2022.buff.vulnerability_buff = *(pdata + data_addr + 4); //易伤BUFF
+		BYTE0(referee2022.buff.attack_buff) = *(pdata + data_addr + 5); //攻击增益
+		BYTE1(referee2022.buff.attack_buff) = *(pdata + data_addr + 6);
+		referee2022.buff.remaining_energy = *(pdata + data_addr + 7); //剩余能量
 	}
 	
 	if(cmd_id==0x0206)	
@@ -233,6 +241,14 @@ void _Data_Diapcak(uint8_t *pdata)
 		referee2022.sentry_info_t.remain_bullet = (referee2022.sentry_info_t.sentry_info_2 >> 1) & 0x07FF;		//队伍剩余可兑换的17mm弹丸数
 		referee2022.sentry_info_t.posture = (referee2022.sentry_info_t.sentry_info_2 >> 12) & 0x3;		//当前姿态
 		referee2022.sentry_info_t.energy_device = (referee2022.sentry_info_t.sentry_info_2 >> 14) & 1;		//能量机关是否在可激活状态
+		
+		referee2022.sentry_info_t.attack_weak     = (referee2022.sentry_info_t.sentry_info_3 >> 0)  & 0xFF; //Remaining time for attack stance weakening
+		referee2022.sentry_info_t.defense_weak    = (referee2022.sentry_info_t.sentry_info_3 >> 8)  & 0xFF; //Time left for defense stance debuff
+		referee2022.sentry_info_t.move_weak       = (referee2022.sentry_info_t.sentry_info_3 >> 16) & 0xFF; //Move posture weakens remaining duration
+		referee2022.sentry_info_t.attack_enhance  = (referee2022.sentry_info_t.sentry_info_3 >> 32) & 0xFF; //Remaining duration of enhanced attack stance
+		referee2022.sentry_info_t.defense_enhance = (referee2022.sentry_info_t.sentry_info_3 >> 40) & 0xFF; //Remaining time of reinforced defensive stance
+		referee2022.sentry_info_t.move_enhance    = (referee2022.sentry_info_t.sentry_info_3 >> 48) & 0xFF; //Remaining time for enhanced mobile posture
+	
 	}
 	
 	if(cmd_id == 0x0301)//雷达站通讯
@@ -479,8 +495,8 @@ void Sentry_Decision_Control(void)
 	referee2022.sentry_decision.resurrection = (referee2022.game_robot_status.remain_HP == 0) ? 1 : 0;
 	if(referee2022.bullet_remaining.bullet_remaining_num <= 20 && referee2022.bullet_remaining.money >= 900 && referee2022.game_status.game_progress == 4)
 		referee2022.sentry_decision.shoot_num += 100;
-	if(referee2022.sentry_info_t.posture != swervechassis.Movement.Posture)
-		referee2022.sentry_decision.target_posture = swervechassis.Movement.Posture;
+	if(referee2022.sentry_info_t.posture != Base.Lidar.Lidar_posture)
+		referee2022.sentry_decision.target_posture = Base.Lidar.Lidar_posture;
 	referee2022.sentry_decision.open_energy_device = 0;
 	
 	referee2022.sentry_decision.decision_data = (referee2022.sentry_decision.decision_data & ~1U) | (referee2022.sentry_decision.resurrection & 1U);

@@ -23,6 +23,7 @@ typedef struct
 		uint8_t big_buff;
 		uint8_t posture;
 		uint8_t base_flag;
+		uint8_t outpost_flag;
 	}Referee;
 
 }Top_t;
