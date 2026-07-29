@@ -79,6 +79,8 @@ typedef struct
 		float Yaw;
 		float Yaw_vel;
 		float Yaw_acc;
+		float Yaw_add;
+		float Pitch_add;
 		float Distance;
 		uint8_t IsFire;
 		uint8_t All_Sense; //全向感知

@@ -1,5 +1,6 @@
 #include "brain.h"
 #include "holder.h"
+#include "ins.h"
 #include "interboard.h"
 #include "shoot.h"
 #include "DM_imu.h"
@@ -36,7 +37,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 		brain->Autoaim.Brain_Data.FrameType = recBuffer[1];
 		brain->Autoaim.Brain_Data.FrameCoreID = recBuffer[2];
 
-		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[12] == 0xDD) //< è§£ç®—åè½¬ï¿½?
+		if ((brain->Autoaim.Brain_Data.FrameType == 1) && recBuffer[12] == 0xDD) //< è§£ç®—åè½¬ï¿??
 		{
 			brain->Autoaim.mode_cnt = 0;
 			brain->Autoaim.mode = Lock;
@@ -54,7 +55,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add * 1.0f + Holder.Pitch.GYRO_Angle;
 				#endif
 				#if HOLDER_MODE == 2
-				// æ­¤æ—¶å’Œè‡ªç„çš„é€šä¿¡åï¿½??ä¸ºï¼šåŸå…ˆè¡¨ç¤ºå¢é‡çš„æ•°ï¿½?å˜ä¸ºä½ç½®çš„æ•°ï¿½?
+				// æ­¤æ—¶å’Œè‡ªç„çš„é€šä¿¡åï¿½??ä¸ºï¼šåŸå…ˆè¡¨ç¤ºå¢é‡çš„æ•°ï¿??å˜ä¸ºä½ç½®çš„æ•°ï¿??
 				Holder.Yaw_S.Target_Angle = Brain.Autoaim.Yaw_add;
 				Holder.Pitch.Target_Angle = Brain.Autoaim.Pitch_add;
 				#endif
@@ -101,23 +102,49 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 	if (recBuffer[0] == 'V' && recBuffer[1] == 'G' && recBuffer[27] == 'E' && recBuffer[28] == 'N')
 	{
 		brain->Autoaim.IsFire = recBuffer[2] == 2 && ( Holder.Yaw_S.PID.CorePID->Error < 0.5 && Holder.Pitch.PID.CorePID->Error < 0.4 )? 1 : 0;
-		brain->Autoaim.mode = recBuffer[2] == 0 ? Cruise : Lock;
-		memcpy(&brain->Autoaim.Yaw, recBuffer+3, 4);
-		brain->Autoaim.Yaw *= 180 / 3.1415f;
-		memcpy(&brain->Autoaim.Yaw_vel, recBuffer+7, 4);
-		brain->Autoaim.Yaw_vel *= 180 / 3.1415f;
-		memcpy(&brain->Autoaim.Yaw_acc, recBuffer+11, 4);
-		brain->Autoaim.Yaw_acc *= 180 / 3.1415f;
-		memcpy(&brain->Autoaim.Pitch, recBuffer+15, 4);
-		brain->Autoaim.Pitch *= -180 / 3.1415f;
-		memcpy(&brain->Autoaim.Pitch_vel, recBuffer+19, 4);
-		brain->Autoaim.Pitch_vel *= 180 / 3.1415f;
-		memcpy(&brain->Autoaim.Pitch_acc, recBuffer+23, 4);
-		brain->Autoaim.Pitch_acc *= 180 / 3.1415f;
+        static uint16_t dislockCnt;
+		//brain->Autoaim.mode = recBuffer[2] == 0 ? Cruise : Lock;
+        if ( recBuffer[2] != 0 )
+        {
+            brain->Autoaim.mode = Lock;
+            memcpy(&brain->Autoaim.Yaw, recBuffer+3, 4);
+            brain->Autoaim.Yaw *= 180 / 3.1415f;
+            memcpy(&brain->Autoaim.Yaw_vel, recBuffer+7, 4);
+            brain->Autoaim.Yaw_vel *= 180 / 3.1415f;
+            memcpy(&brain->Autoaim.Yaw_acc, recBuffer+11, 4);
+            brain->Autoaim.Yaw_acc *= 180 / 3.1415f;
+            memcpy(&brain->Autoaim.Pitch, recBuffer+15, 4);
+            brain->Autoaim.Pitch *= -180 / 3.1415f;
+            memcpy(&brain->Autoaim.Pitch_vel, recBuffer+19, 4);
+            brain->Autoaim.Pitch_vel *= 180 / 3.1415f;
+            memcpy(&brain->Autoaim.Pitch_acc, recBuffer+23, 4);
+            brain->Autoaim.Pitch_acc *= 180 / 3.1415f;
+            dislockCnt = 3;
+        }
+        else if ( brain->Autoaim.mode == Lock && dislockCnt > 0 )
+        {
+            dislockCnt --;
+        }
+        else 
+        {
+            brain->Autoaim.mode = Cruise;
+        }
+		
 
-        if (rc_Ctrl_et.rc.s2 == 2 || Top.Referee.game_prograss == 4)
-		{Holder.Yaw_S.Target_Angle = brain->Autoaim.Yaw + mpu6050.Yaw;
-		Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;}
+        if ( (rc_Ctrl_et.rc.s2 == 2 || Top.Referee.game_prograss == 4) && brain->Autoaim.mode != Cruise )
+		{
+			// Holder.Yaw_S.Target_Angle = brain->Autoaim.Yaw + mpu6050.Yaw;
+			// float YawDelta = brain->Autoaim.Yaw - IMU_S.Attitude.yaw;
+			// if (YawDelta >  180) YawDelta -= 360;
+				// brain->Autoaim.Yaw ÊÇÉÏÎ»»ú·µ»ØµÄ IMU_S ×ø±êÏµÏÂµÄ¾ø¶ÔÄ¿±ê yaw (¶È)
+				// ¼ÆËã´Óµ±Ç°ÔÆÌ¨ yaw µ½Ä¿±êµÄ×î¶ÌÂ·¾¶½Ç¶È²î
+				float YawDelta = brain->Autoaim.Yaw - Holder.Yaw_S.GYRO_Angle;
+				if (YawDelta >  180.0f) YawDelta -= 360.0f;
+				if (YawDelta < -180.0f) YawDelta += 360.0f;
+				// µş¼Óµ½µ±Ç°µç»ú½Ç¶È£¬µÃµ½µç»ú¶Ë (Can_Angle) µÄÄ¿±êÖµ
+				Holder.Yaw_S.Target_Angle = Holder.Yaw_S.Can_Angle + YawDelta * 0.3;
+				Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;
+		}
 	}
 	#endif
 }
@@ -131,7 +158,7 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 
 		brain->Lidar.movemode = recBuffer[2];
 
-		if (brain->Lidar.Brain_Data.FrameType == BRAIN_TO_ROBOT_CMD) //< è§£ç®—åè½¬ï¿½?
+		if (brain->Lidar.Brain_Data.FrameType == BRAIN_TO_ROBOT_CMD) //< è§£ç®—åè½¬ï¿??
 		{
 			brain->Lidar.vx = (((recBuffer[3] & 0x40) == 0) ? 1.0f : -1.0f) * (((float)((recBuffer[3] & 0x3F) * 100 + recBuffer[4]) / 100.0f)) ;
 			brain->Lidar.vy = ((recBuffer[5] & 0x40) ? -1.0f : 1.0f) * ((float)((recBuffer[5] & 0x3f) * 100 + recBuffer[6]) / 100.0f) ;
@@ -141,13 +168,14 @@ void Brain_Lidar_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 	}
 }
 
-void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//å‘ç»™ï¿½?ï¿½?
+void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//å‘ç»™ï¿??ï¿??
 {
 	int16_t tmp0, tmp1, tmp2, tmp3;
 	
 
 #if AUTOAIM_Q_SELECT == 1
 #if DMIMU_ENABLE
+    EularAngleToQuaternion(IMU_S.Attitude.yaw,IMU_S.Attitude.pitch,IMU_S.Attitude.roll,IMU_S.Attitude.q);
 	tmp0 = (int16_t)(IMU_S.Attitude.q[0] * 30000);
 	tmp1 = -(int16_t)(IMU_S.Attitude.q[1] * 30000);
 	tmp2 = -(int16_t)(IMU_S.Attitude.q[2] * 30000);
@@ -182,22 +210,22 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//å‘ç»™ï¿½?ï¿½?
 
 #if AUTOAIM_VERSION == 1
 	RobotToBrainTimeBuffer[0] = 0xAA;
-	RobotToBrainTimeBuffer[1] = 0x07;	// Type ;  //å›ºå®šï¿½?0x07
-	RobotToBrainTimeBuffer[2] = 0x01;	// coreID;  //ï¿½?å‰å›ºå®šä¸º0x01
-	RobotToBrainTimeBuffer[3] = 0x01;	// ç´¢å¼•ï¼Œint16_tï¿½?
+	RobotToBrainTimeBuffer[1] = 0x07;	// Type ;  //å›ºå®šï¿??0x07
+	RobotToBrainTimeBuffer[2] = 0x01;	// coreID;  //ï¿??å‰å›ºå®šä¸º0x01
+	RobotToBrainTimeBuffer[3] = 0x01;	// ç´¢å¼•ï¼Œint16_tï¿??
 	RobotToBrainTimeBuffer[4] = 0x01;
 
-	RobotToBrainTimeBuffer[5] = (tim14.ClockTime >> 24);	// å®šæ—¶å™¨æ—¶é—´ï¼Œint32_tï¿½?
+	RobotToBrainTimeBuffer[5] = (tim14.ClockTime >> 24);	// å®šæ—¶å™¨æ—¶é—´ï¼Œint32_tï¿??
 	RobotToBrainTimeBuffer[6] = ((tim14.ClockTime >> 16) & 0xff);
 	RobotToBrainTimeBuffer[7] = ((tim14.ClockTime >> 8) & 0xff);
 	RobotToBrainTimeBuffer[8] = ((tim14.ClockTime & 0xff));
 
 	RobotToBrainTimeBuffer[9] = (Top.Referee.robot_id > 10) ? 1 : 0;
-	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// å››å…ƒæ•°q0ï¼Œfloatï¿½?
+	RobotToBrainTimeBuffer[10] = tmp0 & 0xFF;	// å››å…ƒæ•°q0ï¼Œfloatï¿??
 	RobotToBrainTimeBuffer[11] = tmp0 >> 8;
 	RobotToBrainTimeBuffer[12] = tmp1 & 0xFF;
 	RobotToBrainTimeBuffer[13] = tmp1 >> 8;
-	RobotToBrainTimeBuffer[14] = tmp2 & 0xFF;	// å››å…ƒæ•°q1ï¼Œfloatï¿½?
+	RobotToBrainTimeBuffer[14] = tmp2 & 0xFF;	// å››å…ƒæ•°q1ï¼Œfloatï¿??
 	RobotToBrainTimeBuffer[15] = tmp2 >> 8;
 	RobotToBrainTimeBuffer[16] = tmp3 & 0xFF;
 	RobotToBrainTimeBuffer[17] = tmp3 >> 8;
@@ -218,25 +246,27 @@ void RobotToBrain_Autoaim(float yaw,Brain_t* brain)//å‘ç»™ï¿½?ï¿½?
 	RobotToBrainTimeBuffer[2] = brain->Autoaim.Mode;
 //    float temp_yaw = IMU_S.Attitude.yaw / 360.0f * 2 * 3.14f;
 #if DMIMU_ENABLE
-    float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
+//    float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
+    float temp_yaw = IMU_S.Attitude.yaw / 180.0f * 3.14f;
     float temp_yaw_gyro = IMU_S.Attitude.gyro[2] / 180 * 3.14f;
     float temp_roll = IMU_S.Attitude.roll / 180 * 3.14f;
     float temp_roll_gyro = IMU_S.Attitude.gyro[0] / 180 * 3.14f;
     float temp_pitch = IMU_S.Attitude.pitch / 180 * 3.14f;
     float temp_pitch_gyro = IMU_S.Attitude.gyro[1] / 180 * 3.14f;
 #else
-	float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
-    float temp_yaw_gyro = INS_attitude->gyro[2] / 180 * 3.14f;
-    float temp_roll = INS_attitude->roll / 180 * 3.14f;
-    float temp_roll_gyro = INS_attitude->gyro[1] / 180 * 3.14f;
-    float temp_pitch = INS_attitude->pitch / 180 * 3.14f;
-    float temp_pitch_gyro = INS_attitude->gyro[0] / 180 * 3.14f;
+	// float temp_yaw = -(mpu6050.Yaw - Holder.Motors.Yaw_S.Data.Angle) / 180.0f * 3.14f;
+	// float temp_yaw = (INS_attitude->yaw ) / 180 * 3.14f;
+    // float temp_yaw_gyro = INS_attitude->gyro[2] / 180 * 3.14f;
+    // float temp_roll = INS_attitude->roll / 180 * 3.14f;
+    // float temp_roll_gyro = INS_attitude->gyro[1] / 180 * 3.14f;
+    // float temp_pitch = INS_attitude->pitch / 180 * 3.14f;
+    // float temp_pitch_gyro = INS_attitude->gyro[0] / 180 * 3.14f;
 #endif
 	memcpy(RobotToBrainTimeBuffer+3,&temp_yaw,4);
 	memcpy(RobotToBrainTimeBuffer+7,&temp_yaw_gyro,4);
-//	memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
-//	memcpy(RobotToBrainTimeBuffer+15,&temp_roll_gyro,4);
-//	memcpy(RobotToBrainTimeBuffer+19,&temp_pitch,4);
+	// memcpy(RobotToBrainTimeBuffer+11,&temp_roll,4);
+	// memcpy(RobotToBrainTimeBuffer+15,&temp_roll_gyro,4);
+	// memcpy(RobotToBrainTimeBuffer+19,&temp_pitch,4);
 	memcpy(RobotToBrainTimeBuffer+11,&temp_pitch,4);
 	memcpy(RobotToBrainTimeBuffer+15,&temp_pitch_gyro,4);
 	memcpy(RobotToBrainTimeBuffer+19,&temp_roll,4);
@@ -260,7 +290,7 @@ void RobotToBrain_Lidar(Brain_t* Brain)
 	RobotToBrainChassisTimeBuffer[2] = Top.Referee.game_time >> 8;
 	RobotToBrainChassisTimeBuffer[3] = Top.Referee.robot_HP & 0xff;
 	RobotToBrainChassisTimeBuffer[4] = Top.Referee.robot_HP >> 8;
-	RobotToBrainChassisTimeBuffer[5] = Top.Referee.base_flag; //ä¿æŠ¤Base ï¿½?è®¤ä¸º1
+	RobotToBrainChassisTimeBuffer[5] = Top.Referee.base_flag; //ä¿æŠ¤Base ï¿??è®¤ä¸º1
 	RobotToBrainChassisTimeBuffer[6] = (Top.Referee.shoot_num <= 50) ? 0x01 : 0x00;
 	RobotToBrainChassisTimeBuffer[7] = Top.Referee.lidar_target_state;
 	

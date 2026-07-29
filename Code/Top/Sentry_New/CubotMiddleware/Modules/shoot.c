@@ -45,7 +45,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
         ammo_booster->Shoot_Plate.Plate_Angle += ammo_booster->Shoot_Plate.Delta_Angle;
     }
 #if SHOOT_PLANT_VERSON == 1
-    if (rc_Ctrl_et.isOnline == 1 && Top.Referee.shooter_output == 1 && ammo_booster->Shoot_Plate.heat_status == 1)
+    if (rc_Ctrl_et.isOnline == 1 /*&& Top.Referee.shooter_output == 1*/ && ammo_booster->Shoot_Plate.heat_status == 1)
     {
         if (Top.Referee.cooling_heat >= (Top.Referee.cooling_limit - ammo_booster->Shoot_Plate.Fire_Margin - 70))
             ammo_booster->Shoot_Plate.Fire_Divider = 125; // 125
@@ -60,7 +60,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
 			ammo_booster->Shoot_Plate.Fire_Divider = 500;
 		
 		if(Top.Referee.game_prograss != 4)
-			ammo_booster->Shoot_Plate.Fire_Divider = 1000;
+			ammo_booster->Shoot_Plate.Fire_Divider = 50;
 		
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;

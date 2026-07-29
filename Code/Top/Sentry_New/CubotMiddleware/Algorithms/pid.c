@@ -169,7 +169,7 @@ float BasePID_AngleControl_Swerve(SinglePID_t *base_pid, float target, float fee
 }
 void PID_Init(void)
 {
-    BasePID_Init(&pid_load_angle, 7, 0, 0, 0, 30.0f);         // ≤¶µØ≈ÃΩ«∂»
+    BasePID_Init(&pid_load_angle, 8, 5, -50, 0, 30.0f);         // ≤¶µØ≈ÃΩ«∂»
     BasePID_Init(&pid_load_speed, 100,0,0,0,30.0f);// ≤¶µØ≈ÃÀŸ∂»
     BasePID_Init(&pid_friction0, 10, 1.5, 2, 0 ,30.0f); // ƒ¶≤¡¬÷
     BasePID_Init(&pid_friction1, 10, 1.5, 2, 0 , 30.0f);

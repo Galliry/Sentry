@@ -186,8 +186,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     holder->Yaw_S.Target_Angle = float_constrain(holder->Yaw_S.Target_Angle, -35, 35);
     holder->Pitch.Target_Angle = float_constrain(holder->Pitch.Target_Angle, -34, 25);
 
-    holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_pitch_vision);
-    holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle , &LPF_yaw_vision);
+    holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_yaw_vision);
+    holder->Pitch.Target_Angle = LPFilter( holder->Pitch.Target_Angle , &LPF_pitch_vision);
 
 #if DEBUG_HOLDER == 0
     if ( 0 && rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)

@@ -17,6 +17,7 @@
 #include "communication.h"
 #include "DM_imu.h"
 #include "dm_imu_rs485.h"
+#include "holder.h"
 void MPU_Init_(void);
 void MPU_Init_(void)
 {
@@ -47,8 +48,9 @@ void MPU_Init_(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
 }
+
 /**
-  * @brief  ��ʼ��ָ��ϼ�?
+  * @brief  ��ʼ��ָ��ϼ�?
   */
 void HardwareConfig(void)
 {
@@ -64,9 +66,9 @@ void HardwareConfig(void)
 	
  	UARTx_Init(&huart1,ET08_callback);
 //	UARTx_Init(&huart1,DR16_Callback);
-	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����?
+	UARTx_Init(&huart2,Brain_Autoaim_Callback); 	//�Ӿ�����ص�����?
 	UARTx_Init(&huart5,DM_IMU_UART_Callback);
-	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����?
+	UARTx_Init(&huart4,Brain_Lidar_Callback); 	//�����״�ص�����?
 	UARTx_Init(&huart7,NULL);//  Vofa+
 	
 	#if DMIMU_ENABLE == 0
@@ -87,8 +89,8 @@ void HardwareConfig(void)
 	
 	#if DMIMU_ENABLE
 	DM_IMU_Init(&IMU_S,0x98,0x99,can2);
-	DM_IMU_Run(&IMU_S);// ��̨
+	DM_IMU_Run(&IMU_S);// ��̨
 	#endif
-//	DM_IMU_Calibration(&IMU_S);
+	DM_IMU_Calibration(&IMU_S);
 }
 
