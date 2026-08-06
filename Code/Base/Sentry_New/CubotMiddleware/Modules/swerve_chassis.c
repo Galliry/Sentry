@@ -7,7 +7,7 @@
 #ifndef PI
 #define PI 3.1415926535f
 #endif
-
+extern uint8_t Cruise_Flag;
 float Chassis_Slew_Rate_Limiter(float target, float current, float accel_step, float decel_step);
 float Calculate_Variable_Omega(float amplitude, float offset, float period_s, float dt_s);
 void SwerveChassisSetSpeed(SwerveChassis *chassis);
@@ -72,10 +72,15 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 				}else if(referee2022.game_status.stage_remain_time > 400 && referee2022.game_status.game_progress == 4)
 				{
 					super_cap.cap_state.Supercap_Mode = 1;
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
+					if(Cruise_Flag == 0)
+						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
+					else chassis->Movement.Omega = 0;
 				}else
 				{
-					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
+					if(Cruise_Flag == 0)
+						chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
+					else chassis->Movement.Omega = 0;
+//					chassis->Movement.Omega = BasePID_SpeedControl(&chassis->Motors6020.FollowPID, 97.2165f, Holder.Motors.Yaw_M.angle);
 					super_cap.cap_state.Supercap_Mode = 0;
 				}
 				if (rec->Lidar.Movemode == 1)	//åˆ°è¾¾
@@ -90,7 +95,7 @@ void SwerveChassis_Control(SwerveChassis *chassis, Base_t *rec)
 					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;
 					chassis->Movement.Posture = 3;	//ç§»åŠ¨å§¿æ€?
 				}
-				else if (rec->Lidar.Movemode == 2)	//å›žè¡¥ç»™åŒº
+				else if (rec->Lidar.Movemode == 2)	//ÆúÓÃ
 				{
 					chassis->Movement.Vx_Tar = rec->Lidar.Vx * chassis->Movement.Lidar_Sensitivity;
 					chassis->Movement.Vy_Tar = rec->Lidar.Vy * chassis->Movement.Lidar_Sensitivity;

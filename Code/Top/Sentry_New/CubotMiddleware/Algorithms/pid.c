@@ -171,14 +171,14 @@ float BasePID_AngleControl_Swerve(SinglePID_t *base_pid, float target, float fee
 }
 void PID_Init(void)
 {
-    BasePID_Init(&pid_load_angle, 8, 5, -50, 0, 30.0f);         // ²¦µ¯ÅÌ½Ç¶È
-    BasePID_Init(&pid_load_speed, 100,0,0,0,30.0f);// ²¦µ¯ÅÌËÙ¶È
+    BasePID_Init(&pid_load_angle, 6, 300, -8, 480, 30.0f);         // ²¦µ¯ÅÌ½Ç¶È
+    BasePID_Init(&pid_load_speed, 90,0,0,0,30.0f);// ²¦µ¯ÅÌËÙ¶È
     BasePID_Init(&pid_friction0, 10, 1.5, 2, 0 ,30.0f); // Ä¦²ÁÂÖ
     BasePID_Init(&pid_friction1, 10, 1.5, 2, 0 , 30.0f);
-    BasePID_Init(&pid_pitch_angle, 0.34, 0.34, -0.3, 3.2, 30.0f); // ÔÆÌ¨ 0.5 0.005 -0.005 1.5
-    BasePID_Init(&pid_pitch_speed, 0.32, 4, 0, 0.5 , 30.0f);
-    BasePID_Init(&pid_yaw_s_angle, 0.4, 8, 0.3, 5 , 30.0f);//0.8 0.0045 -4 ´ò·ûPID
-    BasePID_Init(&pid_yaw_s_speed, 2800, 0, 1000, 2 , 30.0f); // 2200
+    BasePID_Init(&pid_pitch_angle, 0.25, 0.34, -0.3, 3.2, 30.0f); // ÔÆÌ¨ 0.5 0.005 -0.005 1.5
+    BasePID_Init(&pid_pitch_speed, 0.8, 4, 0.25, 0.25, 30.0f);
+    BasePID_Init(&pid_yaw_s_angle, 0.45, 8, 0.3, 5 , 30.0f);//0.8 0.0045 -4 ´ò·ûPID
+    BasePID_Init(&pid_yaw_s_speed, 4000, 0, 1000, 2 , 30.0f); // 2200
     BasePID_Init(&pid_run, 20, 0, 0, 0, 30.0f);   // µ×ÅÌÔË¶¯ 20
     BasePID_Init(&pid_follow, 0, 0, 0, 0, 30.0f); // µ×ÅÌ¸úËæ
     for (int i = 0; i < 4; i++)

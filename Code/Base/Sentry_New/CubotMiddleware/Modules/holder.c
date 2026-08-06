@@ -12,6 +12,7 @@
 Holder_t Holder;
 uint16_t AllSenseDelayCount;
 uint8_t Follow_Flag = 0;
+uint8_t Cruise_Flag = 0;
 uint16_t Follow_Flag_cnt = 0;
 #define DEBUG_YAW 0
 
@@ -43,38 +44,44 @@ void HolderControl_Base(Holder_t *holder, Base_t *rec)
     {
         holder->Yaw_M.Target_Angle += ((rec->Rc.rc_Ctrl_ch2 - 1024) * holder->Yaw_M.Sensitivity);
     }
-	if(rec->Rc.rc_Ctrl_s2 == 2 && referee2022.game_status.stage_remain_time <= 360)
+	if(rec->Rc.rc_Ctrl_s2 == 2 && Base.Autoaim.Mode == 0 && referee2022.game_status.game_progress == 4 && Base.Lidar.Movemode == 1)
 	{
-		if (Base.All_sense.All_Sense_cnt != 0)
-		{
-			if (AllSenseDelayCount == 0)
-			{
-				holder->Yaw_M.Target_Angle += Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
-				AllSenseDelayCount = 2000;
-			}
-			else
-			{
-				AllSenseDelayCount--;
-			}
-		}
+		holder->Yaw_M.Target_Angle += 0.05f;
+		Cruise_Flag = 1;
+//		if (Base.All_sense.All_Sense_cnt != 0)
+//		{
+//			if (AllSenseDelayCount == 0)
+//			{
+//				holder->Yaw_M.Target_Angle += Base.All_sense.All_Sense_Angle[Base.All_sense.All_Sense_cnt];
+//				AllSenseDelayCount = 2000;
+//			}
+//			else
+//			{
+//				AllSenseDelayCount--;
+//			}
+//		}
 		// else if ( Base.Autoaim.Mode == 1 && Base.Autoaim.Target_Yaw != 0)
 		// {
 		// 	holder->Yaw_M.Target_Angle = Base.Autoaim.Target_Yaw;
 		// }
 	}
-//	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
-//	{
-//		if(Base.Autoaim.is_Follow == 1)
-//		{
-//			holder->Yaw_M.Target_Angle -= 20;
-//			Follow_Flag = 0;
-//		}
-//		else if(Base.Autoaim.is_Follow == 2)
-//		{
-//			holder->Yaw_M.Target_Angle += 20;
-//			Follow_Flag = 0;
-//		}
-//	}
+	else 
+	{
+		Cruise_Flag = 0;
+	}
+	if(Follow_Flag == 1 && tim14.ClockTime % 100 == 0 && Base.Autoaim.Mode != 0)
+	{
+		if(Base.Autoaim.is_Follow == 1)
+		{
+			holder->Yaw_M.Target_Angle -= 20;
+			Follow_Flag = 0;
+		}
+		else if(Base.Autoaim.is_Follow == 2)
+		{
+			holder->Yaw_M.Target_Angle += 20;
+			Follow_Flag = 0;
+		}
+	}
 	if(Follow_Flag == 0)
 		Follow_Flag_cnt++;
 	if(Follow_Flag_cnt > 500)

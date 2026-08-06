@@ -120,7 +120,10 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
             brain->Autoaim.Pitch_vel *= 180 / 3.1415f;
             memcpy(&brain->Autoaim.Pitch_acc, recBuffer+23, 4);
             brain->Autoaim.Pitch_acc *= 180 / 3.1415f;
+//			brain->Autoaim.All_Sense = brain->Autoaim.Yaw_vel == 0 && brain->Autoaim.Yaw_acc == 0 && brain->Autoaim.Pitch_vel ==0 && brain->Autoaim.Pitch_acc == 0 && brain->Autoaim.mode == Lock ? 3 : 0;
             dislockCnt = 3;
+			if(Top.Referee.game_time >= 360 && brain->Autoaim.Pitch <= 0.0f)
+				brain->Autoaim.mode = Cruise;
         }
         else if ( brain->Autoaim.mode == Lock && dislockCnt > 0 )
         {
@@ -137,6 +140,7 @@ void Brain_Autoaim_DataUnpack(Brain_t* brain ,uint8_t * recBuffer)
 			Holder.Yaw_S.Target_Angle = brain->Autoaim.Yaw;
 			Holder.Pitch.Target_Angle = brain->Autoaim.Pitch ;
 		}
+		brain->Autoaim.All_Sense = brain->Autoaim.Yaw_vel == 0 && brain->Autoaim.Yaw_acc == 0 && brain->Autoaim.Pitch_vel ==0 && brain->Autoaim.Pitch_acc == 0 && brain->Autoaim.mode == Lock ? 3 : 0;
 	}
 	#endif
 }

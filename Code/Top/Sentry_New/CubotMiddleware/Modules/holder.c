@@ -146,11 +146,11 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
             {
 				if(Brain.Autoaim.Mode == Outpost)
 				{
-					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick() / 800.0f) ;
+//					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick() / 800.0f) ;
 					holder->Pitch.Target_Angle = 2 * sin(HAL_GetTick() / 400.0f) + 10;//20;
 				}else
 				{
-					holder->Yaw_S.Target_Angle = 30 * sin(HAL_GetTick () / 400.0f) ;
+//					holder->Yaw_S.Target_Angle = 15 * sin(HAL_GetTick () / 400.0f) ;
 					holder->Pitch.Target_Angle = 20 * sin(HAL_GetTick() / 200.0f);
 				} 
             }
@@ -215,7 +215,8 @@ void HolderControl_Top(Holder_t *holder, RC_Ctrl_ET *rc_ctrl)
     //                                                             + PitchFF_Speed(Brain.Autoaim.Pitch_vel),
     //                                                             holder->Pitch.GYRO_AngleSpeed);
     // }
-    if (rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock)
+    if (rc_ctrl->rc.s2 == 2 && Brain.Autoaim.mode == Lock && 
+		(Brain.Autoaim.Yaw_acc !=0 || Brain.Autoaim.Yaw_vel != 0 || Brain.Autoaim.Pitch_acc != 0 || Brain.Autoaim .Pitch_vel != 0))
     {
         holder->Yaw_S.Target_Angle = LPFilter( holder->Yaw_S.Target_Angle , &LPF_yaw_vision);
         holder->Motors.Yaw_S.Data.Output = BasePID_SpeedControl(holder->Yaw_S.PID.CorePID,

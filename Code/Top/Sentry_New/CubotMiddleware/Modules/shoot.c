@@ -26,8 +26,8 @@ void AmmoBoosterInit(Ammo_Booster *ammo_booster, SinglePID_t *friction_pid0, Sin
     ammo_booster->Shoot_Plate.Angle_Sense = 0.1689f;
 
     ammo_booster->Friction_Wheel.Friction_Start = 0;
-    ammo_booster->Friction_Wheel.Friction_Speed[0] = -5600;
-    ammo_booster->Friction_Wheel.Friction_Speed[1] = -5590;
+    ammo_booster->Friction_Wheel.Friction_Speed[0] = -5300;
+    ammo_booster->Friction_Wheel.Friction_Speed[1] = -5290;
 }
 
 #define SHOOT_PLANT_VERSON 1
@@ -60,7 +60,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
 			ammo_booster->Shoot_Plate.Fire_Divider = 500;
 		
 		if(Top.Referee.game_prograss != 4)
-			ammo_booster->Shoot_Plate.Fire_Divider = 50;
+			ammo_booster->Shoot_Plate.Fire_Divider = 100;
 		
         if (ammo_booster->Shoot_Plate.Shoot_rest_flag)
             ammo_booster->Shoot_Plate.Shoot_Cut++;
@@ -70,7 +70,7 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
         if ((rc_Ctrl_et.rc.s1 == 1 || Top.Referee.game_prograss == 4) 
             && ((rc_Ctrl_et.rc.s2 != 2) || (rc_Ctrl_et.rc.s2 == 2 && Brain.Autoaim.IsFire == 1)) 
             && ammo_booster->Shoot_Plate.Shoot_rest_flag == 0 
-            && (Top.Referee.shoot_num >= 0 || Top.Referee.game_prograss == 0))                       
+            && (Top.Referee.shoot_num >= 20||Top.Referee.game_prograss == 0))                       
         {
             if(Brain.Autoaim.Mode == Small_Buff || Brain.Autoaim.Mode == Big_Buff)
 			{
@@ -87,20 +87,21 @@ void ShootPlantControl(Ammo_Booster *ammo_booster)
         }
     }
 
-    if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle > 5)
+    if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle > 10)
         ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, ammo_booster->Shoot_Plate.Fire_Rate, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
-    else
+    else if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle < 0)
         ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, 0, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
-
+	else
+		ammo_booster->Shoot_Plate.Plate_Out = 0;
     if (ammo_booster->Shoot_Plate.Target_Angle - ammo_booster->Shoot_Plate.Plate_Angle > 5 && ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM < 400)
     {
         ammo_booster->Shoot_Plate.Jam++;
-        if (ammo_booster->Shoot_Plate.Jam >= 900)
+        if (ammo_booster->Shoot_Plate.Jam >= 600)
         {
             ammo_booster->Shoot_Plate.Target_Angle = ammo_booster->Shoot_Plate.Plate_Angle + 6;
             ammo_booster->Shoot_Plate.Jam++;
             ammo_booster->Shoot_Plate.Plate_Out = BasePID_SpeedControl(&ammo_booster->Shoot_Plate.RunPID_angle, -2000, ammo_booster->Shoot_Plate.motor2006.Data.SpeedRPM);
-            if (ammo_booster->Shoot_Plate.Jam > 1600)
+            if (ammo_booster->Shoot_Plate.Jam > 1500)
                 // ammo_booster->Shoot_Plate.Target_Angle = ammo_booster->Shoot_Plate.Plate_Angle - fmod(ammo_booster->Shoot_Plate.Plate_Angle,36);
                 ammo_booster->Shoot_Plate.Jam = 0;
         }

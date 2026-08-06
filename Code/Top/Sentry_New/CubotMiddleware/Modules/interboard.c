@@ -16,10 +16,10 @@ Top_t Top;
 uint8_t yaw_turn = 0;
 void RemoteDataTrans(RC_Ctrl_ET* rc_ctrl)
 { 
-	if(Holder.Yaw_S.Target_Angle > 30)
+	if(Holder.Yaw_S.Target_Angle > 27)
 	{
 		yaw_turn = 1;
-	}else if(Holder.Yaw_S.Target_Angle < -30)
+	}else if(Holder.Yaw_S.Target_Angle < -27)
 	{
 		yaw_turn = 2;
 	}else
@@ -62,9 +62,9 @@ void GyroDataTrans(void)
 
 void LidarDataTrans(void)
 {
-	pack_float_to_2bytes(GyroData.Data,0,Brain.Lidar.vx);
-	pack_float_to_2bytes(GyroData.Data,2,Brain.Lidar.vy);
-	memcpy(&AutoaimData.Data[4],&Brain.Autoaim.Yaw,sizeof(float));
+	pack_float_to_2bytes(LidarData.Data,0,Brain.Lidar.vx);
+	pack_float_to_2bytes(LidarData.Data,2,Brain.Lidar.vy);
+	memcpy(&LidarData.Data[4],&Brain.Autoaim.Yaw,sizeof(float));
 	CAN_Send(&can2,&LidarData);
 	// LidarDataU[0] = 0x03;
 	// memcpy(&LidarDataU[1],&Brain.Lidar.vx,sizeof(float));
